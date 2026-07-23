@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 r"""
 ================================================================================
- GENERADOR DE SUBMITTALS - ES CONSTRUCTORA  (submitals_gui.py)  v2.6.9
+ GENERADOR DE SUBMITTALS - ES CONSTRUCTORA  (submitals_gui.py)  v2.6.10
  Elaborado por Adrian Castro
 ================================================================================
+ v2.6.10 sobre v2.6.9:
+   1. Cuando una carpeta contiene fichas de varias marcas distintas, el campo
+      Marca muestra todas las detectadas separadas por " / " y sin duplicados.
  v2.6.9 sobre v2.6.8:
    1. El excel de uso interno de oficina ahora se llama "Guia interna
       materiales.xlsx" (antes "Guia Materiales.xlsx").
@@ -91,7 +94,7 @@ from tkinter import ttk, filedialog, messagebox
 # ============================================================================
 # CONSTANTES / TEMA
 # ============================================================================
-VERSION   = "2.6.9"
+VERSION   = "2.6.10"
 AUTOR     = "Adrián Castro"
 ROJO_ES   = "#E11D2D"
 AZUL_ES   = "#1F3864"
@@ -1325,18 +1328,36 @@ def _render_portada_b64(path, max_px=900):
         return None
 
 
-def _marcas_claramente_distintas(marcas):
-    """True si la lista de marcas identificadas contiene 2 o mas nombres
-    claramente distintos (no variantes del mismo nombre/mismas siglas)."""
+def _marcas_unicas_distintas(marcas):
+    """Devuelve marcas validas, unicas y con su escritura original.
+
+    Descarta valores genericos y agrupa variantes muy parecidas del mismo
+    fabricante (por ejemplo, razon social completa frente a nombre comercial).
+    El orden es el mismo en que las marcas aparecen en las fichas.
+    """
+    unicas = []
     normalizadas = []
+    no_marcas = {
+        "", SIN_ESP, "POR DEFINIR", "NO ESPECIFICADA", "NO ESPECIFICADO",
+        "SIN MARCA", "N/A", "NA",
+    }
     for m in marcas:
-        norm = re.sub(r'[^A-Z0-9]', '', m.upper())
+        visible = re.sub(r"\s+", " ", str(m or "")).strip(" /,;")
+        if visible.upper() in no_marcas:
+            continue
+        norm = re.sub(r'[^A-Z0-9]', '', visible.upper())
         if not norm:
             continue
         if not any(difflib.SequenceMatcher(None, norm, existente).ratio() >= 0.7
                   for existente in normalizadas):
             normalizadas.append(norm)
-    return len(normalizadas) >= 2
+            unicas.append(visible)
+    return unicas
+
+
+def _marcas_claramente_distintas(marcas):
+    """True si la lista contiene 2 o mas fabricantes realmente distintos."""
+    return len(_marcas_unicas_distintas(marcas)) >= 2
 
 
 def analizar_relacion_fichas(textos_por_doc, api_key, q=None, cons="-", imagenes_portada=None):
@@ -2099,6 +2120,7 @@ def construir_materiales(base, api_key, q, cancelar, gc=None):
         # "aspectos adicionales" de la caratula o advertir de una posible
         # mezcla incorrecta de materiales distintos en una misma carpeta.
         aspectos_adicionales = ""
+        relacion_info = None
         if len(textos_por_doc) >= 2:
             # v2.6.4: tambien se renderiza la portada de cada ficha, porque el
             # nombre del fabricante muchas veces solo aparece como logo grafico
@@ -2153,6 +2175,16 @@ def construir_materiales(base, api_key, q, cancelar, gc=None):
             else:
                 marca, desc, norm, idioma, trad = extraer_con_chatgpt(
                     combinado, api_key, q, cons)
+
+            # v2.6.10: la extraccion integrada suele escoger una sola marca,
+            # pero el analisis documento-por-documento ya identifico todas las
+            # alternativas comerciales. Si hay 2+, se muestran juntas.
+            marcas_distintas = _marcas_unicas_distintas(
+                (relacion_info or {}).get("marcas", []))
+            if len(marcas_distintas) >= 2:
+                marca = " / ".join(marcas_distintas)
+                q.put(("LOG", f"{cons}: marcas alternativas detectadas: {marca}"))
+
             if not marca or marca.upper() in (SIN_ESP, "NO ESPECIFICADA"):
                 marca = "POR DEFINIR"
             desc = _trunc_desc(desc) or "Sin especificacion disponible"

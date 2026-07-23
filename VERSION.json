@@ -1,11 +1,11 @@
 {
-  "version": "2.6.9",
+  "version": "2.6.10",
   "tipo_actualizacion": "ejecutable",
   "fecha": "2026-07-23",
-  "changelog": "Separa la guia interna de materiales de la Guia Submittal resumida para entregar a la administracion.",
+  "changelog": "Muestra todas las marcas alternativas de un material separadas por una barra y sin duplicados.",
   "archivos": {
     "submitals_gui.py": {
-      "hash": "4ff8a836b72ecd909c7f2f13c1fc872dc3a820715ceededd8b2059a0c598b117",
+      "hash": "420c736537e2d4c9e281fdef80f088f075a42a72bb2591477125bbc6874dc695",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui.py",
       "tipo": "python"
     },
@@ -35,8 +35,8 @@
       "tipo": "html"
     },
     "GeneradorSubmittalsES.exe": {
-      "hash": "bde74813aa1a83ad15cd4c62bd60f6c1619039cb03711f330975290eaf2bec14",
-      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v2.6.9/GeneradorSubmittalsES.exe",
+      "hash": "7b635af530b078d7d95b9c9d2f27e72a1a873cacc7cf6fabe48c6bdedf8b40e4",
+      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v2.6.10/GeneradorSubmittalsES.exe",
       "tipo": "ejecutable",
       "requerido": false
     }
