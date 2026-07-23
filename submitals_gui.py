@@ -2,9 +2,14 @@
 # -*- coding: utf-8 -*-
 r"""
 ================================================================================
- GENERADOR DE SUBMITTALS - ES CONSTRUCTORA  (submitals_gui.py)  v2.6.10
+ GENERADOR DE SUBMITTALS - ES CONSTRUCTORA  (submitals_gui.py)  v2.6.11
  Elaborado por Adrian Castro
 ================================================================================
+ v2.6.11 sobre v2.6.10:
+   1. Las caratulas de tubos y perfiles estructurales, angulares y otros
+      elementos de acero agregan al final de las notas una aclaracion breve
+      sobre la tolerancia aplicable segun ASTM A500/A500M, ASTM A53/A53M,
+      AISI S240 o ASTM A6/A6M.
  v2.6.10 sobre v2.6.9:
    1. Cuando una carpeta contiene fichas de varias marcas distintas, el campo
       Marca muestra todas las detectadas separadas por " / " y sin duplicados.
@@ -80,6 +85,7 @@ import threading
 import subprocess
 import importlib.util
 import multiprocessing
+import unicodedata
 from pathlib import Path
 from datetime import datetime
 
@@ -94,7 +100,7 @@ from tkinter import ttk, filedialog, messagebox
 # ============================================================================
 # CONSTANTES / TEMA
 # ============================================================================
-VERSION   = "2.6.10"
+VERSION   = "2.6.11"
 AUTOR     = "Adrián Castro"
 ROJO_ES   = "#E11D2D"
 AZUL_ES   = "#1F3864"
@@ -1444,6 +1450,123 @@ def construir_texto_aspectos_adicionales(relacion_info, n_docs):
     return ""
 
 
+NOTA_TOLERANCIA_A500 = (
+    "La norma ASTM A500/A500M permite una variación de hasta −10 % respecto "
+    "al espesor nominal. Por ello, el tubo estructural puede presentar un "
+    "espesor real menor al nominal y seguir siendo aceptable, siempre que se "
+    "mantenga dentro de esa tolerancia."
+)
+NOTA_TOLERANCIA_A53 = (
+    "La norma ASTM A53/A53M permite una reducción de hasta 12,5 % respecto al "
+    "espesor nominal de pared. Por ello, la tubería de acero puede presentar "
+    "un espesor real menor al nominal y seguir siendo aceptable, siempre que "
+    "se mantenga dentro de esa tolerancia."
+)
+NOTA_TOLERANCIA_PERFIL_FRIO = (
+    "La norma AISI S240 establece que el espesor base mínimo de los perfiles "
+    "de acero conformado en frío no sea menor al 95 % del espesor de diseño. "
+    "Por ello, una medición inferior al nominal es aceptable siempre que "
+    "respete ese límite."
+)
+NOTA_TOLERANCIA_A6 = (
+    "La norma ASTM A6/A6M establece tolerancias dimensionales y de masa "
+    "específicas para perfiles, angulares y otros elementos laminados de "
+    "acero. Por ello, una variación respecto a la dimensión nominal es "
+    "aceptable siempre que se mantenga dentro de los límites aplicables al "
+    "producto."
+)
+
+
+def _texto_tecnico_normalizado(item):
+    """Une los campos utiles para clasificar el elemento sin depender de tildes."""
+    campos = (
+        item.get("nombre", ""),
+        item.get("descripcion", ""),
+        item.get("normativa", ""),
+        " ".join(str(x) for x in (item.get("archivos", []) or [])),
+    )
+    texto = " ".join(str(valor or "") for valor in campos).upper()
+    texto = "".join(
+        caracter for caracter in unicodedata.normalize("NFD", texto)
+        if unicodedata.category(caracter) != "Mn"
+    )
+    return re.sub(r"\s+", " ", texto).strip()
+
+
+def _incluye_norma(texto, numero):
+    return re.search(rf"\bA[\s\-_./]*{numero}(?:M)?\b", texto) is not None
+
+
+def nota_tolerancia_elemento_metalico(item):
+    """Devuelve una nota normativa solo cuando la clasificacion es confiable."""
+    if not isinstance(item, dict):
+        return ""
+    texto = _texto_tecnico_normalizado(item)
+    if not texto:
+        return ""
+
+    # Las normas de acero de esta funcion no aplican a tuberias no metalicas.
+    no_acero = (
+        "PVC", "CPVC", "PPR", "PEAD", "HDPE", "POLIETILENO", "POLIPROPILENO",
+        "COBRE", "FIBROCEMENTO",
+    )
+    if any(termino in texto for termino in no_acero):
+        return ""
+
+    es_tubo = any(termino in texto for termino in (
+        "TUBO", "TUBERIA", "HSS", "SECCION HUECA", "THN ",
+    ))
+    evidencia_acero = any(termino in texto for termino in (
+        "ACERO", "HIERRO", "METALIC", "ESTRUCTURAL", "GALVANIZAD",
+        "ASTM A", "THN ", "HSS",
+    ))
+
+    # La norma declarada en la ficha prevalece sobre la clasificacion por nombre.
+    if _incluye_norma(texto, "53") and es_tubo:
+        return NOTA_TOLERANCIA_A53
+    if _incluye_norma(texto, "500"):
+        return NOTA_TOLERANCIA_A500
+    if es_tubo and evidencia_acero and (
+            "ESTRUCTURAL" in texto or "SECCION HUECA" in texto or "THN " in texto):
+        return NOTA_TOLERANCIA_A500
+
+    es_perfil_frio = any(termino in texto for termino in (
+        "CONFORMADO EN FRIO", "FORMADO EN FRIO", "COSTANERA",
+        "PERFIL TIPO C", "PERFIL EN 'C'", 'PERFIL EN "C"', "PERFIL C ",
+        "PERFIL TIPO U", "PERFIL U ", "PERFIL TIPO Z", "PERFIL Z ",
+        "MONTEN", "CORREA METALICA", "STEEL STUD", "METAL STUD",
+    ))
+    if es_perfil_frio and evidencia_acero:
+        return NOTA_TOLERANCIA_PERFIL_FRIO
+
+    es_elemento_laminado = any(termino in texto for termino in (
+        "ANGULAR", "ANGULO DE ACERO", "ANGULO DE HIERRO", "PERFIL",
+        "PLETINA", "PLATINA", "VIGA DE ACERO", "COLUMNA DE ACERO",
+        "ELEMENTO METALICO", "LAMINADO EN CALIENTE",
+    ))
+    fijacion = any(termino in texto for termino in (
+        "TORNILLO", "PERNO", "TUERCA", "ARANDELA", "ANCLAJE", "REMACHE",
+    ))
+    if es_elemento_laminado and evidencia_acero and not fijacion:
+        return NOTA_TOLERANCIA_A6
+    return ""
+
+
+def agregar_notas_tolerancia_metalica(materiales):
+    """Agrega la nota al final sin duplicarla al reutilizar un JSON existente."""
+    agregadas = 0
+    for item in materiales:
+        nota = nota_tolerancia_elemento_metalico(item)
+        if not nota:
+            continue
+        actual = str(item.get("aspectos_adicionales", "") or "").strip()
+        if nota in actual:
+            continue
+        item["aspectos_adicionales"] = f"{actual}\n\n{nota}".strip()
+        agregadas += 1
+    return agregadas
+
+
 # ============================================================================
 # COMPILADO
 # ============================================================================
@@ -2540,6 +2663,9 @@ def hilo_trabajo(modo, carpeta_base, ruta_json, api_key, opciones,
             if cancelar.is_set():
                 q.put(("CANCELLED",))
                 return
+            notas_agregadas = agregar_notas_tolerancia_metalica(materiales)
+            if notas_agregadas:
+                q.put(("LOG", f"Notas de tolerancia metalica agregadas: {notas_agregadas}"))
             res = resumen_materiales(materiales, docs_totales)
             q.put(("LOG", f"JSON: {res['total']} materiales, {res['documentos_totales']} documentos, "
                           f"{res['fichas_disponibles']} con ficha, {res['carpetas_vacias']} vacias, "
@@ -2568,6 +2694,9 @@ def hilo_trabajo(modo, carpeta_base, ruta_json, api_key, opciones,
             for it in materiales:
                 if isinstance(it, dict) and "normativa" not in it:
                     it["normativa"] = SIN_ESP
+            notas_agregadas = agregar_notas_tolerancia_metalica(materiales)
+            if notas_agregadas:
+                q.put(("LOG", f"Notas de tolerancia metalica agregadas: {notas_agregadas}"))
 
         # ---------- FASE 4: seleccionar plantilla y generar caratulas -------
         q.put(("FASE", f"Generando caratulas ({CARATULA_NOMBRES.get(caratula, caratula)})..."))

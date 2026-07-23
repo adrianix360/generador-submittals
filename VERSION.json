@@ -1,11 +1,11 @@
 {
-  "version": "2.6.10",
+  "version": "2.6.11",
   "tipo_actualizacion": "ejecutable",
   "fecha": "2026-07-23",
-  "changelog": "Muestra todas las marcas alternativas de un material separadas por una barra y sin duplicados.",
+  "changelog": "Agrega al final de las notas las tolerancias normativas aplicables a tubos, perfiles, angulares y otros elementos de acero.",
   "archivos": {
     "submitals_gui.py": {
-      "hash": "420c736537e2d4c9e281fdef80f088f075a42a72bb2591477125bbc6874dc695",
+      "hash": "58356430f6a2ea59377e28a39bb69e38c4814c751462d5bba0f13212965353c1",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui.py",
       "tipo": "python"
     },
@@ -35,8 +35,8 @@
       "tipo": "html"
     },
     "GeneradorSubmittalsES.exe": {
-      "hash": "7b635af530b078d7d95b9c9d2f27e72a1a873cacc7cf6fabe48c6bdedf8b40e4",
-      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v2.6.10/GeneradorSubmittalsES.exe",
+      "hash": "647466584d5c772e268161956e571a1d831b1eb84a3ade767a5f57c54a0cd587",
+      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v2.6.11/GeneradorSubmittalsES.exe",
       "tipo": "ejecutable",
       "requerido": false
     }
