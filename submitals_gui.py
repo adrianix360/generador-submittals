@@ -2,9 +2,18 @@
 # -*- coding: utf-8 -*-
 r"""
 ================================================================================
- GENERADOR DE SUBMITTALS - ES CONSTRUCTORA  (submitals_gui.py)  v2.6.8
+ GENERADOR DE SUBMITTALS - ES CONSTRUCTORA  (submitals_gui.py)  v2.6.9
  Elaborado por Adrian Castro
 ================================================================================
+ v2.6.9 sobre v2.6.8:
+   1. El excel de uso interno de oficina ahora se llama "Guia interna
+      materiales.xlsx" (antes "Guia Materiales.xlsx").
+   2. Al exportar la version final ("COMPILADO FINAL SUBMITTAL") ya no se
+      copia el excel interno; en su lugar se genera "Guia Submittal.xlsx",
+      con una hoja por carpeta madre (Arquitectonicos, Estructurales,
+      Mecanicos, Electricos) y solo 4 columnas (Consecutivo, Descripcion,
+      Aprobacion, Observaciones), pensado para entregar a la administracion
+      del contrato sin datos innecesarios.
  v2.6.8 sobre v2.6.7:
    1. Las imagenes pequenas, borrosas o de bajo contraste se evaluan y mejoran
       en memoria antes de intentar leerlas.
@@ -82,7 +91,7 @@ from tkinter import ttk, filedialog, messagebox
 # ============================================================================
 # CONSTANTES / TEMA
 # ============================================================================
-VERSION   = "2.6.8"
+VERSION   = "2.6.9"
 AUTOR     = "Adrián Castro"
 ROJO_ES   = "#E11D2D"
 AZUL_ES   = "#1F3864"
@@ -1559,20 +1568,22 @@ def exportar_version_final(base, q=None):
     a las carpetas madre, con la version "limpia" del submittal lista para
     enviar a aprobacion: por cada carpeta madre, solo los CMP individuales de
     cada material (caratula + ficha tecnica ya combinadas) y su compilado de
-    disciplina (CMP SUBMITTAL <DISC>.pdf); en la raiz, el excel guia.
+    disciplina (CMP SUBMITTAL <DISC>.pdf); en la raiz, el excel 'Guía
+    Submittal.xlsx' (version resumida, para la administracion del contrato;
+    no es la 'Guía interna materiales.xlsx' de uso exclusivo de oficina).
 
         COMPILADO FINAL SUBMITTAL/
             <CARPETA MADRE>/
                 <material>-CMP.pdf
                 CMP SUBMITTAL <DISCIPLINA>.pdf
-            Guía Materiales.xlsx
+            Guía Submittal.xlsx
 
     Solo copia archivos ya generados; no modifica ni borra nada dentro de las
     carpetas madre originales.
 
     Devuelve un dict:
         {"carpeta_salida": str, "cmp_copiados": int,
-         "compilados_disc_copiados": int, "excel_copiado": bool,
+         "compilados_disc_copiados": int, "excel_generado": bool,
          "disciplinas_sin_archivos": [str, ...], "errores": [(ruta, detalle), ...]}
     """
     base = Path(base)
@@ -1583,7 +1594,7 @@ def exportar_version_final(base, q=None):
     salida.mkdir(parents=True, exist_ok=True)
 
     resultado = {"carpeta_salida": str(salida), "cmp_copiados": 0,
-                "compilados_disc_copiados": 0, "excel_copiado": False,
+                "compilados_disc_copiados": 0, "excel_generado": False,
                 "disciplinas_sin_archivos": [], "errores": []}
 
     for madre in CARPETAS_MADRE:
@@ -1614,17 +1625,22 @@ def exportar_version_final(base, q=None):
                 if q:
                     q.put(("WARN", f"No se pudo copiar '{p.name}': {e}"))
 
-    excel_path = base / "Guía Materiales.xlsx"
-    if excel_path.exists():
+    json_path = base / NOMBRE_JSON
+    if json_path.exists():
         try:
-            shutil.copy2(excel_path, salida / excel_path.name)
-            resultado["excel_copiado"] = True
-            if q:
-                q.put(("LOG", f"Copiado: {excel_path.name}"))
+            resultado_excel = generar_excel_submittal(json_path, salida)
+            if resultado_excel.get("exitoso"):
+                resultado["excel_generado"] = True
+                if q:
+                    q.put(("LOG", "Generado: Guía Submittal.xlsx"))
+            else:
+                resultado["errores"].append((str(json_path), resultado_excel.get("error", "")))
+                if q:
+                    q.put(("WARN", f"No se pudo generar Guía Submittal.xlsx: {resultado_excel.get('error')}"))
         except Exception as e:
-            resultado["errores"].append((str(excel_path), str(e)))
+            resultado["errores"].append((str(json_path), str(e)))
             if q:
-                q.put(("WARN", f"No se pudo copiar el excel: {e}"))
+                q.put(("WARN", f"No se pudo generar Guía Submittal.xlsx: {e}"))
 
     return resultado
 
@@ -1754,7 +1770,7 @@ def hilo_compilados_disciplina(carpeta_base, disciplinas, q):
 # ============================================================================
 def generar_excel_materiales(json_path, carpeta_base):
     """
-    Genera un Excel 'Guía Materiales.xlsx' en carpeta_base con los datos del JSON.
+    Genera un Excel 'Guía interna materiales.xlsx' en carpeta_base con los datos del JSON.
     Una hoja por disciplina (ARQ, ESTR, ELEC, MEC).
     Actualiza si ya existe.
     """
@@ -1857,7 +1873,112 @@ def generar_excel_materiales(json_path, carpeta_base):
         total_materiales += len(items)
 
     # Guardar
-    ruta_excel = Path(carpeta_base) / "Guía Materiales.xlsx"
+    ruta_excel = Path(carpeta_base) / "Guía interna materiales.xlsx"
+    try:
+        wb.save(str(ruta_excel))
+    except Exception as e:
+        return {"exitoso": False, "error": f"Error guardando Excel: {e}"}
+
+    return {
+        "exitoso": True,
+        "archivo": str(ruta_excel),
+        "total_materiales": total_materiales,
+    }
+
+
+# ============================================================================
+# GENERAR EXCEL 'GUÍA SUBMITTAL' (para entrega a la administración)
+# ============================================================================
+def generar_excel_submittal(json_path, carpeta_destino):
+    """
+    Genera 'Guía Submittal.xlsx' en carpeta_destino con los datos del JSON.
+    Una hoja por carpeta madre (Arquitectónicos, Estructurales, Mecánicos,
+    Eléctricos). Este excel se entrega a la administración del contrato junto
+    con el compilado final, por lo que solo incluye las columnas minimas:
+    Consecutivo, Descripción (nombre de la carpeta de cada material),
+    Aprobación y Observaciones (estas ultimas dos en blanco, para que las
+    complete la administración).
+    """
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment
+
+    json_path = Path(json_path)
+    if not json_path.exists():
+        return {"exitoso": False, "error": f"JSON no encontrado: {json_path}"}
+
+    try:
+        data = json.loads(json_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        return {"exitoso": False, "error": f"Error leyendo JSON: {e}"}
+
+    materiales = data.get("materiales", []) if isinstance(data, dict) else data
+    if not isinstance(materiales, list):
+        return {"exitoso": False, "error": "JSON debe contener array 'materiales'"}
+
+    # Agrupar por disciplina
+    por_disciplina = {
+        "ARQUITECTONICOS": [],
+        "ESTRUCTURALES": [],
+        "MECANICOS": [],
+        "ELECTRICOS": []
+    }
+
+    for item in materiales:
+        consec = str(item.get("consecutivo", "")).strip()
+        if not consec:
+            continue
+        prefijo = re.sub(r'\d.*', '', consec).upper()
+        if prefijo == "ARQ":
+            por_disciplina["ARQUITECTONICOS"].append(item)
+        elif prefijo == "ESTR":
+            por_disciplina["ESTRUCTURALES"].append(item)
+        elif prefijo == "MEC":
+            por_disciplina["MECANICOS"].append(item)
+        elif prefijo == "ELEC":
+            por_disciplina["ELECTRICOS"].append(item)
+
+    wb = Workbook()
+    wb.remove(wb.active)  # Eliminar hoja vacía por defecto
+
+    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+    header_alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+    nombres_hojas = {
+        "ARQUITECTONICOS": "Arquitectónicos",
+        "ESTRUCTURALES": "Estructurales",
+        "MECANICOS": "Mecánicos",
+        "ELECTRICOS": "Eléctricos"
+    }
+
+    total_materiales = 0
+    for disciplina, nombre_hoja in nombres_hojas.items():
+        items = por_disciplina[disciplina]
+        if not items:
+            continue
+
+        ws = wb.create_sheet(title=nombre_hoja)
+
+        encabezados = ["Consecutivo", "Descripción", "Aprobación", "Observaciones"]
+        for col, header in enumerate(encabezados, 1):
+            cell = ws.cell(row=1, column=col, value=header)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = header_alignment
+
+        for row_idx, item in enumerate(items, 2):
+            ws.cell(row=row_idx, column=1, value=item.get("consecutivo", ""))
+            ws.cell(row=row_idx, column=2, value=item.get("nombre", ""))
+            # Aprobación y Observaciones quedan en blanco para la administración
+
+        ws.column_dimensions["A"].width = 15
+        ws.column_dimensions["B"].width = 60
+        ws.column_dimensions["C"].width = 20
+        ws.column_dimensions["D"].width = 40
+
+        total_materiales += len(items)
+
+    ruta_excel = Path(carpeta_destino) / "Guía Submittal.xlsx"
     try:
         wb.save(str(ruta_excel))
     except Exception as e:
@@ -3599,7 +3720,7 @@ class SubmitalsGUI(tk.Tk):
                 total = resultado.get("total_materiales", 0)
                 messagebox.showinfo("Excel generado",
                                    f"✅ Excel actualizado exitosamente\n\n"
-                                   f"Archivo: Guía Materiales.xlsx\n"
+                                   f"Archivo: Guía interna materiales.xlsx\n"
                                    f"Materiales: {total}\n\n"
                                    f"Ubicación: {carpeta}")
             else:
@@ -3718,7 +3839,7 @@ class SubmitalsGUI(tk.Tk):
         msg = [f"✅ Versión final exportada en:\n{resultado['carpeta_salida']}\n",
               f"  • CMP individuales copiados: {resultado['cmp_copiados']}",
               f"  • Compilados por disciplina copiados: {resultado['compilados_disc_copiados']}",
-              f"  • Excel guía: {'copiado' if resultado['excel_copiado'] else 'no encontrado'}"]
+              f"  • Guía Submittal.xlsx: {'generado' if resultado['excel_generado'] else 'no se pudo generar'}"]
         if resultado["disciplinas_sin_archivos"]:
             msg.append(f"\n⚠ Sin archivos para: {', '.join(resultado['disciplinas_sin_archivos'])}")
         if resultado["errores"]:
@@ -3887,7 +4008,7 @@ class SubmitalsGUI(tk.Tk):
         if compilados:
             msg.append(f"\n⚠ Se eliminaron {len(compilados)} compilado(s) por disciplina "
                       "obsoleto(s); genere uno nuevo con '📦 Generar Compilados'.")
-        msg.append(f"\n📊 {NOMBRE_JSON} y Guía Materiales.xlsx actualizados.")
+        msg.append(f"\n📊 {NOMBRE_JSON} y Guía interna materiales.xlsx actualizados.")
         msg.append("\n➡ Presione 🚀 GENERAR (modo 'usar JSON existente') para regenerar las "
                    "caratulas de los materiales renumerados (no vuelve a consultar la API).")
         messagebox.showinfo("Duplicados corregidos", "\n".join(msg))

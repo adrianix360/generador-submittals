@@ -1,11 +1,11 @@
 {
-  "version": "2.6.8",
+  "version": "2.6.9",
   "tipo_actualizacion": "ejecutable",
   "fecha": "2026-07-23",
-  "changelog": "Mejora automatica de imagenes degradadas, OCR multivariante y doble verificacion visual con IA.",
+  "changelog": "Separa la guia interna de materiales de la Guia Submittal resumida para entregar a la administracion.",
   "archivos": {
     "submitals_gui.py": {
-      "hash": "6db41ce44e36fc3f6f7fa974e7ceca159e03b82f1a8cb3bfd58515be59a5cbd2",
+      "hash": "4ff8a836b72ecd909c7f2f13c1fc872dc3a820715ceededd8b2059a0c598b117",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui.py",
       "tipo": "python"
     },
@@ -35,8 +35,8 @@
       "tipo": "html"
     },
     "GeneradorSubmittalsES.exe": {
-      "hash": "5178762c7eafd9ed1b5cdcf4d63ec36c91222defacf962f57378665a2fb5f1ad",
-      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v2.6.8/GeneradorSubmittalsES.exe",
+      "hash": "bde74813aa1a83ad15cd4c62bd60f6c1619039cb03711f330975290eaf2bec14",
+      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v2.6.9/GeneradorSubmittalsES.exe",
       "tipo": "ejecutable",
       "requerido": false
     }
