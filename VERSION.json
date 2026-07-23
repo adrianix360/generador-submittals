@@ -1,6 +1,6 @@
 {
   "version": "2.6.8",
-  "tipo_actualizacion": "codigo",
+  "tipo_actualizacion": "ejecutable",
   "fecha": "2026-07-23",
   "changelog": "Mejora automatica de imagenes degradadas, OCR multivariante y doble verificacion visual con IA.",
   "archivos": {
@@ -33,6 +33,12 @@
       "hash": "86779d5ee1fde6765b41e5239ec0ae9854af147d564079b0a30ddcce25c255d1",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/template_ministerio_salud.html",
       "tipo": "html"
+    },
+    "GeneradorSubmittalsES.exe": {
+      "hash": "5178762c7eafd9ed1b5cdcf4d63ec36c91222defacf962f57378665a2fb5f1ad",
+      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v2.6.8/GeneradorSubmittalsES.exe",
+      "tipo": "ejecutable",
+      "requerido": false
     }
   },
   "instrucciones_auto_actualizar": {
