@@ -2,9 +2,18 @@
 # -*- coding: utf-8 -*-
 r"""
 ================================================================================
- GENERADOR DE SUBMITTALS - ES CONSTRUCTORA  (submitals_gui.py)  v2.6.6
+ GENERADOR DE SUBMITTALS - ES CONSTRUCTORA  (submitals_gui.py)  v2.6.8
  Elaborado por Adrian Castro
 ================================================================================
+ v2.6.8 sobre v2.6.7:
+   1. Las imagenes pequenas, borrosas o de bajo contraste se evaluan y mejoran
+      en memoria antes de intentar leerlas.
+   2. OCR por consenso sobre varias versiones (original, ampliada y binaria),
+      conservando la estructura de lineas de las tablas.
+   3. Extraccion visual de alta precision con gpt-5.6-sol y alternativas
+      automaticas, usando original, mejora y acercamientos.
+   4. Segunda lectura visual obligatoria para auditar/corregir la primera. Se
+      guardan modelo, calidad, confianza y evidencias en datos_materiales.json.
  v2.6.6 sobre v2.6.5:
    1. Fix: la columna "Descripcion" del Excel (Guia Materiales.xlsx) mostraba
       el texto largo que ChatGPT extrae de la ficha tecnica (item["descripcion"]
@@ -73,7 +82,7 @@ from tkinter import ttk, filedialog, messagebox
 # ============================================================================
 # CONSTANTES / TEMA
 # ============================================================================
-VERSION   = "2.6.7"
+VERSION   = "2.6.8"
 AUTOR     = "Adrián Castro"
 ROJO_ES   = "#E11D2D"
 AZUL_ES   = "#1F3864"
@@ -103,7 +112,14 @@ MAX_NORMATIVA = 500
 MODELO_GPT = "gpt-4o-mini"
 TESSERACT_DEFECTO = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 SIN_ESP = "SIN ESPECIFICAR"
-VISION_MODEL = "gpt-4o"   # v2.5.1: OpenAI Vision (una sola API)
+# v2.6.8: las fichas en imagen usan el modelo visual mas potente disponible.
+# Se mantienen alternativas porque no todas las cuentas de OpenAI tienen
+# acceso simultaneo a los modelos mas recientes.
+VISION_MODEL = "gpt-5.6-sol"
+VISION_MODELOS_ALTERNATIVOS = (
+    VISION_MODEL, "gpt-5.5-pro", "gpt-5.4-pro", "gpt-5.2-pro", "gpt-4o"
+)
+VISION_MODEL_RELACION = "gpt-4o"
 TESSERACT_OK = None
 LOCK_PORT = 50573        # instancia unica (socket)
 _LOCK_SOCK = None
@@ -296,6 +312,45 @@ def _asegurar_idioma_espanol(logf):
     return (TESSDATA_DIR / "spa.traineddata").exists()
 
 
+def _asegurar_chromium_playwright(logf):
+    """Instala Chromium de Playwright si no está disponible.
+
+    En modo empaquetado no se puede ejecutar ``sys.executable -m playwright``
+    porque ``sys.executable`` es el propio GeneradorSubmittalsES.exe. Se usa
+    directamente el driver Node que Playwright incluye dentro del ejecutable
+    y se guarda el navegador junto a la app, en ``ms-playwright/``.
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            if Path(p.chromium.executable_path).exists():
+                logf("Chromium de Playwright: OK")
+                return True
+    except Exception:
+        pass
+
+    destino = app_dir() / "ms-playwright"
+    try:
+        destino.mkdir(parents=True, exist_ok=True)
+        os.environ["PLAYWRIGHT_BROWSERS_PATH"] = str(destino)
+        from playwright._impl._driver import compute_driver_executable
+        node, cli = compute_driver_executable()
+        logf("Chromium no encontrado; descargando para generar PDFs "
+             "(solo la primera vez, puede tardar varios minutos)...")
+        env = os.environ.copy()
+        subprocess.check_call(
+            [str(node), str(cli), "install", "chromium"],
+            cwd=str(app_dir()), env=env)
+        with sync_playwright() as p:
+            ok = Path(p.chromium.executable_path).exists()
+        logf("Chromium de Playwright instalado." if ok
+             else "La descarga terminó, pero Chromium no quedó disponible.")
+        return ok
+    except Exception as e:
+        logf("No se pudo instalar Chromium automáticamente: " + str(e)[:200])
+        return False
+
+
 def bootstrap(logf):
     if sys.version_info < (3, 9):
         raise RuntimeError(f"Se requiere Python 3.9 o superior "
@@ -320,6 +375,8 @@ def bootstrap(logf):
                     "Detalle: " + str(e)[:200])
         else:
             logf("Dependencias de Python: OK")
+
+    _asegurar_chromium_playwright(logf)
 
     global TESSERACT_OK
     _instalar_tesseract_si_falta(logf)
@@ -518,18 +575,187 @@ def _config_tesseract():
     return pytesseract
 
 
+def evaluar_calidad_imagen(img):
+    """Evalua si una imagen necesita ampliacion/limpieza antes de leerla.
+
+    No pretende adivinar una resolucion real que no existe. Detecta los casos
+    que suelen perjudicar al OCR: pocos pixeles, contraste bajo y bordes poco
+    definidos. Devuelve metricas simples para dejar trazabilidad en el log.
+    """
+    from PIL import Image, ImageFilter, ImageOps, ImageStat
+    abrir_local = not isinstance(img, Image.Image)
+    if abrir_local:
+        img = Image.open(str(img))
+    try:
+        g = ImageOps.exif_transpose(img).convert("L")
+        muestra = g.copy()
+        muestra.thumbnail((1200, 1200), Image.Resampling.LANCZOS)
+        contraste = float(ImageStat.Stat(muestra).stddev[0])
+        bordes = muestra.filter(ImageFilter.FIND_EDGES)
+        nitidez = float(ImageStat.Stat(bordes).stddev[0])
+        ancho, alto = g.size
+        lado_menor, lado_mayor = min(ancho, alto), max(ancho, alto)
+        necesita = (lado_menor < 900 or lado_mayor < 1400 or
+                    contraste < 35.0 or nitidez < 18.0)
+        return {
+            "ancho": ancho, "alto": alto,
+            "contraste": round(contraste, 1),
+            "nitidez": round(nitidez, 1),
+            "necesita_mejora": necesita,
+        }
+    finally:
+        if abrir_local:
+            try:
+                img.close()
+            except Exception:
+                pass
+
+
+def mejorar_imagen_para_lectura(img):
+    """Crea una version ampliada, limpia y enfocada para OCR/IA visual.
+
+    La mejora es conservadora: elimina ruido leve, aumenta el tamano con
+    LANCZOS y refuerza contraste/bordes sin aplicar IA generativa. Esto evita
+    que un super-resolutor "invente" digitos en tablas tecnicas.
+    """
+    from PIL import Image, ImageEnhance, ImageFilter, ImageOps
+    abrir_local = not isinstance(img, Image.Image)
+    if abrir_local:
+        img = Image.open(str(img))
+    try:
+        base = ImageOps.exif_transpose(img).convert("RGB")
+        lado_mayor = max(base.size)
+        # Lleva fichas pequenas a ~2800 px, sin ampliar mas de 5 veces.
+        escala = min(5.0, max(1.0, 2800.0 / max(1, lado_mayor)))
+        if escala > 1.05:
+            nuevo = (max(1, round(base.width * escala)),
+                     max(1, round(base.height * escala)))
+            base = base.resize(nuevo, Image.Resampling.LANCZOS)
+        base = ImageOps.autocontrast(base, cutoff=1)
+        base = ImageEnhance.Contrast(base).enhance(1.12)
+        base = base.filter(ImageFilter.UnsharpMask(
+            radius=1.4, percent=170, threshold=2))
+        return base
+    finally:
+        if abrir_local:
+            try:
+                img.close()
+            except Exception:
+                pass
+
+
+def _umbral_otsu(img_gris):
+    """Calcula un umbral Otsu sin depender de OpenCV."""
+    hist = img_gris.histogram()
+    total = sum(hist)
+    suma_total = sum(i * n for i, n in enumerate(hist))
+    peso_fondo = 0
+    suma_fondo = 0
+    mejor_varianza = -1.0
+    mejor_umbral = 127
+    for i, n in enumerate(hist):
+        peso_fondo += n
+        if not peso_fondo:
+            continue
+        peso_frente = total - peso_fondo
+        if not peso_frente:
+            break
+        suma_fondo += i * n
+        media_fondo = suma_fondo / peso_fondo
+        media_frente = (suma_total - suma_fondo) / peso_frente
+        varianza = peso_fondo * peso_frente * (media_fondo - media_frente) ** 2
+        if varianza > mejor_varianza:
+            mejor_varianza = varianza
+            mejor_umbral = i
+    return mejor_umbral
+
+
+def _normalizar_salida_ocr(texto):
+    lineas = [re.sub(r"[ \t]+", " ", l).strip()
+              for l in (texto or "").splitlines()]
+    return "\n".join(l for l in lineas if l)
+
+
+def _puntuar_salida_ocr(texto, confianza):
+    if not texto:
+        return -1000.0
+    caracteres = len(texto)
+    legibles = sum(c.isalnum() for c in texto)
+    palabras = len(re.findall(r"[A-Za-zÁÉÍÓÚÑáéíóúñ]{3,}", texto))
+    return confianza + min(25.0, caracteres / 80.0) + min(15.0, palabras / 4.0) + (
+        10.0 * legibles / max(1, caracteres))
+
+
+def _ocr_variante(pytesseract, img, psm):
+    """OCR de una variante, con confianza media para comparar resultados."""
+    cfg = f"--oem 3 --psm {psm}"
+    texto = _normalizar_salida_ocr(
+        pytesseract.image_to_string(img, lang="spa+eng", config=cfg))
+    confianza = 0.0
+    try:
+        datos = pytesseract.image_to_data(
+            img, lang="spa+eng", config=cfg,
+            output_type=pytesseract.Output.DICT)
+        valores = []
+        for valor, token in zip(datos.get("conf", []), datos.get("text", [])):
+            try:
+                valor = float(valor)
+            except (TypeError, ValueError):
+                continue
+            if valor >= 0 and str(token).strip():
+                valores.append(valor)
+        if valores:
+            confianza = sum(valores) / len(valores)
+    except Exception:
+        pass
+    return texto, confianza
+
+
 def ocr_mejorado(img):
+    """OCR por consenso sobre versiones mejoradas, gris y binaria.
+
+    Conserva saltos de linea (importantes en tablas), compara confianza y
+    combina las dos lecturas mas utiles para que la IA posterior pueda
+    contrastar palabras o numeros dudosos.
+    """
     from PIL import Image, ImageEnhance, ImageOps
     pytesseract = _config_tesseract()
     abrir_local = not isinstance(img, Image.Image)
     if abrir_local:
         img = Image.open(str(img))
     try:
-        g = img.convert("L")
-        g = ImageOps.autocontrast(g)
-        g = ImageEnhance.Contrast(g).enhance(1.8)
-        g = ImageEnhance.Sharpness(g).enhance(2.0)
-        return " ".join(pytesseract.image_to_string(g, lang="spa+eng").split())
+        original_gris = ImageOps.autocontrast(
+            ImageOps.exif_transpose(img).convert("L"))
+        original_gris = ImageEnhance.Contrast(original_gris).enhance(1.8)
+        original_gris = ImageEnhance.Sharpness(original_gris).enhance(2.0)
+        mejorada = mejorar_imagen_para_lectura(img)
+        gris = ImageOps.autocontrast(mejorada.convert("L"), cutoff=1)
+        gris = ImageEnhance.Contrast(gris).enhance(1.20)
+        umbral = _umbral_otsu(gris)
+        binaria = gris.point(lambda p: 255 if p > umbral else 0, mode="1")
+        candidatos = []
+        for etiqueta, variante, psm in (
+                ("original-auto", original_gris, 3),
+                ("mejorada-auto", gris, 3),
+                ("binaria-bloques", binaria, 6),
+                ("gris-disperso", gris, 11)):
+            texto, confianza = _ocr_variante(pytesseract, variante, psm)
+            candidatos.append((
+                _puntuar_salida_ocr(texto, confianza),
+                etiqueta, texto, confianza))
+        candidatos.sort(reverse=True)
+        elegidos = []
+        for _, etiqueta, texto, confianza in candidatos:
+            if not texto or any(
+                    difflib.SequenceMatcher(None, texto, previo[2]).ratio() > 0.92
+                    for previo in elegidos):
+                continue
+            elegidos.append((etiqueta, confianza, texto))
+            if len(elegidos) == 2:
+                break
+        return "\n\n".join(
+            f"[OCR {etiqueta}; confianza {confianza:.0f}%]\n{texto}"
+            for etiqueta, confianza, texto in elegidos)
     finally:
         if abrir_local:
             try:
@@ -825,6 +1051,230 @@ def extraer_con_chatgpt(contenido, api_key, q=None, cons="-"):
     return marca, desc, norm, idioma, trad
 
 
+def _imagen_a_data_url(img, formato="JPEG", calidad=95):
+    """Codifica una imagen PIL para enviarla a OpenAI sin crear temporales."""
+    buf = io.BytesIO()
+    try:
+        if formato.upper() == "PNG":
+            img.save(buf, format="PNG", optimize=True)
+            mime = "image/png"
+        else:
+            img.convert("RGB").save(
+                buf, format="JPEG", quality=calidad, subsampling=0, optimize=True)
+            mime = "image/jpeg"
+        b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+        return f"data:{mime};base64,{b64}"
+    finally:
+        buf.close()
+
+
+def _preparar_imagenes_para_ia(path):
+    """Devuelve original, version mejorada y acercamientos para lectura fina."""
+    from PIL import Image, ImageOps
+    resultados = []
+    with Image.open(str(path)) as abierta:
+        original = ImageOps.exif_transpose(abierta).convert("RGB")
+        calidad = evaluar_calidad_imagen(original)
+        resultados.append((
+            f"Original de {Path(path).name}",
+            _imagen_a_data_url(original, "JPEG", calidad=97)))
+
+        if calidad["necesita_mejora"]:
+            mejorada = mejorar_imagen_para_lectura(original)
+            try:
+                resultados.append((
+                    f"Version mejorada de {Path(path).name}",
+                    _imagen_a_data_url(mejorada, "PNG")))
+                # Tres franjas con solapamiento: los caracteres pequenos ocupan
+                # mas area visual y el modelo puede revisar tablas densas.
+                alto = mejorada.height
+                bandas = ((0.00, 0.44), (0.28, 0.73), (0.57, 1.00))
+                for numero, (inicio, fin) in enumerate(bandas, 1):
+                    y0, y1 = round(alto * inicio), round(alto * fin)
+                    recorte = mejorada.crop((0, y0, mejorada.width, y1))
+                    try:
+                        resultados.append((
+                            f"Acercamiento {numero}/3 de {Path(path).name}",
+                            _imagen_a_data_url(recorte, "PNG")))
+                    finally:
+                        recorte.close()
+            finally:
+                mejorada.close()
+        return resultados, calidad
+
+
+def _datos_extraccion_visual(data):
+    """Normaliza una salida Pydantic/dict de la extraccion visual."""
+    if hasattr(data, "model_dump"):
+        data = data.model_dump()
+    data = dict(data or {})
+    marca = str(data.get("marca", "")).strip() or SIN_ESP
+    desc = str(data.get("descripcion", "")).strip()
+    norm = str(data.get("normativa", "")).strip() or SIN_ESP
+    idioma = str(data.get("idioma_original", "español")).strip() or "español"
+    data.update({
+        "marca": marca,
+        "descripcion": desc,
+        "normativa": norm,
+        "idioma_original": idioma,
+        "fue_traducido": bool(data.get("fue_traducido", False)),
+        "requiere_revision_manual": bool(
+            data.get("requiere_revision_manual", False)),
+        "evidencias": [str(x).strip() for x in data.get("evidencias", [])
+                       if str(x).strip()][:8],
+    })
+    return data
+
+
+def extraer_imagenes_con_ia(
+        rutas_imagen, contenido_ocr, api_key, q=None, cons="-"):
+    """Extrae y verifica datos de fichas en imagen con OCR + Vision.
+
+    Flujo:
+      1) mide calidad y mejora localmente la imagen si hace falta;
+      2) envia original, mejora y acercamientos con detalle original;
+      3) exige una salida estructurada;
+      4) hace una segunda lectura visual que audita/corrige la primera.
+
+    Devuelve los cinco campos historicos mas un dict de auditoria. Si ningun
+    modelo visual esta disponible, lanza la ultima excepcion para que el
+    llamador use el flujo de texto/OCR ya existente.
+    """
+    import openai
+    from openai import OpenAI
+    from pydantic import BaseModel, Field
+    from typing import Literal
+
+    class ExtraccionVisual(BaseModel):
+        idioma_original: str
+        fue_traducido: bool
+        marca: str
+        descripcion: str
+        normativa: str
+        confianza_marca: Literal["alta", "media", "baja"]
+        confianza_descripcion: Literal["alta", "media", "baja"]
+        confianza_normativa: Literal["alta", "media", "baja"]
+        evidencias: list[str] = Field(
+            description="Textos breves leidos literalmente en la ficha")
+        requiere_revision_manual: bool
+
+    visuales = []
+    calidades = []
+    # Evita un payload desproporcionado en carpetas con muchas fotografias; el
+    # OCR de las restantes permanece incluido en contenido_ocr.
+    for ruta in list(rutas_imagen)[:2]:
+        preparadas, calidad = _preparar_imagenes_para_ia(ruta)
+        visuales.extend(preparadas)
+        calidad["archivo"] = Path(ruta).name
+        calidades.append(calidad)
+        if q:
+            estado = "mejorada antes de leer" if calidad["necesita_mejora"] else "calidad suficiente"
+            q.put(("LOG", f"{cons}: imagen '{Path(ruta).name}' {estado} "
+                          f"({calidad['ancho']}x{calidad['alto']}, "
+                          f"contraste {calidad['contraste']}, "
+                          f"nitidez {calidad['nitidez']})"))
+
+    reglas = (
+        "Eres un auditor senior de fichas tecnicas de construccion. Lee las "
+        "imagenes a resolucion completa y usa el OCR solamente como una hipotesis "
+        "que debes confirmar visualmente. No completes datos por conocimiento "
+        "general ni por patrones esperados. Un digito, sigla, marca o norma solo "
+        "se acepta si es visible o coincide claramente en dos fuentes. Si una "
+        "marca no aparece, escribe exactamente 'SIN ESPECIFICAR'. Copia las "
+        "normas con su designacion exacta (por ejemplo numero y sufijo); si no "
+        "son legibles, escribe 'SIN ESPECIFICAR'. La descripcion debe estar en "
+        "espanol, describir el producto general y tener maximo 200 caracteres. "
+        "No transcribas filas numericas de tablas dentro de la descripcion. "
+        "Marca requiere_revision_manual=true si algun campo que no sea la marca "
+        "queda ambiguo aun despues de revisar los acercamientos. En evidencias "
+        "incluye de 2 a 8 fragmentos breves que realmente puedas leer."
+    )
+    contenido_usuario = [
+        {"type": "input_text", "text": (
+            "Realiza la primera extraccion. Contrasta todas las versiones de la "
+            "misma ficha y devuelve un unico resultado integrado.\n\n"
+            "OCR COMPARATIVO (puede contener errores):\n" +
+            (contenido_ocr or "(sin OCR legible)")[:MAX_COMBINADO])}
+    ]
+    for etiqueta, data_url in visuales:
+        contenido_usuario.append({"type": "input_text", "text": etiqueta})
+        contenido_usuario.append({
+            "type": "input_image", "image_url": data_url, "detail": "original"})
+
+    client = OpenAI(api_key=api_key, timeout=180)
+
+    def llamar(modelo, instruccion, candidato=None):
+        contenido = list(contenido_usuario)
+        if candidato is not None:
+            contenido[0] = {"type": "input_text", "text": (
+                "AUDITORIA FINAL. Vuelve a leer las imagenes sin asumir que la "
+                "primera extraccion es correcta. Corrige cualquier campo que no "
+                "este respaldado visualmente. Si hay conflicto, prevalece la "
+                "imagen; nunca inventes un dato para resolverlo.\n\n"
+                f"PRIMERA EXTRACCION:\n{json.dumps(candidato, ensure_ascii=False)}"
+                "\n\nOCR COMPARATIVO (solo referencia secundaria):\n" +
+                (contenido_ocr or "(sin OCR legible)")[:MAX_COMBINADO])}
+        argumentos = {
+            "model": modelo,
+            "input": [
+                {"role": "system", "content": reglas},
+                {"role": "user", "content": contenido},
+            ],
+            "text_format": ExtraccionVisual,
+            "max_output_tokens": 1400,
+        }
+        if modelo.startswith("gpt-5"):
+            argumentos["reasoning"] = {"effort": "high"}
+        respuesta = client.responses.parse(**argumentos)
+        if respuesta.output_parsed is None:
+            raise ValueError("OpenAI no devolvio la estructura solicitada")
+        return _datos_extraccion_visual(respuesta.output_parsed)
+
+    ultimo_error = None
+    for modelo in VISION_MODELOS_ALTERNATIVOS:
+        try:
+            primera = llamar(modelo, "primera extraccion")
+            final = llamar(modelo, "auditoria final", primera)
+            auditoria = {
+                "metodo": "OCR multivariante + Vision + verificacion visual",
+                "modelo": modelo,
+                "calidad_imagenes": calidades,
+                "confianza": {
+                    "marca": final.get("confianza_marca", "baja"),
+                    "descripcion": final.get("confianza_descripcion", "baja"),
+                    "normativa": final.get("confianza_normativa", "baja"),
+                },
+                "evidencias": final.get("evidencias", []),
+                "requiere_revision_manual": final[
+                    "requiere_revision_manual"],
+                "coincidio_primera_revision": all(
+                    primera.get(k) == final.get(k)
+                    for k in ("marca", "descripcion", "normativa")),
+            }
+            if q:
+                q.put(("LOG", f"{cons}: extraccion visual verificada con {modelo}"))
+                if auditoria["requiere_revision_manual"]:
+                    q.put(("WARN", f"{cons}: la IA marco datos visuales ambiguos; "
+                                   "se recomienda revision manual"))
+            return (
+                final["marca"], final["descripcion"], final["normativa"],
+                final["idioma_original"], final["fue_traducido"], auditoria)
+        except openai.AuthenticationError as e:
+            raise _AuthError(str(e))
+        except openai.RateLimitError as e:
+            ultimo_error = e
+            if q:
+                q.put(("WARN", f"{cons}: limite de OpenAI con {modelo}; "
+                               "probando alternativa"))
+        except Exception as e:
+            ultimo_error = e
+            if q:
+                q.put(("WARN", f"{cons}: {modelo} no pudo completar la lectura "
+                               f"visual ({str(e)[:120]}); probando alternativa"))
+    raise RuntimeError(
+        f"ningun modelo visual pudo verificar la imagen ({ultimo_error})")
+
+
 RELACIONES_FICHAS_VALIDAS = ("MISMO_PROVEEDOR", "MISMA_FAMILIA_DISTINTA_MARCA", "DISCREPANCIA")
 
 
@@ -898,7 +1348,7 @@ def analizar_relacion_fichas(textos_por_doc, api_key, q=None, cons="-", imagenes
 
     imagenes_portada = imagenes_portada or []
     if any(imagenes_portada):
-        modelo = VISION_MODEL
+        modelo = VISION_MODEL_RELACION
         prompt = [{"type": "text", "text": prompt_texto}]
         for i, ((nombre, _), b64) in enumerate(zip(textos_por_doc, imagenes_portada), 1):
             if b64:
@@ -1470,12 +1920,18 @@ def construir_materiales(base, api_key, q, cancelar, gc=None):
                 "aspectos_adicionales": "", "ruta_carpeta": str(sub)})
             continue
 
-        bloques, textos_por_doc, tot = [], [], 0
+        bloques, textos_por_doc, rutas_imagen, tot = [], [], [], 0
         for d in docs:
             if cancelar.is_set():
                 raise _Cancelado()
             try:
                 t = extraer_texto_robusto(d)
+                es_imagen = d.suffix.lower() in IMG_EXT
+                if es_imagen:
+                    # Aunque Tesseract no recupere ni una palabra, Vision debe
+                    # recibir la imagen; precisamente ese es el caso mas
+                    # importante para la ruta de recuperacion avanzada.
+                    rutas_imagen.append(d)
                 if t.strip():
                     seg = t[:1500]
                     # v2.6.5: si el texto plano parece una tabla tecnica densa
@@ -1495,6 +1951,10 @@ def construir_materiales(base, api_key, q, cancelar, gc=None):
                     tot += len(seg)
                     if tot >= MAX_COMBINADO:
                         break
+                elif es_imagen:
+                    seg = "[IMAGEN SIN TEXTO OCR LEGIBLE; REVISAR VISUALMENTE]"
+                    bloques.append(f"DOCUMENTO ({d.name}):\n{seg}")
+                    textos_por_doc.append((d.name, seg))
                 else:
                     q.put(("WARN", f"{cons}: '{d.name}' sin texto legible"))
             except Exception as e:
@@ -1547,8 +2007,31 @@ def construir_materiales(base, api_key, q, cancelar, gc=None):
                         q.put(("WARN", f"{cons}: {msg}"))
 
         combinado = "\n\n".join(bloques)
+        auditoria_extraccion = {}
         try:
-            marca, desc, norm, idioma, trad = extraer_con_chatgpt(combinado, api_key, q, cons)
+            if rutas_imagen:
+                try:
+                    (marca, desc, norm, idioma, trad,
+                     auditoria_extraccion) = extraer_imagenes_con_ia(
+                        rutas_imagen, combinado, api_key, q, cons)
+                except _AuthError:
+                    raise
+                except Exception as e:
+                    # La ruta multimodal es una mejora, no un punto unico de
+                    # fallo. Si la cuenta no tiene un modelo visual disponible,
+                    # se conserva el comportamiento OCR + texto historico.
+                    q.put(("WARN", f"{cons}: lectura visual avanzada no disponible "
+                                   f"({str(e)[:160]}); usando OCR + texto"))
+                    marca, desc, norm, idioma, trad = extraer_con_chatgpt(
+                        combinado, api_key, q, cons)
+                    auditoria_extraccion = {
+                        "metodo": "OCR multivariante + modelo de texto (respaldo)",
+                        "requiere_revision_manual": True,
+                        "motivo": str(e)[:300],
+                    }
+            else:
+                marca, desc, norm, idioma, trad = extraer_con_chatgpt(
+                    combinado, api_key, q, cons)
             if not marca or marca.upper() in (SIN_ESP, "NO ESPECIFICADA"):
                 marca = "POR DEFINIR"
             desc = _trunc_desc(desc) or "Sin especificacion disponible"
@@ -1581,7 +2064,9 @@ def construir_materiales(base, api_key, q, cancelar, gc=None):
             "idioma_original": idioma, "fue_traducido": trad,
             "documentos_encontrados": nombres_docs, "compilado_generado": compilado,
             "estado": estado, "carpeta_vacia": False,
-            "aspectos_adicionales": aspectos_adicionales, "ruta_carpeta": str(sub)})
+            "aspectos_adicionales": aspectos_adicionales,
+            "auditoria_extraccion": auditoria_extraccion,
+            "ruta_carpeta": str(sub)})
     return materiales, docs_totales
 
 

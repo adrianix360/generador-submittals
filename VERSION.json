@@ -1,11 +1,11 @@
 {
-  "version": "2.6.7",
+  "version": "2.6.8",
   "tipo_actualizacion": "codigo",
   "fecha": "2026-07-23",
-  "changelog": "Sistema de auto-actualizacion hibrido (auto_updater + deployment).",
+  "changelog": "Mejora automatica de imagenes degradadas, OCR multivariante y doble verificacion visual con IA.",
   "archivos": {
     "submitals_gui.py": {
-      "hash": "651925fc5397f9f3b0d9c7f36e8518ee4e3d59eb845d8987a6d003e803fe8834",
+      "hash": "6db41ce44e36fc3f6f7fa974e7ceca159e03b82f1a8cb3bfd58515be59a5cbd2",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui.py",
       "tipo": "python"
     },
@@ -20,7 +20,7 @@
       "tipo": "python"
     },
     "requirements.txt": {
-      "hash": "8151458071dcec266642cd06c24974175da98dffb06b188198fb0dbdec457b81",
+      "hash": "534eb624288108eb1c82b71a05abfb3bb499210fcb40397b48466a71a3545d74",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/requirements.txt",
       "tipo": "requirements"
     },

@@ -1,5 +1,5 @@
-# Generador de Submittals ES — dependencias (v2.6.5)
-# Una sola API: OpenAI (ChatGPT gpt-4o-mini para fichas + gpt-4o Vision para SICOP).
+# Generador de Submittals ES — dependencias (v2.6.8)
+# Una sola API: OpenAI (texto + Vision; seleccion automatica de modelo).
 #
 #   pip install -r requirements.txt
 #   python -m playwright install chromium
