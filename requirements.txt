@@ -1,0 +1,29 @@
+# Generador de Submittals ES — dependencias (v2.6.5)
+# Una sola API: OpenAI (ChatGPT gpt-4o-mini para fichas + gpt-4o Vision para SICOP).
+#
+#   pip install -r requirements.txt
+#   python -m playwright install chromium
+#
+openai
+jinja2
+playwright
+pypdf
+pymupdf
+pytesseract
+Pillow
+python-docx
+requests
+beautifulsoup4
+pdfplumber      # v2.6.5: relectura de tablas tecnicas densas (dimensiones/tolerancias)
+
+# --- Opcionales ---
+# openpyxl        # solo si se regeneran los Excel auxiliares (la app no los genera)
+# pyinstaller     # solo para compilar el .exe
+
+# NOTA: el codigo NO usa anthropic, PyPDF2, pdf2image ni langdetect.
+#  - SICOP usa OpenAI Vision (no Anthropic).
+#  - La deteccion/traduccion de idioma la hace el propio modelo de OpenAI.
+#  - OCR de imagenes/PDF escaneados requiere Tesseract-OCR (v2.6.6: bootstrap()
+#    lo instala solo con "winget" si falta, y descarga el idioma espanol a la
+#    carpeta propia "tessdata_es/" -- no requiere permisos de administrador).
+packaging        # v2.6.7: comparar versiones (auto-updater)

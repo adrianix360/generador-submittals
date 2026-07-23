@@ -1,0 +1,43 @@
+{
+  "version": "2.6.7",
+  "tipo_actualizacion": "codigo",
+  "fecha": "2026-07-23",
+  "changelog": "Sistema de auto-actualizacion hibrido (auto_updater + deployment).",
+  "archivos": {
+    "submitals_gui.py": {
+      "hash": "651925fc5397f9f3b0d9c7f36e8518ee4e3d59eb845d8987a6d003e803fe8834",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui.py",
+      "tipo": "python"
+    },
+    "generate_caratulas.py": {
+      "hash": "2475e6124485e18e1262f02be4578d452e86ad4c57f789beb63edbc193497755",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/generate_caratulas.py",
+      "tipo": "python"
+    },
+    "auto_updater.py": {
+      "hash": "c1bea2b17688eda7568548c0851b004f6dc2321d41b99f4fbea2f7adda8643ec",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/auto_updater.py",
+      "tipo": "python"
+    },
+    "requirements.txt": {
+      "hash": "8151458071dcec266642cd06c24974175da98dffb06b188198fb0dbdec457b81",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/requirements.txt",
+      "tipo": "requirements"
+    },
+    "template_caratula.html": {
+      "hash": "77620c58a3eedc310f191021d0905b79cbb1ab615134a59048172fb4f885202f",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/template_caratula.html",
+      "tipo": "html"
+    },
+    "template_ministerio_salud.html": {
+      "hash": "86779d5ee1fde6765b41e5239ec0ae9854af147d564079b0a30ddcce25c255d1",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/template_ministerio_salud.html",
+      "tipo": "html"
+    }
+  },
+  "instrucciones_auto_actualizar": {
+    "si_solo_python": "Descarga los .py/.html cambiados (segundos).",
+    "si_requirements_cambio": "Descarga requirements.txt + pip install.",
+    "si_cambios_mayores": "Descargar el .exe nuevo (opcional)."
+  }
+}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #E7E9EE; }
+  a { color: #E11D2D; }
+  a:hover { color: #b3121f; }
+  @page { size: letter; margin: 0; }
+  @media print {
+    body { background: #fff; }
+    .om-desk { padding: 0 !important; }
+    .om-sheet { box-shadow: none !important; }
+  }
+</style>
+</helmet>
+<div class="om-desk" style="display:flex; justify-content:center; padding:32px 20px; font-family:'Public Sans', system-ui, sans-serif; color:#2A2E35;">
+  <div class="om-sheet" style="width:816px; min-height:1056px; background:#ffffff; box-shadow:0 12px 40px rgba(20,30,55,0.16); position:relative; display:flex; flex-direction:column;">
+
+    <!-- top accent rule -->
+    <div style="height:6px; width:100%; background:{{ accent }};"></div>
+
+    <div style="padding:44px 56px 52px 56px; display:flex; flex-direction:column; flex:1;">
+
+      <!-- HEADER -->
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:32px; padding-bottom:22px; border-bottom:1px solid #E4E7EC;">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <img src="assets/logo_es_crop.png" alt="ES Constructora" style="height: 76px; width: 104px; display: block">
+          <div style="font-family:'Public Sans',sans-serif; font-size:11px; letter-spacing:0.06em; color:#6E7480; font-weight:500; text-transform:uppercase;">ES Consultoría y Construcción S.A.</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; text-align:right; gap:14px;">
+          <div>
+            <div style="font-family:'Archivo',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.16em; color:{{ accent }}; text-transform:uppercase;">Ficha de submittal</div>
+            
+          </div>
+          <div style="display:flex; align-items:stretch; border:1.5px solid #1F3864; border-radius:8px; overflow:hidden; min-width:190px;">
+            <div style="background: #1F3864; color: #fff; font-family: 'Archivo',sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 12px; display: flex; align-items: center; width: 105px; height: 35px">Consecutivo</div>
+            <div style="flex: 1; min-height: 34px; background: #fff; width: 138px; height: 32px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION BAND -->
+      <div style="display:flex; align-items:center; gap:0; margin-top:26px; border-radius:8px; overflow:hidden;">
+        <div style="width:8px; align-self:stretch; background:{{ accent }};"></div>
+        <div style="flex:1; background:#1F3864; color:#fff; font-family:'Archivo',sans-serif; font-weight:600; font-size:13px; letter-spacing:0.14em; text-transform:uppercase; padding:11px 16px;">Información del material / equipo</div>
+      </div>
+
+      <!-- FIELD GRID -->
+      <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px; flex:1;">
+
+        <!-- two column -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <div style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Nombre comercial</div>
+            <div style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:44px;"></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <div style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Fabricante / Distribuidor</div>
+            <div style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:44px;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:7px;">
+          <div style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Descripción técnica</div>
+          <div style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:96px;"></div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:7px;">
+          <div style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Normativa / Especificación aplicable</div>
+          <div style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:60px;"></div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:7px;">
+          <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;">
+            <span style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Documentación técnica adjunta</span>
+            <span style="font-family:'Public Sans',sans-serif; font-size:11px; font-style:italic; color:#9298A4;">fichas técnicas, certificados, ensayos</span>
+          </div>
+          <div style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:72px;"></div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:7px; flex:1;">
+          <div style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Observaciones adicionales</div>
+          <div style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:96px; flex:1;"></div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div style="margin-top:24px; padding-top:14px; border-top:1px solid #E4E7EC; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-family:'Public Sans',sans-serif; font-size:10px; letter-spacing:0.04em; color:#AEB3BD; text-transform:uppercase;">ES Consultoría y Construcción S.A.</div>
+        <div style="display:flex; align-items:center; gap:7px;">
+          <div style="width:22px; height:3px; background:{{ accent }}; border-radius:2px;"></div>
+          <div style="font-family:'Archivo',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.1em; color:#6E7480; text-transform:uppercase;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:816,&quot;height&quot;:1056},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#E11D2D&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#E11D2D&quot;,&quot;#1F3864&quot;,&quot;#6E6E70&quot;]}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#E11D2D'
+    };
+  }
+}
+</script>
+</body>
+</html>

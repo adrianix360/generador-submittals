@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <g transform="scale(2.56)">
+  <defs>
+    <mask id="mC">
+      <rect x="26" y="14" width="48" height="72" rx="6" fill="#fff"></rect>
+      <rect x="34" y="24" width="30" height="5" rx="2.5" fill="#000"></rect>
+      <rect x="34" y="33" width="18" height="5" rx="2.5" fill="#000"></rect>
+    </mask>
+  </defs>
+  <rect x="26" y="14" width="48" height="72" rx="6" fill="#1F3864" mask="url(#mC)"></rect>
+  <rect x="34" y="60" width="8" height="14" rx="1.5" fill="#E11D2D"></rect>
+  <rect x="46" y="52" width="8" height="22" rx="1.5" fill="#E11D2D"></rect>
+  <rect x="58" y="44" width="8" height="30" rx="1.5" fill="#E11D2D"></rect></g>
+</svg>

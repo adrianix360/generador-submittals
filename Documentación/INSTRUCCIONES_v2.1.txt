@@ -1,0 +1,104 @@
+================================================================================
+ GENERADOR DE SUBMITTALS - ES CONSTRUCTORA   ·   INSTRUCCIONES v2.1
+================================================================================
+
+QUE HACE EL PROGRAMA
+--------------------------------------------------------------------------------
+Toma las carpetas de materiales (ARQUITECTONICOS / ESTRUCTURALES / MECANICOS),
+lee la ficha tecnica de cada una, y con ayuda de ChatGPT extrae la MARCA, una
+DESCRIPCION breve y las NORMATIVAS. Con esos datos genera una CARATULA PDF de
+portada dentro de cada carpeta. Todo en un solo clic.
+
+
+1) INSTALACION (una sola vez)
+--------------------------------------------------------------------------------
+Abra una consola (CMD o PowerShell) y ejecute:
+
+    pip install jinja2 pypdf playwright openai pytesseract Pillow python-docx
+    python -m playwright install chromium
+
+Solo si tiene fichas en IMAGEN (JPG/PNG) y quiere leerlas, instale Tesseract-OCR:
+    https://github.com/UB-Mannheim/tesseract/wiki
+    (ruta tipica: C:\Program Files\Tesseract-OCR\tesseract.exe)
+Si no lo instala, las fichas en imagen se marcan como incompletas y el resto
+sigue funcionando con normalidad.
+
+
+2) COMO USARLO (paso a paso)
+--------------------------------------------------------------------------------
+a) Abra el programa (doble clic al .exe o "python submitals_gui.py").
+b) En "CONFIGURACION API", pegue su API Key de OpenAI y pulse "Test Conexion".
+   - La consigue en: https://platform.openai.com/api-keys
+c) Deje marcado "Generar JSON automaticamente desde fichas".
+d) En "CONFIGURACION DEL PROYECTO", elija la carpeta base (Submitals ES).
+e) Elija las opciones (normalmente "Solo generar PDFs faltantes").
+f) Pulse "🚀 GENERAR".
+   - Fase 1: lee las fichas y consulta ChatGPT (marca/descripcion/normativa).
+   - Fase 2: genera las caratulas PDF.
+g) Al terminar vera el resumen y podra abrir el log o la carpeta de resultados.
+
+Modo alternativo: si ya tiene un datos_materiales.json listo, marque
+"Usar JSON pre-existente" y seleccionelo (no consume la API).
+
+
+3) PANEL DE MANTENIMIENTO (boton 🔧)
+--------------------------------------------------------------------------------
+Se abre con el boton "🔧 Mantenimiento" (arriba a la derecha). Permite:
+
+- Ver la clave actual (oculta) y COPIARLA al portapapeles.
+- LIMPIAR la clave guardada.
+- CAMBIAR la clave: escriba la nueva y pulse "✅ OK".
+  El programa valida el formato (debe empezar con "sk-"), la prueba con OpenAI
+  y, si funciona, la guarda y avisa "✅ API key actualizada".
+- LIMPIAR CACHE: borra archivos temporales de render.
+- RESETEAR CONFIG: vuelve la configuracion a valores de fabrica (borra la key
+  guardada y las preferencias).
+- ABRIR CARPETA CONFIG: abre la carpeta donde vive submitals_config.json.
+- INFO: version, ultima validacion de la API y proyecto actual.
+
+Nota: el boton de mantenimiento se desactiva mientras hay un proceso en curso.
+
+
+4) QUE SON LAS NORMATIVAS Y COMO SE USAN
+--------------------------------------------------------------------------------
+Son las normas o estandares que la IA detecta en la ficha (por ejemplo:
+"ASTM C90, ASTM C129", "ISO 1452", "NTC 121"). Se guardan en el JSON (campo
+"normativa") y aparecen en la caratula PDF en el recuadro
+"Normativa / Especificacion aplicable".
+
+IMPORTANTE:
+- Son una SUGERENCIA de la IA. Reviselas y, si hace falta, corrijalas.
+- Si la IA no encuentra normas, el campo dice "SIN ESPECIFICAR" y en el PDF
+  queda VACIO, para que usted lo complete a mano si lo desea.
+
+
+5) COMPATIBILIDAD
+--------------------------------------------------------------------------------
+- Los JSON creados con v2.0 (sin normativa) siguen funcionando: el programa
+  agrega "normativa = SIN ESPECIFICAR" automaticamente.
+
+
+6) SOLUCION DE PROBLEMAS (Troubleshooting)
+--------------------------------------------------------------------------------
+- "API key invalida o sin creditos": revise la clave en el panel de
+  Mantenimiento o en https://platform.openai.com/api-keys ; confirme que tenga
+  saldo/creditos.
+- "No hay motor de PDF disponible": ejecute
+      pip install playwright
+      python -m playwright install chromium
+- "Falta una libreria de Python": ejecute la linea de instalacion del punto 1.
+- Las fichas en JPG/PNG salen incompletas: falta Tesseract-OCR (ver punto 1),
+  o la imagen es de baja calidad. Convierta la ficha a PDF si es posible.
+- No se genera una caratula que ya existe: es normal con "Solo generar PDFs
+  faltantes". Para rehacerla, borre ese PDF o use "Forzar regeneracion".
+- El Excel "Guia Materiales.xlsx" no se actualiza: cierrelo si esta abierto;
+  se guarda una copia como "Guia Materiales (actualizada).xlsx".
+- Sin internet: use el modo "Usar JSON pre-existente".
+
+
+7) SEGURIDAD DE LA API KEY
+--------------------------------------------------------------------------------
+La clave se guarda ofuscada (base64) en submitals_config.json. Esto la OCULTA
+a la vista, pero NO es cifrado seguro. No comparta ese archivo. Para uso local
+es suficiente.
+================================================================================

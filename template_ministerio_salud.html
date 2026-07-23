@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  Caratula MINISTERIO DE SALUD (Costa Rica) - "Solicitud de aprobacion de
+  materiales / equipos". HTML puro + variables Jinja2. Tamano carta (816x1056).
+  Colores oficiales muestreados del PDF: banda navy #001F60, footer #1F2858,
+  etiqueta azul claro #D8E1F2. Texto seleccionable (no imagenes).
+-->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #E7E9EE; font-family: Arial, Helvetica, sans-serif; color: #000; }
+  @page { size: letter; margin: 0; }
+  @media print {
+    body { background: #fff; margin: 0; padding: 0; }
+    .ms-desk { padding: 0 !important; margin: 0; }
+    /* v2.4: evitar 2da pagina en blanco - permite flujo natural sin forzar altura */
+    .ms-sheet { box-shadow: none !important; min-height: auto !important; margin: 0; width: 100%; }
+    .ms-form { page-break-inside: avoid; break-inside: avoid; orphans: 3; widows: 3; margin: 48px 44px 20px 44px !important; }
+    .ms-footer { page-break-after: avoid; break-after: avoid; margin-top: auto; }
+    table.ms { page-break-inside: avoid; }
+    table.ms tr { page-break-inside: avoid; page-break-after: auto; }
+  }
+
+  .ms-desk { display: flex; justify-content: center; padding: 28px 20px; background: #E7E9EE; }
+  .ms-sheet {
+    width: 816px; min-height: 1056px; background: #fff;
+    box-shadow: 0 12px 40px rgba(20,30,55,0.16);
+    display: flex; flex-direction: column;
+  }
+  /* marco exterior del formulario */
+  .ms-form { border: 1.2px solid #111; margin: 96px 44px 40px 44px; display: flex; flex-direction: column; }
+
+  /* logo */
+  .ms-logo { text-align: center; padding: 14px 20px 6px 20px; }
+  .ms-logo img { max-width: 62%; max-height: 64px; height: auto; display: inline-block; }
+
+  /* titulo */
+  .ms-title {
+    text-align: center; font-size: 14px; font-weight: bold; color: #001F60;
+    padding: 6px 10px 16px 10px; letter-spacing: 0.2px;
+  }
+
+  /* tabla principal */
+  table.ms { width: 100%; border-collapse: collapse; table-layout: fixed; page-break-inside: avoid; }
+  table.ms td {
+    border: 0.8px solid #808080; padding: 5px 7px; font-size: 10px;
+    vertical-align: middle; word-wrap: break-word; page-break-inside: avoid; orphans: 2; widows: 2;
+  }
+  .lbl { background: #D8E1F2; font-weight: bold; color: #000; }        /* etiqueta */
+  .lbl-top { vertical-align: top; }
+  .band td {                                                            /* banda de seccion */
+    background: #001F60; color: #fff; font-weight: bold; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.4px; padding: 5px 8px;
+    border: 0.8px solid #001F60;
+  }
+  .val { background: #fff; }
+  .val-c { background: #fff; text-align: center; }
+  .spacer td { border: 0.8px solid #808080; height: 12px; background: #fff; padding: 0; }
+  .firma-linea { color: #000; }
+
+  /* footer */
+  .ms-footer {
+    background: #1F2858; color: #fff; text-align: center;
+    font-size: 13px; font-weight: bold; letter-spacing: 3px;
+    padding: 16px 10px;
+  }
+</style>
+</head>
+<body>
+<div class="ms-desk">
+  <div class="ms-sheet">
+    <div class="ms-form">
+
+      <!-- LOGO MINISTERIO (VARIABLE JINJA2) -->
+      <div class="ms-logo">
+        <img src="{{ logo_ministerio }}" alt="Ministerio de Salud - Gobierno de Costa Rica">
+      </div>
+
+      <!-- TITULO -->
+      <div class="ms-title">SOLICITUD DE APROBACIÓN DE MATERIALES / EQUIPOS</div>
+
+      <!-- TABLA PRINCIPAL -->
+      <table class="ms">
+        <colgroup>
+          <col style="width:18%"><col style="width:16%"><col style="width:14%">
+          <col style="width:18%"><col style="width:14%"><col style="width:20%">
+        </colgroup>
+
+        <!-- Registro / Version / Fecha de emision -->
+        <tr>
+          <td class="lbl">Registro</td>
+          <td class="val">{{ registro }}</td>
+          <td class="lbl">Versión</td>
+          <td class="val">{{ version }}</td>
+          <td class="lbl">Fecha de emisión</td>
+          <td class="val">{{ fecha_emision }}</td>
+        </tr>
+
+        <!-- Banda: INFORMACION DEL PROYECTO -->
+        <tr class="band"><td colspan="6">Información del proyecto</td></tr>
+
+        <tr>
+          <td class="lbl">Proyecto</td>
+          <td class="val" colspan="5">{{ proyecto }}</td>
+        </tr>
+        <tr style="height:34px">
+          <td class="lbl lbl-top">Cliente / Institución</td>
+          <td class="val">{{ cliente }}</td>
+          <td class="lbl lbl-top">Plazo</td>
+          <td class="val">{{ plazo }}</td>
+          <td class="val" colspan="2" rowspan="2"></td>
+        </tr>
+        <tr style="height:34px">
+          <td class="lbl lbl-top">Contrato / Licitación</td>
+          <td class="val">{{ contrato }}</td>
+          <td class="lbl lbl-top">Monto</td>
+          <td class="val">{{ monto }}</td>
+        </tr>
+
+        <tr class="spacer"><td colspan="6"></td></tr>
+
+        <!-- Banda: DATOS DEL RESPONSABLE -->
+        <tr class="band"><td colspan="6">Datos del responsable</td></tr>
+
+        <tr>
+          <td class="lbl">Nombre y cargo</td>
+          <td class="val" colspan="2">{{ nombre_cargo }}</td>
+          <td class="lbl">Fecha</td>
+          <td class="val" colspan="2">{{ fecha }}</td>
+        </tr>
+        <tr>
+          <td class="lbl">Consecutivo</td>
+          <td class="val" colspan="5">{{ consecutivo }}</td>
+        </tr>
+
+        <tr class="spacer"><td colspan="6"></td></tr>
+
+        <!-- Banda: INFORMACION DEL MATERIAL / EQUIPO -->
+        <tr class="band"><td colspan="6">Información del material / equipo</td></tr>
+
+        <tr>
+          <td class="lbl">Nombre comercial</td>
+          <td class="val-c" colspan="5">{{ nombre_comercial }}</td>
+        </tr>
+        <tr>
+          <td class="lbl lbl-top">Fabricante / Distribuidor</td>
+          <td class="val-c" colspan="5">{{ fabricante }}</td>
+        </tr>
+        <tr style="height:74px">
+          <td class="lbl lbl-top">Descripción técnica</td>
+          <td class="val-c" colspan="5">{{ descripcion_tecnica }}</td>
+        </tr>
+        <tr style="height:60px">
+          <td class="lbl lbl-top">Normativa / Especificación aplicable</td>
+          <td class="val" colspan="5">{{ normativa }}</td>
+        </tr>
+        <tr style="height:70px">
+          <td class="lbl lbl-top">Documentación técnica adjunta (fichas, certificados, ensayos)</td>
+          <td class="val-c" colspan="5">{{ documentacion_tecnica }}</td>
+        </tr>
+        <tr style="height:44px">
+          <td class="lbl lbl-top">Observaciones adicionales</td>
+          <td class="val" colspan="5">{{ observaciones_material }}</td>
+        </tr>
+
+        <tr class="spacer"><td colspan="6"></td></tr>
+
+        <!-- Banda: RESPUESTA A LA SOLICITUD -->
+        <tr class="band"><td colspan="6">Respuesta a la solicitud</td></tr>
+
+        <tr style="height:80px">
+          <td class="lbl lbl-top">Estado (Aprobado / Rechazado / Aprobado con restricciones)</td>
+          <td class="val" colspan="5">{{ estado }}</td>
+        </tr>
+        <tr>
+          <td class="lbl">Fecha de revisión</td>
+          <td class="val" colspan="5">{{ fecha_revision }}</td>
+        </tr>
+        <tr style="height:70px">
+          <td class="lbl lbl-top">Observaciones</td>
+          <td class="val" colspan="5">{{ observaciones_respuesta }}</td>
+        </tr>
+
+        <tr class="spacer"><td colspan="6"></td></tr>
+
+        <tr>
+          <td class="lbl">Revisa</td>
+          <td class="val" colspan="2">{{ revisa }}</td>
+          <td class="lbl">Firma y fecha</td>
+          <td class="val" colspan="2"></td>
+        </tr>
+      </table>
+
+      <!-- FOOTER -->
+      <div class="ms-footer">WWW.MINISTERIODESALUD.GO.CR</div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

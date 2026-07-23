@@ -1,0 +1,109 @@
+================================================================================
+ GENERADOR DE SUBMITTALS - ES CONSTRUCTORA   ·   INSTRUCCIONES v2.2
+ Elaborado por Adrian Castro
+================================================================================
+
+QUE HAY DE NUEVO EN v2.2
+--------------------------------------------------------------------------------
+1) COMPILADOS: ademas de la caratula, genera un PDF unico por material que
+   junta la caratula (pagina 1) + TODAS las fichas de la carpeta (pagina 2+).
+2) MULTIPLES FICHAS: si una carpeta tiene varios documentos, los lee todos y
+   fusiona marca/descripcion/normativas en un solo resultado.
+3) OCR MEJORADO: ahora lee PDFs escaneados y fotos (JPG/PNG/BMP/TIFF), como
+   la ficha BB5-BISAGRAS que antes fallaba.
+
+
+1) INSTALACION (una sola vez)
+--------------------------------------------------------------------------------
+En una consola (CMD/PowerShell):
+
+    pip install jinja2 playwright openai python-docx pypdf pymupdf pytesseract Pillow
+    python -m playwright install chromium
+
+OCR de imagenes (JPG/PNG/PDF escaneado) — instalar Tesseract-OCR:
+    https://github.com/UB-Mannheim/tesseract/wiki
+    (ruta tipica: C:\Program Files\Tesseract-OCR\tesseract.exe)
+Si NO instala Tesseract: los PDF de texto y DOCX siguen funcionando; las fichas
+en imagen se marcan como incompletas y el proceso continua.
+
+
+2) COMO USARLO
+--------------------------------------------------------------------------------
+a) Abra el programa.
+b) Pegue su API Key de OpenAI y pulse "Test Conexion".
+c) Deje "Generar JSON automaticamente desde fichas".
+d) Elija la carpeta base del proyecto.
+e) Opciones: normalmente "Solo generar faltantes".
+f) Pulse "GENERAR". Vera 5 fases:
+     1. Verificando configuracion
+     2. Leyendo fichas y extrayendo datos con ChatGPT
+     3. Generando caratulas
+     4. Compilando documentos (caratula + fichas)
+     5. Fin (resumen)
+
+
+3) QUE SE GENERA EN CADA CARPETA
+--------------------------------------------------------------------------------
+Ejemplo con varias fichas:
+
+  MEC05-TUBO PVC 100MM\
+    Datasheet.pdf              (original - se conserva)
+    Especificaciones.jpg       (original - se conserva)
+    Certificado.png            (original - se conserva)
+    CARATULA MEC05-TUBO PVC 100MM.pdf        (portada sola)
+    MEC05-TUBO PVC 100MM-CMP.pdf             (COMPILADO: portada + 3 fichas)
+
+Carpeta SIN fichas: solo se genera la caratula (no hay compilado).
+
+
+4) TIPOS DE ARCHIVO SOPORTADOS
+--------------------------------------------------------------------------------
+- PDF con texto      -> lectura directa
+- PDF escaneado/imagen -> OCR (PyMuPDF + Tesseract)
+- JPG, JPEG, PNG, BMP, TIFF/TIF -> OCR
+- DOCX               -> lectura de texto
+- DOC (antiguo)      -> avisa; conviertalo a DOCX o PDF
+Para el COMPILADO se anexan PDF e imagenes. Los DOCX se usan para extraer datos
+pero no se anexan al compilado (conviertalos a PDF si desea incluirlos).
+
+
+5) PANEL DE MANTENIMIENTO (boton 🔧)
+--------------------------------------------------------------------------------
+- Ver / Copiar / Limpiar la API key.
+- Cambiar la clave (valida formato "sk-", la prueba y la guarda).
+- Limpiar cache, Resetear config, Abrir carpeta de config.
+- Info: version, ultima validacion de API y proyecto.
+(Se desactiva mientras hay un proceso en curso.)
+
+
+6) NORMATIVAS
+--------------------------------------------------------------------------------
+La IA detecta las normas de las fichas (ASTM, ISO, DIN, EN, NBR, NTC, INEN...)
+y las coloca en la caratula (campo "Normativa / Especificacion aplicable").
+Son una SUGERENCIA: reviselas y ajustelas si hace falta. Si no encuentra
+normas, queda "SIN ESPECIFICAR" y el recuadro del PDF queda vacio.
+
+
+7) TROUBLESHOOTING (incluye OCR)
+--------------------------------------------------------------------------------
+- "Una ficha en imagen sale incompleta":
+    * Instale Tesseract-OCR (punto 1).
+    * La imagen puede ser de muy baja calidad: escanee a mayor resolucion o
+      convierta la ficha a PDF.
+- "Falta pymupdf / fitz": ejecute  pip install pymupdf
+- "API key invalida o sin creditos": revise en Mantenimiento o en
+    https://platform.openai.com/api-keys
+- "No hay motor de PDF": ejecute
+    pip install playwright
+    python -m playwright install chromium
+- "El compilado no incluye un DOCX": los DOCX no se anexan; conviertalo a PDF.
+- "No se regenera un compilado que ya existe": es normal con "Solo faltantes".
+    Borre el *-CMP.pdf o use "Forzar regeneracion".
+- OCR lento: es normal; el OCR de imagenes toma unos segundos por ficha.
+
+
+8) SEGURIDAD DE LA API KEY
+--------------------------------------------------------------------------------
+La clave se guarda ofuscada (base64) en submitals_config.json. Esto la oculta a
+la vista, pero NO es cifrado seguro. No comparta ese archivo.
+================================================================================

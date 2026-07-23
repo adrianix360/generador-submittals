@@ -1,0 +1,103 @@
+================================================================================
+ GENERADOR DE SUBMITTALS - ES CONSTRUCTORA   ·   INSTRUCCIONES v2.3
+ Elaborado por Adrian Castro
+================================================================================
+
+QUE HAY DE NUEVO EN v2.3
+--------------------------------------------------------------------------------
+1) Se auto-instala: al abrir, verifica e instala lo que le falte. Funciona en
+   cualquier PC que solo tenga Python.
+2) Se elige la carATULA antes de generar (Clasica o Ministerio de Salud).
+3) Para la carATULA del Ministerio hay un menu "Datos del proyecto".
+4) Si falta informacion en las fichas, esos campos quedan EN BLANCO.
+5) "Forzar regeneracion" ahora SOBREESCRIBE lo existente.
+
+
+1) INSTALACION EN UNA PC NUEVA
+--------------------------------------------------------------------------------
+- Requisito unico: tener Python 3.9 o superior instalado (marque "Add Python to
+  PATH" al instalarlo). Descarga: https://www.python.org/downloads/
+- Copie la carpeta del programa (con submitals_gui.py, generate_caratulas.py,
+  las plantillas y la carpeta "Tabla visual refresh").
+- Doble clic en submitals_gui.py, o desde consola:  python submitals_gui.py
+- La PRIMERA vez aparecera una ventana "Preparando el programa" que instala
+  las librerias que falten y descarga Chromium. Esto puede tardar unos minutos
+  y requiere internet una sola vez. Al terminar, abre el programa.
+
+OCR de imagenes (opcional): si sus fichas son fotos o PDF escaneados y quiere
+leerlas, instale Tesseract-OCR:
+   https://github.com/UB-Mannheim/tesseract/wiki
+Si no lo instala, los PDF de texto y DOCX funcionan igual; las imagenes se
+marcan como incompletas y el resto continua.
+
+
+2) COMO SE USA (paso a paso)
+--------------------------------------------------------------------------------
+a) Ingrese su API Key de OpenAI y pulse "Test Conexion".
+b) Elija el TIPO DE CARATULA:  Clasica (ES)  o  Ministerio de Salud.
+   - Si necesita una que no esta en la lista, pida al administrador una
+     actualizacion del software.
+c) Si eligio "Ministerio de Salud", pulse "Datos del proyecto" y complete:
+   proyecto, cliente/institucion, contrato/licitacion, monto, plazo,
+   responsable (nombre y cargo) y fecha. Lo que deje vacio quedara en blanco.
+   * "Version" sera siempre v1 y "Registro" sera el consecutivo de cada
+     material (automatico, no se pide).
+d) Elija la carpeta base del proyecto.
+e) Marque las opciones:
+   - "Solo generar faltantes": no rehace lo ya generado (recomendado).
+   - "Forzar regeneracion": SOBREESCRIBE las caratulas/compilados existentes.
+f) Pulse GENERAR.
+
+
+3) CAMPOS VACIOS
+--------------------------------------------------------------------------------
+Si una ficha no trae marca, descripcion o normativa, esos recuadros salen EN
+BLANCO en la carATULA para que usted los complete a mano. El programa NUNCA
+inventa datos.
+
+
+4) FORZAR REGENERACION (sobreescribir)
+--------------------------------------------------------------------------------
+Con esta opcion, las caratulas y compilados que ya existan se REEMPLAZAN por los
+nuevos. Si un PDF esta abierto en un visor, se avisa: "cierre el PDF y reintente".
+
+
+5) MANTENIMIENTO (boton 🔧)
+--------------------------------------------------------------------------------
+Cambiar/limpiar/probar la API key, limpiar cache, resetear config y abrir la
+carpeta de configuracion. Muestra tambien si Tesseract esta instalado.
+
+
+6) TROUBLESHOOTING
+--------------------------------------------------------------------------------
+- "No se pudieron instalar las dependencias": revise su conexion a internet;
+  si persiste, abra una consola y ejecute:
+    pip install jinja2 openai pypdf pymupdf pytesseract Pillow python-docx playwright
+    python -m playwright install chromium
+- "No hay motor de PDF": ejecute  python -m playwright install chromium
+- Ficha en imagen sale incompleta: instale Tesseract-OCR (punto 1).
+- "API key invalida": revisela en el panel Mantenimiento o en
+  https://platform.openai.com/api-keys
+- No se regenera algo que ya existe: use "Forzar regeneracion".
+
+
+7) EMPAQUETAR COMO .EXE (para distribuir sin que instalen nada)
+--------------------------------------------------------------------------------
+    pip install pyinstaller
+    pyinstaller --onefile --windowed --name "GeneradorSubmittalsES" ^
+      --collect-all playwright --collect-all jinja2 --collect-all pypdf ^
+      --collect-all fitz ^
+      --add-data "template_caratula.html;." ^
+      --add-data "template_ministerio_salud.html;." ^
+      --add-data "Tabla visual refresh/assets/logo_es_crop.png;Tabla visual refresh/assets" ^
+      --add-data "Tabla visual refresh/assets/ministerio_salud_banner.png;Tabla visual refresh/assets" ^
+      submitals_gui.py
+Las plantillas y logos quedan embebidos. En la PC destino puede seguir faltando
+Chromium/Tesseract: el programa los verifica al abrir.
+
+
+8) SEGURIDAD DE LA API KEY
+--------------------------------------------------------------------------------
+La clave se guarda ofuscada (base64) en submitals_config.json. La oculta a la
+vista, pero NO es cifrado seguro. No comparta ese archivo.
+================================================================================

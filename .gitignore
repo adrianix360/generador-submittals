@@ -1,0 +1,55 @@
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+*.exe
+dist/
+build/
+*.spec~
+.DS_Store
+
+# Configuracion local de asistentes/herramientas
+.claude/
+
+# --- v2.6.7: secretos, datos y temporales (NO subir) ---
+# Contiene la API key (aunque sea base64)
+submitals_config.json
+# Datos de trabajo
+datos_materiales.json
+generate_caratulas.log
+generate_caratulas_report.txt
+*.bak
+*.nuevo
+*.cmp.tmp
+_actualizar_exe.bat
+ms-playwright/
+.thumbnail
+# fichas/PDF de obra (no versionar)
+ARQUITECTONICOS/
+MECANICOS/
+ESTRUCTURALES/
+ELECTRICOS/
+
+# --- v2.6.7: excluir binarios grandes (GitHub rechaza >100 MB) ---
+*.zip
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.xlsx
+# ...pero SI incluir los logos de la caratula:
+!Tabla visual refresh/assets/*.png
+*.traineddata
+tessdata_es/
+Distribucion/
+Fichas por ordenar/
+Entregables y Respaldos/
+Copia de seguridad*
+*Respaldo*/
+*RESPALDO*/
+# Re-incluir recursos propios del app (iconos, pequenos)
+!assets/
+!assets/**
+!Icono Generador de Submittals/
+!Icono Generador de Submittals/**
