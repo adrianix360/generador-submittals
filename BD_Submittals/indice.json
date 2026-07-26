@@ -1,0 +1,26 @@
+{
+  "version": "3.1.0",
+  "ultima_actualizacion": "2026-07-26T14:33:23",
+  "fichas": [
+    {
+      "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
+      "nombre_material": "Interruptor sencillo tres vías",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "tipo_producto": "Interruptor eléctrico",
+      "dimensiones": "106.8x96.8x83.3",
+      "especificacion": "",
+      "normativa": "NEMA: WD-6, UL E327858",
+      "descripcion_corta": "Interruptor de grado comercial, construcción en termoplástico resistente, terminales para cableado lateral y posterior, riel metálico.",
+      "search_keywords": "interruptor sencillo tres vias eagle elec electrico 106 8x96 8x83 3 nema wd 6 ul e327858 de grado comercial construccion en termoplastico resistente terminales para cableado lateral y posterior riel metalico",
+      "ruta_pdf": "ELEC/Interruptor-sencillo-tres-vias-Eagle-106-8x96-8x83-3.pdf",
+      "hash_archivo": "d1ce7fa05c060dbe",
+      "fecha_carga": "2026-07-26",
+      "fecha_modificacion": "2026-07-26T14:33:23",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
+    }
+  ],
+  "rama_actual": "main",
+  "ultima_sincronizacion_git": "2026-07-26T14:32:33"
+}
