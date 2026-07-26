@@ -1,6 +1,6 @@
 {
   "version": "3.1.0",
-  "ultima_actualizacion": "2026-07-26T14:33:23",
+  "ultima_actualizacion": "2026-07-26T14:34:11",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -17,6 +17,24 @@
       "hash_archivo": "d1ce7fa05c060dbe",
       "fecha_carga": "2026-07-26",
       "fecha_modificacion": "2026-07-26T14:33:23",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
+    },
+    {
+      "id": "a65ce304-23d2-4db9-9abc-e395a558daa8",
+      "nombre_material": "TUBO ESTRUCTURAL CUADRADO 8\" X 8\" X 3/16\"",
+      "marca": "MultiGroup",
+      "categoria": "ESTR",
+      "tipo_producto": "Tubería estructural",
+      "dimensiones": "203.20 x 203.20 x 4.76",
+      "especificacion": "",
+      "normativa": "ASTM A123, ASTM A500, ASTM A653",
+      "descripcion_corta": "Tubería estructural soldada longitudinalmente, disponible en acabados negro, remetalizado y galvanizado por inmersión.",
+      "search_keywords": "tubo estructural cuadrado 8 x 3 16 multigroup estr tuberia 203 20 4 76 astm a123 a500 a653 soldada longitudinalmente disponible en acabados negro remetalizado y galvanizado por inmersion",
+      "ruta_pdf": "ESTR/TUBO-ESTRUCTURAL-CUADRADO-8-X-8-X-3-16-MultiGroup-203-20-x-203-20-x-4-76.pdf",
+      "hash_archivo": "cce0346b77d2140e",
+      "fecha_carga": "2026-07-26",
+      "fecha_modificacion": "2026-07-26T14:34:11",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
     }
