@@ -1,6 +1,6 @@
 {
   "version": "3.1.0",
-  "ultima_actualizacion": "2026-07-26T14:34:11",
+  "ultima_actualizacion": "2026-07-26T14:35:05",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -35,6 +35,60 @@
       "hash_archivo": "cce0346b77d2140e",
       "fecha_carga": "2026-07-26",
       "fecha_modificacion": "2026-07-26T14:34:11",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
+    },
+    {
+      "id": "8406edfc-aea0-4b03-b462-3db1ca31dd5d",
+      "nombre_material": "Tubo Rectangular e Industrial",
+      "marca": "Macopa",
+      "categoria": "ESTR",
+      "tipo_producto": "Perfil estructural",
+      "dimensiones": "150x50x3.2",
+      "especificacion": "",
+      "normativa": "ASTM A500, ASTM A653",
+      "descripcion_corta": "Perfiles estructurales para construcción, fabricados en acero galvanizado e hierro negro, cumpliendo normas ASTM.",
+      "search_keywords": "tubo rectangular e industrial macopa estr perfil estructural 150x50x3 2 astm a500 a653 perfiles estructurales para construccion fabricados en acero galvanizado hierro negro cumpliendo normas",
+      "ruta_pdf": "ESTR/Tubo-Rectangular-e-Industrial-Macopa-150x50x3-2.pdf",
+      "hash_archivo": "10fe4a7eba664212",
+      "fecha_carga": "2026-07-26",
+      "fecha_modificacion": "2026-07-26T14:34:48",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
+    },
+    {
+      "id": "507bac57-5cbb-4c47-82a3-dbedd828c960",
+      "nombre_material": "Tubería Estructural",
+      "marca": "METALCO",
+      "categoria": "ESTR",
+      "tipo_producto": "Tubería cuadrada y rectangular",
+      "dimensiones": "",
+      "especificacion": "",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Tubería estructural en acero negro y galvanizado, mejora la capacidad estructural y facilita la instalación.",
+      "search_keywords": "tuberia estructural metalco estr cuadrada y rectangular sin especificar en acero negro galvanizado mejora la capacidad facilita instalacion",
+      "ruta_pdf": "ESTR/Tuberia-Estructural-METALCO.pdf",
+      "hash_archivo": "9a9283b9ba83e218",
+      "fecha_carga": "2026-07-26",
+      "fecha_modificacion": "2026-07-26T14:34:59",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
+    },
+    {
+      "id": "3c5473f7-b9f0-4816-9398-0bd1ea1ff219",
+      "nombre_material": "TUBO ESTRUCTURAL RECTANGULAR 6\" X 2\" CH 13",
+      "marca": "MultiGroup",
+      "categoria": "ESTR",
+      "tipo_producto": "Tubería estructural",
+      "dimensiones": "152.40x50.80x2.20",
+      "especificacion": "",
+      "normativa": "ASTM A123, ASTM A500, ASTM A653",
+      "descripcion_corta": "Tubería estructural soldada longitudinalmente, disponible en acabados negro, remetalizado y galvanizado por inmersión.",
+      "search_keywords": "tubo estructural rectangular 6 x 2 ch 13 multigroup estr tuberia 152 40x50 80x2 20 astm a123 a500 a653 soldada longitudinalmente disponible en acabados negro remetalizado y galvanizado por inmersion",
+      "ruta_pdf": "ESTR/TUBO-ESTRUCTURAL-RECTANGULAR-6-X-2-CH-13-MultiGroup-152-40x50-80x2-20.pdf",
+      "hash_archivo": "caa37c6c8e244643",
+      "fecha_carga": "2026-07-26",
+      "fecha_modificacion": "2026-07-26T14:35:05",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
     }
