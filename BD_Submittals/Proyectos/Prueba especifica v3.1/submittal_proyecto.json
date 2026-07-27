@@ -1,0 +1,46 @@
+{
+  "nombre_proyecto": "Prueba especifica v3.1",
+  "datos_procedimiento": {
+    "numero_procedimiento": "123",
+    "institucion": "123",
+    "detalle": "123",
+    "plazo": "123",
+    "monto": "123"
+  },
+  "tipo_caratula": "clasica",
+  "materiales_seleccionados": [
+    {
+      "consecutivo": "ESTR01",
+      "id_ficha_bd": "a65ce304-23d2-4db9-9abc-e395a558daa8",
+      "nombre_material": "TUBO ESTRUCTURAL CUADRADO 8\" X 8\" X 3/16\"",
+      "marca": "MultiGroup",
+      "categoria": "ESTR",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ESTR02",
+      "id_ficha_bd": "3c5473f7-b9f0-4816-9398-0bd1ea1ff219",
+      "nombre_material": "TUBO ESTRUCTURAL RECTANGULAR 6\" X 2\" CH 13",
+      "marca": "MultiGroup",
+      "categoria": "ESTR",
+      "marcas_alternativas": [],
+      "justificacion_stock": true
+    },
+    {
+      "consecutivo": "ELEC01",
+      "id_ficha_bd": "76cca228-4841-4bc1-992b-88f4cbfee78b",
+      "nombre_material": "Interruptor sencillo tres vías",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    }
+  ],
+  "ruta_entregables": "C:\\Users\\castr\\Downloads\\Submitals_ES\\Prueba especifica v3.1",
+  "id_proyecto": "9bc197f7-d38c-41ac-8166-e78d42b12ab9",
+  "fecha_creacion": "2026-07-26",
+  "ultima_actualizacion": "2026-07-26T14:40:21",
+  "actualizado_por": "ProBook_de_Adri",
+  "entregables_generados": true
+}
