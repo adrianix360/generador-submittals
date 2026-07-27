@@ -1,8 +1,172 @@
 # CHANGELOG COMPLETO — Generador de Submittals ES
 
-Historial de versiones (v1.0 → v2.6.6). Elaborado por Adrián Castro.
+Historial de versiones (v1.0 → v2.6.18). Elaborado por Adrián Castro.
 
 ---
+
+## v2.6.18 (2026-07-24) — Carátulas editables (campos de formulario en el PDF)
+
+- Ambas carátulas (Clásica y Ministerio de Salud) se generan ahora como PDF con
+  **campos de formulario editables** sobre cada dato: se puede corregir un valor
+  a mano en cualquier lector de PDF, sin volver a generar la carátula con la app.
+- El aspecto es idéntico al anterior; el valor va dentro de un cuadro de texto
+  (no queda texto "quemado" detrás, así que no se duplica al editar). Fuente,
+  color y alineación se toman del propio diseño.
+- El render (Playwright) mide la posición real de cada caja en modo impresión y
+  coloca el campo con PyMuPDF (fitz). Los compilados (`-CMP.pdf`) fusionan la
+  carátula con `append(...)` para no perder los campos editables.
+- Si PyMuPDF no está disponible o algo falla, se genera la carátula plana
+  anterior como respaldo. Solo aplica al motor Playwright (recomendado).
+
+## v2.6.17 (2026-07-24) — Consecutivo inicial por disciplina (remedial/temporal)
+
+- ⚠️ Función **temporal**, no definitiva: para cuando una lista de submittals
+  debe continuar la numeración de otra lista previa en vez de reiniciarla.
+- Nueva sección "🔢 CONSECUTIVO INICIAL (temporal)": por cada disciplina
+  (ARQ, ESTR, MEC, ELEC) se indica desde qué número arranca su consecutivo
+  (ej: ARQ = 35 → la 1ra carpeta ARQ sale como ARQ35, la siguiente ARQ36…).
+- Renumera **en secuencia** (ignora el número de la carpeta); el nombre de las
+  carpetas no cambia, solo el consecutivo de la carátula, el compilado y el
+  Excel. Disciplinas con campo vacío mantienen la numeración normal.
+- Los campos no se persisten (arrancan vacíos en cada sesión) y se pide
+  confirmación antes de renumerar. Para reemplazar carátulas ya generadas debe
+  estar activo "Forzar regeneración".
+
+## v2.6.16 (2026-07-24) — Columna "Proveedor" en la Guía interna de materiales
+
+- Cada hoja de "Guía interna materiales.xlsx" ahora incluye una sexta columna,
+  "Proveedor", de llenado manual (depende del stock de cada proveedor y no se
+  puede automatizar); la app nunca escribe valores en ella.
+- Como este Excel se regenera por completo en cada actualización, si el
+  archivo ya existía se preservan los valores previos de "Proveedor"
+  emparejando filas por Consecutivo, para que no se pierdan al actualizar.
+
+## v2.6.15 (2026-07-24) — Fix definitivo del tamaño de la carátula
+
+- Chromium decide dónde cortar el contenido en páginas según el `@page` del
+  CSS, de forma **independiente** al ancho/alto que se le pide a
+  `page.pdf()` (eso solo define el tamaño físico de cada página resultante).
+  Como la plantilla trae un `@page` fijo (pensado como respaldo para otros
+  motores de PDF), cuando ese tamaño no coincidía exactamente con el alto
+  real del contenido, Chromium seguía paginando de más o dejando espacio en
+  blanco de más, según el caso — la causa de fondo de los dos intentos
+  anteriores.
+- Ahora, justo antes de generar el PDF, se inyecta un `@page` que coincide
+  **exactamente** con el alto recién medido del contenido real, de forma que
+  nunca compite con el tamaño solicitado. La carátula queda siempre en una
+  sola página, ajustada a su contenido.
+
+## v2.6.14 (2026-07-24) — Fix: páginas casi en blanco en la carátula
+
+- El fix de v2.6.13 (alto dinámico de la carátula) estaba generando páginas
+  enormes casi en blanco: el contenido se veía pequeño arriba y el resto de
+  la hoja quedaba vacío. La causa: el alto se medía después de activar el
+  modo impresión, y la hoja de respaldo del CSS (`@page`, agrandada en
+  v2.6.13) hace que el body ocupe el alto completo de esa caja de página en
+  modo impresión, en vez del alto real del contenido.
+- Ahora el alto se mide en modo pantalla (antes de cambiar a impresión),
+  directamente sobre el elemento de la hoja (`.om-sheet` / `.ms-sheet`), lo
+  que refleja el contenido real sin importar el tamaño del `@page`.
+
+## v2.6.13 (2026-07-24) — Fix: carátula cortada y botones de compilado
+
+- **Carátula clásica cortada**: al agregar los nuevos datos de procedimiento,
+  el contenido desbordaba la hoja tamaño carta y Chromium la dividía en 2
+  páginas; como el compilado individual solo conservaba la primera página, el
+  resto del contenido se perdía. Como la carátula nunca se imprime en papel,
+  ahora el PDF se dimensiona dinámicamente al alto real del contenido, así
+  que siempre ocupa una sola hoja completa sin importar cuántos datos u
+  observaciones tenga.
+- **"📦 Generar Compilados" y "Entrega final" no funcionaban**: eran un
+  efecto secundario de la misma causa (carátulas partidas en 2 páginas). Al
+  corregir el tamaño de la carátula, ambos botones vuelven a generar los
+  compilados completos y correctos.
+- **Ancho de hoja incorrecto**: el ancho real de la carátula se medía mal y
+  generaba páginas de ~13 pulgadas con márgenes en blanco a los lados; ahora
+  se fija correctamente a 8.5 pulgadas (816px), el ancho de diseño real.
+- **Corte todavía posible con texto muy largo combinado**: la hoja de
+  respaldo usada para calcular los saltos de página tenía un límite que aún
+  podía cortar carátulas con varios campos de texto libre muy extensos
+  combinados; se amplió ese límite a un valor que ninguna carátula real
+  alcanza.
+- **Excel vacío fallaba**: generar el Excel interno o el de entrega con un
+  JSON sin materiales válidos producía un error interno; ahora devuelve un
+  mensaje claro en vez de fallar.
+- Motores de respaldo (weasyprint, pdfkit) también reciben una hoja más alta
+  que carta como salvaguarda adicional.
+
+## v2.6.12 (2026-07-23) — Datos del procedimiento en la carátula clásica
+
+- La carátula clásica (ES Constructora) agrega una nueva sección
+  **"Información del procedimiento"**, antes de la información del material o
+  equipo, con la misma estética del resto de la carátula.
+- Campos incluidos: Número de procedimiento, Nombre de la institución,
+  Detalle de procedimiento, Duración de contrato y Monto.
+- El botón **"Datos del proyecto"** ahora está disponible para ambas
+  carátulas (antes solo para Ministerio de Salud). Los nuevos campos de la
+  carátula clásica reutilizan los mismos datos ya existentes del proyecto
+  (Contrato/Licitación, Cliente/Institución, Plazo, Monto) — así el dato se
+  llena una sola vez y aplica a cualquiera de las dos carátulas.
+- El campo **"Proyecto"** del diálogo es el mismo dato en ambas carátulas: en
+  la de Ministerio de Salud se muestra como "Proyecto" (esa carátula no se
+  puede modificar) y en la clásica se muestra como "Detalle de
+  procedimiento".
+
+## v2.6.11 (2026-07-23) — Notas de tolerancia para elementos de acero
+
+- Las carátulas agregan al final de las observaciones una nota breve y
+  profesional sobre la tolerancia aplicable a cada elemento de acero.
+- Tubos estructurales ASTM A500/A500M: se aclara la tolerancia de hasta −10 %
+  respecto al espesor nominal.
+- Tuberías de acero ASTM A53/A53M: se indica la tolerancia específica de
+  espesor de pared.
+- Perfiles conformados en frío: se aplica la referencia de AISI S240 sobre el
+  espesor base mínimo; perfiles, angulares, pletinas y otros laminados reciben
+  la nota correspondiente a ASTM A6/A6M.
+- La nota conserva las observaciones existentes, se muestra en ambas plantillas
+  de carátula y no se duplica al reutilizar un JSON. Se excluyen PVC, CPVC,
+  PPR, PEAD, cobre y otros materiales no cubiertos por esas normas de acero.
+
+## v2.6.10 (2026-07-23) — Varias marcas en un mismo material
+
+- Cuando una carpeta contiene fichas de dos o más fabricantes, el campo
+  **Marca** muestra todas las alternativas en el formato
+  `Marca 1 / Marca 2 / Marca 3`.
+- Se eliminan duplicados, variantes casi idénticas y valores genéricos como
+  `SIN ESPECIFICAR` o `POR DEFINIR`, respetando el orden de aparición en las
+  fichas técnicas.
+
+## v2.6.9 (2026-07-23) — Excel interno y Excel de entrega separados
+
+- El archivo de uso interno pasó a llamarse **Guía interna materiales.xlsx** y
+  conserva la información técnica y de control por disciplina.
+- La exportación final ya no incluye ese archivo interno: genera
+  **Guía Submittal.xlsx**, con una hoja por disciplina y solo las columnas
+  Consecutivo, Descripción, Aprobación y Observaciones para la administración
+  del contrato.
+
+## v2.6.8 (2026-07-23) — Lectura robusta de imágenes degradadas
+
+- Antes de extraer información, la aplicación evalúa resolución, contraste y
+  nitidez de las fichas en imagen; las versiones mejoradas se trabajan en
+  memoria y el original no se modifica.
+- El OCR compara versiones original, ampliada y binaria para conservar la
+  estructura de tablas técnicas. OpenAI Vision recibe además acercamientos de
+  alta resolución y una segunda lectura audita marca, descripción y normativa.
+- El JSON registra modelo utilizado, métricas de calidad, confianza, evidencias
+  y necesidad de revisión manual. Si Vision no está disponible, el flujo sigue
+  con OCR y extracción de texto.
+- Se publicó el ejecutable como Release para que el actualizador pueda ofrecer
+  la versión nueva a los equipos de oficina.
+
+## v2.6.7 (2026-07-23) — Publicación y actualización de la aplicación
+
+- El repositorio se depuró para distribuir solo el código y los recursos de la
+  aplicación: se excluyeron disciplinas de trabajo, respaldos y binarios del
+  control de versiones.
+- Se incorporó el manifiesto `VERSION.json`, el actualizador y la configuración
+  de despliegue para publicar versiones desde GitHub y permitir actualizaciones
+  posteriores del programa.
 
 ## v2.6.6 (2026-07-22) — Fix: columna "Descripción" del Excel + icono de la app + OCR sin admin
 

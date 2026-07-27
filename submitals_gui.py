@@ -2,9 +2,75 @@
 # -*- coding: utf-8 -*-
 r"""
 ================================================================================
- GENERADOR DE SUBMITTALS - ES CONSTRUCTORA  (submitals_gui.py)  v2.6.11
+ GENERADOR DE SUBMITTALS - ES CONSTRUCTORA  (submitals_gui.py)  v2.6.15
  Elaborado por Adrian Castro
 ================================================================================
+ v2.6.15 sobre v2.6.14:
+   1. Fix definitivo del tamano de la caratula: Chromium pagina el contenido
+      segun el @page del CSS de forma independiente al ancho/alto pedido a
+      page.pdf() (que solo define el tamano fisico de cada pagina resultante);
+      como la plantilla tiene un @page fijo (usado como respaldo para otros
+      motores de PDF), si ese tamano no coincidia exactamente con el alto real
+      del contenido, Chromium seguia paginando o dejando espacio de mas segun
+      el caso. Ahora, justo antes de generar el PDF, se inyecta un @page que
+      coincide exactamente con el alto recien medido del contenido, de forma
+      que nunca compite con el tamano solicitado: la caratula siempre queda en
+      una sola pagina, ajustada a su contenido real.
+ v2.6.14 sobre v2.6.13:
+   1. Fix: la correccion de v2.6.13 (alto dinamico de la caratula) generaba
+      paginas casi en blanco enormes (contenido pequeno arriba, el resto
+      vacio) porque el alto se media con document.body.scrollHeight DESPUES
+      de activar el modo impresion; el @page del CSS (agrandado en v2.6.13
+      como respaldo) infla ese valor al modo impresion, ya que el body pasa a
+      ocupar el alto completo de la caja de pagina en vez del alto real del
+      contenido. Ahora el alto se mide en modo pantalla (antes de cambiar a
+      impresion), directamente sobre el elemento de la hoja (.om-sheet o
+      .ms-sheet), lo que refleja el contenido real sin importar el tamano del
+      @page.
+ v2.6.13 sobre v2.6.12:
+   1. Fix: la caratula clasica quedaba cortada al incluir los nuevos datos de
+      procedimiento (el contenido desbordaba una hoja tamano carta y Chromium
+      la paginaba en 2 hojas; como el compilado individual solo conservaba la
+      1a pagina, el resto del contenido se perdia). Ahora, dado que la
+      caratula no se imprime en papel, el PDF se dimensiona dinamicamente al
+      alto real del contenido (Playwright: page.pdf con ancho/alto exactos en
+      vez de forzar tamano carta), de forma que la caratula siempre ocupa una
+      sola hoja completa sin importar cuantos datos u observaciones tenga.
+      Se agrego ademas una hoja de respaldo mas alta en el CSS (@page) y en
+      las opciones de pdfkit para los motores de PDF alternativos.
+   2. Fix: esta misma causa (caratulas cortadas a 2 paginas) hacia que los
+      botones "📦 Generar Compilados" y "Entrega final" produjeran archivos
+      con contenido incompleto o con paginas de mas; al corregir el tamano de
+      la caratula, ambos botones vuelven a generar los compilados completos y
+      correctos.
+   3. Fix: el ancho de la caratula se media mal (document.body.scrollWidth
+      devolvia el viewport por defecto de Playwright, 1280px, no los 816px
+      reales de la hoja), generando paginas de ~13in de ancho con margenes en
+      blanco a los lados. Ahora el viewport de Playwright se fija a 816px
+      (el ancho real de la hoja en ambas plantillas) antes de renderizar.
+   4. Fix: el @page del CSS (usado como respaldo para otros motores de PDF)
+      tambien le indicaba a Chromium donde cortar el contenido en paginas,
+      sin importar el alto exacto que se le pedia luego al PDF -- una
+      caratula con campos de texto muy largos combinados podia volver a
+      partirse en 2 paginas. Se aumento ese alto de respaldo a un valor que
+      ninguna caratula real alcanza.
+   5. Fix: generar_excel_materiales/generar_excel_submittal (Guia interna
+      materiales.xlsx / Guia Submittal.xlsx) fallaban con un error interno de
+      openpyxl ("At least one sheet must be visible") cuando el JSON no tenia
+      ningun material valido en ninguna disciplina; ahora devuelven un error
+      claro sin intentar guardar un archivo vacio.
+ v2.6.12 sobre v2.6.11:
+   1. Caratula clasica (ES Constructora): nueva seccion "Informacion del
+      procedimiento" antes de la informacion del material/equipo, con
+      Numero de procedimiento, Nombre de la institucion, Detalle de
+      procedimiento, Duracion de contrato y Monto.
+   2. El boton "Datos del proyecto" ahora esta disponible para ambas
+      caratulas (antes solo para Ministerio de Salud); los nuevos campos de
+      la caratula clasica reutilizan los mismos datos del proyecto
+      (Contrato/Licitacion, Cliente/Institucion, Plazo, Monto). El campo
+      "Proyecto" del dialogo se muestra en la caratula clasica como "Detalle
+      de procedimiento" (en la caratula del Ministerio de Salud se sigue
+      mostrando como "Proyecto", ya que esa caratula no se puede modificar).
  v2.6.11 sobre v2.6.10:
    1. Las caratulas de tubos y perfiles estructurales, angulares y otros
       elementos de acero agregan al final de las notas una aclaracion breve
@@ -100,7 +166,7 @@ from tkinter import ttk, filedialog, messagebox
 # ============================================================================
 # CONSTANTES / TEMA
 # ============================================================================
-VERSION   = "2.6.11"
+VERSION   = "2.6.18"
 AUTOR     = "Adrián Castro"
 ROJO_ES   = "#E11D2D"
 AZUL_ES   = "#1F3864"
@@ -151,11 +217,11 @@ CARATULAS = {
 CARATULA_NOMBRES = {"clasica": "Clásica (ES Constructora)", "ministerio_salud": "Ministerio de Salud"}
 
 CAMPOS_PROYECTO = [
-    ("proyecto", "Proyecto"),
+    ("proyecto", "Proyecto / Detalle de procedimiento"),
     ("cliente", "Cliente / Institución"),
-    ("contrato", "Contrato / Licitación"),
+    ("contrato", "Contrato / Licitación (Número de procedimiento)"),
     ("monto", "Monto"),
-    ("plazo", "Plazo"),
+    ("plazo", "Plazo (Duración de contrato)"),
     ("nombre_cargo", "Responsable (nombre y cargo)"),
     ("fecha", "Fecha (dd/mm/aaaa)"),
     ("fecha_emision", "Fecha de emisión"),
@@ -1591,8 +1657,16 @@ def imagen_a_pdf_reader(path):
 def generar_compilado(caratula_path, doc_paths, out_path, q=None, cons="-"):
     from pypdf import PdfWriter, PdfReader
     w = PdfWriter()
-    # Solo la 1a pagina de la caratula (evita la 2a hoja en blanco que agrega Chromium)
-    w.add_page(PdfReader(str(caratula_path)).pages[0])
+    # Solo la 1a pagina de la caratula (evita la 2a hoja en blanco que agrega
+    # Chromium). Se usa append(pages=(0,1)) en vez de add_page() para CONSERVAR
+    # los campos de formulario editables de la caratula (v2.6.18): add_page copia
+    # la pagina pero NO el AcroForm del documento, y los lectores dejarian de
+    # reconocer los campos como editables en el compilado.
+    try:
+        w.append(PdfReader(str(caratula_path)), pages=(0, 1))
+    except Exception:
+        # Respaldo: caratula plana (sin formulario) -> basta con la pagina.
+        w.add_page(PdfReader(str(caratula_path)).pages[0])
     anexados = 0
     for d in sorted(doc_paths, key=lambda x: x.name.lower()):
         ext = d.suffix.lower()
@@ -1917,8 +1991,13 @@ def generar_excel_materiales(json_path, carpeta_base):
     Genera un Excel 'Guía interna materiales.xlsx' en carpeta_base con los datos del JSON.
     Una hoja por disciplina (ARQ, ESTR, ELEC, MEC).
     Actualiza si ya existe.
+
+    La columna "Proveedor" es de llenado manual (depende del stock de cada
+    proveedor y no se puede automatizar), por lo que no se genera con datos:
+    si el excel ya existia, se preservan los valores que el usuario haya
+    escrito en esa columna, emparejando filas por Consecutivo.
     """
-    from openpyxl import Workbook
+    from openpyxl import Workbook, load_workbook
     from openpyxl.styles import Font, PatternFill, Alignment
 
     json_path = Path(json_path)
@@ -1958,6 +2037,32 @@ def generar_excel_materiales(json_path, carpeta_base):
         elif prefijo == "ELEC":
             por_disciplina["ELECTRICOS"].append(item)
 
+    # v2.6.13: si ningun material cayo en alguna disciplina (p.ej. JSON sin
+    # materiales validos) no hay nada que mostrar; salir antes de crear el
+    # workbook evita wb.save() reventando con "At least one sheet must be
+    # visible" al no haberse creado ninguna hoja.
+    if not any(por_disciplina.values()):
+        return {"exitoso": False, "error": "No hay materiales para generar el Excel."}
+
+    # Preservar columna "Proveedor" existente (llenado manual, ver docstring)
+    ruta_excel = Path(carpeta_base) / "Guía interna materiales.xlsx"
+    proveedores_previos = {}  # {nombre_hoja: {consecutivo: proveedor}}
+    if ruta_excel.exists():
+        try:
+            wb_previo = load_workbook(str(ruta_excel))
+            for hoja in wb_previo.sheetnames:
+                ws_previo = wb_previo[hoja]
+                mapa = {}
+                for fila in ws_previo.iter_rows(min_row=2, values_only=True):
+                    if fila and fila[0]:
+                        proveedor = fila[5] if len(fila) > 5 else None
+                        if proveedor:
+                            mapa[str(fila[0]).strip()] = proveedor
+                if mapa:
+                    proveedores_previos[hoja] = mapa
+        except Exception:
+            pass  # Si el excel previo no se puede leer, se genera sin arrastrar proveedores
+
     # Crear workbook
     wb = Workbook()
     wb.remove(wb.active)  # Eliminar hoja vacía por defecto
@@ -1984,16 +2089,19 @@ def generar_excel_materiales(json_path, carpeta_base):
         ws = wb.create_sheet(title=nombre_hoja)
 
         # Encabezados
-        encabezados = ["Consecutivo", "Familia", "Descripción", "Normativa", "Estado"]
+        encabezados = ["Consecutivo", "Familia", "Descripción", "Normativa", "Estado", "Proveedor"]
         for col, header in enumerate(encabezados, 1):
             cell = ws.cell(row=1, column=col, value=header)
             cell.fill = header_fill
             cell.font = header_font
             cell.alignment = header_alignment
 
+        mapa_proveedores = proveedores_previos.get(nombre_hoja, {})
+
         # Datos
         for row_idx, item in enumerate(items, 2):
-            ws.cell(row=row_idx, column=1, value=item.get("consecutivo", ""))
+            consec = item.get("consecutivo", "")
+            ws.cell(row=row_idx, column=1, value=consec)
             ws.cell(row=row_idx, column=2, value=item.get("marca", ""))  # Familia = marca
             # v2.6.6: Descripcion = nombre del material segun el nombre de la
             # carpeta (item["nombre"]), NO el texto largo que ChatGPT extrae
@@ -2007,17 +2115,23 @@ def generar_excel_materiales(json_path, carpeta_base):
                 estado = "DISPONIBLE"
             ws.cell(row=row_idx, column=5, value=estado)
 
+            # Proveedor: columna de llenado manual, se arrastra el valor previo
+            # si existia (ver docstring); nunca se genera automaticamente.
+            proveedor_previo = mapa_proveedores.get(str(consec).strip())
+            if proveedor_previo:
+                ws.cell(row=row_idx, column=6, value=proveedor_previo)
+
         # Ajustar anchos de columna
         ws.column_dimensions["A"].width = 15
         ws.column_dimensions["B"].width = 25
         ws.column_dimensions["C"].width = 60
         ws.column_dimensions["D"].width = 30
         ws.column_dimensions["E"].width = 15
+        ws.column_dimensions["F"].width = 25
 
         total_materiales += len(items)
 
     # Guardar
-    ruta_excel = Path(carpeta_base) / "Guía interna materiales.xlsx"
     try:
         wb.save(str(ruta_excel))
     except Exception as e:
@@ -2080,6 +2194,11 @@ def generar_excel_submittal(json_path, carpeta_destino):
             por_disciplina["MECANICOS"].append(item)
         elif prefijo == "ELEC":
             por_disciplina["ELECTRICOS"].append(item)
+
+    # v2.6.13: evita wb.save() reventando con "At least one sheet must be
+    # visible" cuando ningun material cae en alguna disciplina.
+    if not any(por_disciplina.values()):
+        return {"exitoso": False, "error": "No hay materiales para generar el Excel."}
 
     wb = Workbook()
     wb.remove(wb.active)  # Eliminar hoja vacía por defecto
@@ -2356,6 +2475,64 @@ def resumen_materiales(m, docs_totales=0):
         "compilados_generados": sum(1 for x in m if x.get("documentos_encontrados")),
         "traducidos": sum(1 for x in m if x.get("fue_traducido")),
     }
+
+
+# ============================================================================
+# CONSECUTIVO INICIAL POR DISCIPLINA  ***FUNCION REMEDIAL / TEMPORAL***
+# ----------------------------------------------------------------------------
+# NO forma parte del diseno definitivo. Sirve para un caso puntual: cuando un
+# proyecto ya tiene una lista de submittals numerada aparte (hecha sin la app)
+# y esta segunda lista debe CONTINUAR la numeracion en vez de reiniciarla.
+#
+# Renumera en secuencia los consecutivos de cada disciplina a partir del numero
+# inicial que indique la usuaria: si ARQ empieza en 35, la primera carpeta ARQ
+# sale como ARQ35, la siguiente ARQ36, etc. (se ignora el numero de la carpeta;
+# ver la decision "renumerar en secuencia"). El nombre de las CARPETAS no se
+# toca; solo cambia el consecutivo que se imprime en la caratula, el nombre del
+# compilado y el Excel.
+#
+# Disciplinas sin numero inicial quedan EXACTAMENTE igual que hoy.
+# ============================================================================
+def aplicar_consecutivo_inicial(materiales, inicio_por_cat, q=None):
+    """Renumera en secuencia el consecutivo de cada disciplina indicada en
+    inicio_por_cat ({"ARQ": 35, ...}). Modifica materiales in-place y devuelve
+    el numero de items renumerados. Solo toca las disciplinas presentes en el
+    diccionario; el resto se deja sin cambios."""
+    if not inicio_por_cat:
+        return 0
+
+    def _cat_de(item):
+        cat = str(item.get("categoria", "")).strip().upper()
+        if cat:
+            return cat
+        # Respaldo: deducir el prefijo del consecutivo (ARQ01 -> ARQ).
+        return re.sub(r'\d.*', '', str(item.get("consecutivo", ""))).upper()
+
+    contador = {}   # {cat: siguiente numero a asignar}
+    renumerados = 0
+    for item in materiales:
+        cat = _cat_de(item)
+        if cat not in inicio_por_cat:
+            continue
+        if cat not in contador:
+            contador[cat] = int(inicio_por_cat[cat])
+        num = contador[cat]
+        contador[cat] += 1
+
+        nuevo_cons = f"{cat}{num:02d}"
+        anterior = str(item.get("consecutivo", ""))
+        item["consecutivo"] = nuevo_cons
+
+        # Rehacer el nombre del compilado para que coincida con el nuevo
+        # consecutivo (mismo formato que usa construir_materiales()).
+        if item.get("compilado_generado"):
+            nombre = item.get("nombre", nuevo_cons)
+            item["compilado_generado"] = sanitizar(f"{nuevo_cons}-{nombre}-CMP") + ".pdf"
+
+        renumerados += 1
+        if q is not None and anterior and anterior != nuevo_cons:
+            q.put(("LOG", f"Consecutivo remediado: {anterior} -> {nuevo_cons}"))
+    return renumerados
 
 
 # ============================================================================
@@ -2666,6 +2843,13 @@ def hilo_trabajo(modo, carpeta_base, ruta_json, api_key, opciones,
             notas_agregadas = agregar_notas_tolerancia_metalica(materiales)
             if notas_agregadas:
                 q.put(("LOG", f"Notas de tolerancia metalica agregadas: {notas_agregadas}"))
+            # Funcion remedial: renumerar consecutivos desde un numero inicial
+            # por disciplina (ver aplicar_consecutivo_inicial). Se aplica antes
+            # de escribir el JSON para que caratula, compilado y Excel coincidan.
+            renum = aplicar_consecutivo_inicial(
+                materiales, opciones.get("inicio_consecutivo") or {}, q)
+            if renum:
+                q.put(("LOG", f"Consecutivo inicial aplicado a {renum} material(es)."))
             res = resumen_materiales(materiales, docs_totales)
             q.put(("LOG", f"JSON: {res['total']} materiales, {res['documentos_totales']} documentos, "
                           f"{res['fichas_disponibles']} con ficha, {res['carpetas_vacias']} vacias, "
@@ -2697,6 +2881,29 @@ def hilo_trabajo(modo, carpeta_base, ruta_json, api_key, opciones,
             notas_agregadas = agregar_notas_tolerancia_metalica(materiales)
             if notas_agregadas:
                 q.put(("LOG", f"Notas de tolerancia metalica agregadas: {notas_agregadas}"))
+            # Funcion remedial: renumerar consecutivos desde un numero inicial
+            # por disciplina (ver aplicar_consecutivo_inicial). Como el Excel se
+            # genera leyendo datos_materiales.json del disco, si se renumero hay
+            # que reescribir ese JSON para que todo quede consistente.
+            renum = aplicar_consecutivo_inicial(
+                materiales, opciones.get("inicio_consecutivo") or {}, q)
+            if renum:
+                q.put(("LOG", f"Consecutivo inicial aplicado a {renum} material(es)."))
+                try:
+                    if isinstance(data, dict):
+                        data["materiales"] = materiales
+                        data["resumen"] = resumen_materiales(materiales)
+                        contenido = data
+                    else:
+                        contenido = {"resumen": resumen_materiales(materiales),
+                                     "materiales": materiales}
+                    (base / NOMBRE_JSON).write_text(
+                        json.dumps(contenido, ensure_ascii=False, indent=2),
+                        encoding="utf-8")
+                    q.put(("LOG", f"Guardado con consecutivos remediados: {NOMBRE_JSON}"))
+                except Exception as e:
+                    q.put(("WARN", f"No se pudo reescribir {NOMBRE_JSON} tras "
+                                   f"renumerar: {e}"))
 
         # ---------- FASE 4: seleccionar plantilla y generar caratulas -------
         q.put(("FASE", f"Generando caratulas ({CARATULA_NOMBRES.get(caratula, caratula)})..."))
@@ -2756,25 +2963,39 @@ def hilo_trabajo(modo, carpeta_base, ruta_json, api_key, opciones,
                           + (f", {bloqueados} bloqueado(s)" if bloqueados else "")))
 
         def _extra_ctx(item):
-            if caratula != "ministerio_salud":
-                return None
             dp = datos_proyecto or {}
-            return {
-                "logo_ministerio": logo_uri,
-                "version": "v1",
-                "registro": str(item.get("consecutivo", "")).strip(),
-                "fecha_emision": dp.get("fecha_emision", ""),
-                "proyecto": dp.get("proyecto", ""),
-                "cliente": dp.get("cliente", ""),
-                "plazo": dp.get("plazo", ""),
-                "contrato": dp.get("contrato", ""),
-                "monto": dp.get("monto", ""),
-                "nombre_cargo": dp.get("nombre_cargo", ""),
-                "fecha": dp.get("fecha", ""),
-                "documentacion_tecnica": ("Ficha técnica" if item.get("documentos_encontrados") else ""),
-                "observaciones_material": item.get("aspectos_adicionales", ""),
-                "estado": "", "fecha_revision": "", "observaciones_respuesta": "", "revisa": "",
-            }
+            if caratula == "ministerio_salud":
+                return {
+                    "logo_ministerio": logo_uri,
+                    "version": "v1",
+                    "registro": str(item.get("consecutivo", "")).strip(),
+                    "fecha_emision": dp.get("fecha_emision", ""),
+                    "proyecto": dp.get("proyecto", ""),
+                    "cliente": dp.get("cliente", ""),
+                    "plazo": dp.get("plazo", ""),
+                    "contrato": dp.get("contrato", ""),
+                    "monto": dp.get("monto", ""),
+                    "nombre_cargo": dp.get("nombre_cargo", ""),
+                    "fecha": dp.get("fecha", ""),
+                    "documentacion_tecnica": ("Ficha técnica" if item.get("documentos_encontrados") else ""),
+                    "observaciones_material": item.get("aspectos_adicionales", ""),
+                    "estado": "", "fecha_revision": "", "observaciones_respuesta": "", "revisa": "",
+                }
+            if caratula == "clasica":
+                # v2.6.12: datos del procedimiento/contrato, reutilizando los mismos
+                # datos del proyecto que la caratula del Ministerio de Salud.
+                # "proyecto" y "detalle de procedimiento" son el mismo dato: en la
+                # caratula del Ministerio se muestra como "Proyecto" (no se puede
+                # modificar esa caratula) y en la clasica como "Detalle de
+                # procedimiento".
+                return {
+                    "numero_procedimiento": dp.get("contrato", ""),
+                    "nombre_institucion": dp.get("cliente", ""),
+                    "detalle_procedimiento": dp.get("proyecto", ""),
+                    "duracion_contrato": dp.get("plazo", ""),
+                    "monto": dp.get("monto", ""),
+                }
+            return None
 
         total = len(materiales)
         for i, item in enumerate(materiales, start=1):
@@ -2890,6 +3111,13 @@ class SubmitalsGUI(tk.Tk):
         self.var_solo = tk.BooleanVar(value=self.cfg["opciones"]["solo_faltantes"])
         self.var_forzar = tk.BooleanVar(value=self.cfg["opciones"]["forzar_regeneracion"])
         self.var_log = tk.BooleanVar(value=self.cfg["opciones"]["mostrar_log"])
+        # Consecutivo inicial por disciplina (FUNCION REMEDIAL / TEMPORAL).
+        # A proposito NO se persiste en la config: arranca vacio en cada sesion
+        # para no dejar la renumeracion activada por descuido en otro proyecto.
+        self.var_inicio_arq = tk.StringVar(value="")
+        self.var_inicio_estr = tk.StringVar(value="")
+        self.var_inicio_mec = tk.StringVar(value="")
+        self.var_inicio_elec = tk.StringVar(value="")
 
         self._construir_ui()
         self._cargar_valores_iniciales()
@@ -3066,6 +3294,29 @@ class SubmitalsGUI(tk.Tk):
                             bg=GRIS_BG, anchor="w", font=("Segoe UI", 10))
         c3.pack(fill="x")
 
+        # SECCION CONSECUTIVO INICIAL (FUNCION REMEDIAL / TEMPORAL)
+        self._titulo_seccion(cuerpo, "🔢 CONSECUTIVO INICIAL (temporal)")
+        tk.Label(cuerpo,
+                 text=("Solo para cuando esta lista debe CONTINUAR la numeracion de otra "
+                       "lista previa. Indique desde que numero arranca cada disciplina "
+                       "(ej: ARQ = 35 hace que la 1ra carpeta ARQ salga como ARQ35, la "
+                       "siguiente ARQ36, etc.). El nombre de las carpetas NO cambia. "
+                       "Deje los campos VACIOS para numerar normal. Para reemplazar "
+                       "caratulas ya generadas active 'Forzar regeneracion'."),
+                 bg=GRIS_BG, fg="#6C757D", font=("Segoe UI", 8), wraplength=660,
+                 justify="left", anchor="w").pack(fill="x")
+        finit = tk.Frame(cuerpo, bg=GRIS_BG)
+        finit.pack(fill="x", pady=(2, 4))
+        for etq, var in (("ARQ", self.var_inicio_arq), ("ESTR", self.var_inicio_estr),
+                         ("MEC", self.var_inicio_mec), ("ELEC", self.var_inicio_elec)):
+            tk.Label(finit, text=f"{etq} desde:", bg=GRIS_BG,
+                     font=("Segoe UI", 9)).pack(side="left", padx=(0 if etq == "ARQ" else 10, 2))
+            e = tk.Entry(finit, textvariable=var, width=5, font=("Segoe UI", 9),
+                         justify="center")
+            e.pack(side="left")
+            Tooltip(e, f"Numero de consecutivo con el que empieza {etq}. "
+                       "Vacio = numeracion normal.")
+
         # SECCION COMPILADO POR DISCIPLINA (v2.5.2)
         self._titulo_seccion(cuerpo, "📦 COMPILADO POR DISCIPLINA")
         tk.Label(cuerpo, text="Genera un PDF unico por disciplina con TODAS sus caratulas y fichas "
@@ -3174,19 +3425,19 @@ class SubmitalsGUI(tk.Tk):
         cara = self.var_caratula.get()
         self.cfg["caratula_seleccionada"] = cara
         guardar_config(self.cfg)
-        es_min = (cara == "ministerio_salud")
         try:
-            self.btn_datos.config(state=("normal" if es_min else "disabled"))
+            self.btn_datos.config(state="normal")
         except Exception:
             pass
-        if es_min and not inicial and not any((self.datos_proyecto or {}).values()):
+        if not inicial and not any((self.datos_proyecto or {}).values()):
             self._abrir_datos_proyecto()
         self._validar()
 
     def _abrir_datos_proyecto(self):
         try:
+            es_min = (self.var_caratula.get() == "ministerio_salud")
             dlg = tk.Toplevel(self)
-            dlg.title("Datos del proyecto (carátula Ministerio de Salud)")
+            dlg.title(f"Datos del proyecto (carátula {CARATULA_NOMBRES.get(self.var_caratula.get(), '')})")
             dlg.configure(bg=GRIS_BG)
             dlg.transient(self)
             dlg.resizable(False, False)
@@ -3206,10 +3457,11 @@ class SubmitalsGUI(tk.Tk):
                 e.insert(0, self.datos_proyecto.get(clave, ""))
                 e.pack(fill="x", ipady=2, pady=(0, 4))
                 ents[clave] = e
-            tk.Label(cont, text="Nota: 'Versión' será siempre v1 y 'Registro' será el "
-                                "consecutivo de cada material (automático).",
-                     bg=GRIS_BG, fg="#6C757D", font=("Segoe UI", 8), justify="left",
-                     wraplength=360).pack(fill="x", pady=(4, 8))
+            if es_min:
+                tk.Label(cont, text="Nota: 'Versión' será siempre v1 y 'Registro' será el "
+                                    "consecutivo de cada material (automático).",
+                         bg=GRIS_BG, fg="#6C757D", font=("Segoe UI", 8), justify="left",
+                         wraplength=360).pack(fill="x", pady=(4, 8))
 
             def _guardar():
                 for clave, _ in CAMPOS_PROYECTO:
@@ -3541,6 +3793,23 @@ class SubmitalsGUI(tk.Tk):
                 self.var_forzar.set(False)
                 self.var_solo.set(True)
 
+    def _leer_inicio_consecutivos(self):
+        """Lee los campos de 'consecutivo inicial' (funcion remedial) y devuelve
+        (dict {CAT: numero}, error). Solo incluye disciplinas con un numero
+        valido (>= 1). Devuelve error (str) si algun campo tiene texto invalido."""
+        campos = (("ARQ", self.var_inicio_arq), ("ESTR", self.var_inicio_estr),
+                  ("MEC", self.var_inicio_mec), ("ELEC", self.var_inicio_elec))
+        inicio = {}
+        for cat, var in campos:
+            txt = var.get().strip()
+            if not txt:
+                continue
+            if not txt.isdigit() or int(txt) < 1:
+                return None, (f"El consecutivo inicial de {cat} debe ser un numero "
+                              f"entero mayor o igual a 1 (recibido: '{txt}').")
+            inicio[cat] = int(txt)
+        return inicio, None
+
     # ---------------------------------------------------------------- generar
     def _generar(self):
         # v2.4: control de hilo -> evita procesos duplicados
@@ -3579,6 +3848,24 @@ class SubmitalsGUI(tk.Tk):
                     auto = False
                     ruta_json = str(existente)
 
+        # Consecutivo inicial por disciplina (funcion remedial). Se valida aqui
+        # para poder abortar con un mensaje claro si el numero no es valido.
+        inicio_consecutivo, err = self._leer_inicio_consecutivos()
+        if err:
+            messagebox.showwarning("Consecutivo inicial", err)
+            return
+        if inicio_consecutivo:
+            detalle = ", ".join(f"{k} desde {v}" for k, v in inicio_consecutivo.items())
+            if not messagebox.askyesno(
+                    "Consecutivo inicial (temporal)",
+                    "Se renumeraran los consecutivos de estas disciplinas:\n\n"
+                    f"{detalle}\n\n"
+                    "El nombre de las carpetas NO cambia; solo el numero que sale "
+                    "en la caratula, el compilado y el Excel.\n\n"
+                    "Recuerde: para reemplazar caratulas ya generadas debe estar "
+                    "activo 'Forzar regeneracion'.\n\n¿Desea continuar?"):
+                return
+
         self.cfg["opciones"] = {
             "solo_faltantes": self.var_solo.get(),
             "forzar_regeneracion": self.var_forzar.get(),
@@ -3605,6 +3892,8 @@ class SubmitalsGUI(tk.Tk):
         self.btn_compilado_disc.config(state="disabled")
 
         opciones = dict(self.cfg["opciones"])
+        # No se persiste en cfg a proposito (ver __init__): solo viaja al hilo.
+        opciones["inicio_consecutivo"] = inicio_consecutivo
         modo = "auto" if auto else "existente"
         self.thread_activo = threading.Thread(
             target=hilo_trabajo,

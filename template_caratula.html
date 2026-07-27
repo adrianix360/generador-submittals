@@ -12,7 +12,14 @@
   body { background: #E7E9EE; }
   a { color: #E11D2D; }
   a:hover { color: #b3121f; }
-  @page { size: letter; margin: 0; }
+  /* La caratula no se imprime en papel: el motor Playwright ajusta el alto
+     exacto al contenido real (ver render_playwright en generate_caratulas.py),
+     pero @page tambien controla en donde Chromium corta el contenido en
+     paginas, sin importar el alto que luego se le pida al PDF -- por eso este
+     alto debe ser mayor que cualquier contenido real posible (es ademas el
+     respaldo para otros motores de PDF, como weasyprint, que si dependen de
+     este valor). */
+  @page { size: 816px 20000px; margin: 0; }
   @media print {
     body { background: #fff; }
     .om-desk { padding: 0 !important; }
@@ -46,6 +53,46 @@
             <div id="consecutivo" style="flex: 1; min-height: 34px; background: #fff; width: 138px; height: 35px; display:flex; align-items:center; justify-content:center; font-family:'Archivo',sans-serif; font-weight:700; font-size:14px; color:#1F3864;">{{ consecutivo }}</div>
           </div>
         </div>
+      </div>
+
+      <!-- SECTION BAND: PROCEDIMIENTO -->
+      <div style="display:flex; align-items:center; gap:0; margin-top:26px; border-radius:8px; overflow:hidden;">
+        <div style="width:8px; align-self:stretch; background:#E11D2D;"></div>
+        <div style="flex:1; background:#1F3864; color:#fff; font-family:'Archivo',sans-serif; font-weight:600; font-size:13px; letter-spacing:0.14em; text-transform:uppercase; padding:11px 16px;">Información del procedimiento</div>
+      </div>
+
+      <!-- FIELD GRID: PROCEDIMIENTO -->
+      <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
+
+        <!-- two column -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <div style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Número de procedimiento</div>
+            <div id="numero_procedimiento" class="om-value" style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:44px; display:flex; align-items:center;">{{ numero_procedimiento }}</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <div style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Nombre de la institución</div>
+            <div id="nombre_institucion" class="om-value" style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:44px; display:flex; align-items:center;">{{ nombre_institucion }}</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:7px;">
+          <div style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Detalle de procedimiento</div>
+          <div id="detalle_procedimiento" class="om-value" style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:56px;">{{ detalle_procedimiento }}</div>
+        </div>
+
+        <!-- two column -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <div style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Duración de contrato</div>
+            <div id="duracion_contrato" class="om-value" style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:44px; display:flex; align-items:center;">{{ duracion_contrato }}</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <div style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Monto</div>
+            <div id="monto" class="om-value" style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:44px; display:flex; align-items:center;">{{ monto }}</div>
+          </div>
+        </div>
+
       </div>
 
       <!-- SECTION BAND -->
@@ -84,7 +131,7 @@
             <span style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#1F3864;">Documentación técnica adjunta</span>
             <span style="font-family:'Public Sans',sans-serif; font-size:11px; font-style:italic; color:#9298A4;">fichas técnicas, certificados, ensayos</span>
           </div>
-          <div style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:72px;"></div>
+          <div id="documentacion_adjunta" class="om-value" style="border:1px solid #D3D8E0; border-radius:7px; background:#FAFBFC; min-height:72px;"></div>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:7px; flex:1;">

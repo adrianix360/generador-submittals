@@ -16,8 +16,10 @@ requests
 beautifulsoup4
 pdfplumber      # v2.6.5: relectura de tablas tecnicas densas (dimensiones/tolerancias)
 
+# v3.0.0: la BD centralizada genera los Excel de guia -> openpyxl es REQUERIDO.
+openpyxl
+
 # --- Opcionales ---
-# openpyxl        # solo si se regeneran los Excel auxiliares (la app no los genera)
 # pyinstaller     # solo para compilar el .exe
 
 # NOTA: el codigo NO usa anthropic, PyPDF2, pdf2image ni langdetect.
@@ -27,3 +29,16 @@ pdfplumber      # v2.6.5: relectura de tablas tecnicas densas (dimensiones/toler
 #    lo instala solo con "winget" si falta, y descarga el idioma espanol a la
 #    carpeta propia "tessdata_es/" -- no requiere permisos de administrador).
 packaging        # v2.6.7: comparar versiones (auto-updater)
+
+# --- v3.1.0: BD sincronizada con GitHub -------------------------------------
+# NO se agrega ninguna dependencia nueva. A proposito:
+#   * git_bd.py usa el ejecutable "git" via subprocess (no GitPython). GitPython
+#     tambien invoca el binario de git, asi que no aporta nada y complica
+#     bastante el empaquetado con PyInstaller.
+#   * El backend alternativo (PCs sin git) usa la API REST de GitHub con
+#     urllib de la biblioteca estandar. Tampoco hace falta paramiko: la
+#     autenticacion es HTTPS + Personal Access Token, no SSH.
+#
+# REQUISITO DEL SISTEMA (no de pip): para el modo preferido hay que tener
+# instalado Git for Windows -> https://git-scm.com/download/win
+# Si no esta, el app detecta la ausencia y sincroniza por la API REST.
