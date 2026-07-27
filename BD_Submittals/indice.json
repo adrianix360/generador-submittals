@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-27T14:24:25",
+  "ultima_actualizacion": "2026-07-27T14:42:15",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -121,8 +121,28 @@
       "fecha_modificacion": "2026-07-27T14:24:25",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "42d1f378-cd27-4afd-8b83-f6371580b86c",
+      "nombre_ficha": "DUROCK® NEXT GEN E+ 1220 x 2440 x 12.7 - USG",
+      "nombre_ficha_manual": false,
+      "nombre_material": "DUROCK® NEXT GEN e+",
+      "marca": "USG",
+      "categoria": "ARQ",
+      "tipo_producto": "Tablacemento",
+      "dimensiones": "1220x2440x12.7",
+      "especificacion": "Tablero de cemento con malla de fibra de vidrio",
+      "normativa": "ASTM C-136-04, ASTM C-177, ASTM C-473-07, ASTM C-473-07, ASTM C-666-03, ASTM C-84-05, ASTM C-947-03",
+      "descripcion_corta": "Tablero de cemento laminado con malla de fibra de vidrio, ideal para áreas húmedas, fácil de instalar y resistente a la degradación.",
+      "search_keywords": "durock next gen e 1220 x 2440 12 7 usg arq tablacemento 1220x2440x12 tablero de cemento con malla fibra vidrio astm c 136 04 177 473 07 666 03 84 05 947 laminado ideal para areas humedas facil instalar y resistente a la degradacion",
+      "ruta_pdf": "ARQ/DUROCK-NEXT-GEN-E-1220-x-2440-x-12-7-USG.pdf",
+      "hash_archivo": "a6d182277d6ec467",
+      "fecha_carga": "2026-07-27",
+      "fecha_modificacion": "2026-07-27T14:42:15",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-27T14:23:08"
+  "ultima_sincronizacion_git": "2026-07-27T14:41:30"
 }
