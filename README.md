@@ -331,7 +331,6 @@ GitHub Issues: https://github.com/adrianix360/generador-submittals/issues
 ## 👨‍💻 Desarrollado por
 
 **Adrián Castro**  
-Municipalidad de Desamparados, Costa Rica
 
 ---
 
