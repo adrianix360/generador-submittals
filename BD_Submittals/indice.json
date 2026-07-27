@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-27T13:57:05",
+  "ultima_actualizacion": "2026-07-27T13:59:26",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -74,9 +74,9 @@
       "descripcion_corta": "Tubería estructural en acero negro y galvanizado, mejora la capacidad estructural y facilita la instalación.",
       "search_keywords": "tuberia estructural cuadrado metalco estr cuadrada y rectangular sin especificar en acero negro galvanizado mejora la capacidad facilita instalacion",
       "ruta_pdf": "ESTR/Tuberia-Estructural-METALCO.pdf",
-      "hash_archivo": "9a9283b9ba83e218",
+      "hash_archivo": "ead04d109e33c99d",
       "fecha_carga": "2026-07-26",
-      "fecha_modificacion": "2026-07-26T14:34:59",
+      "fecha_modificacion": "2026-07-27T13:59:26",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo",
       "nombre_ficha": "TUBERÍA ESTRUCTURAL CUADRADO - METALCO",
