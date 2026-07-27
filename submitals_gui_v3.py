@@ -39,11 +39,12 @@ from pathlib import Path
 
 import bd_manager
 import fuzzy_search
+import git_bd
 import nomenclatura
 import ocr_extractor
 import updater_gh
 
-VERSION = "3.2.0"
+VERSION = "3.2.1"
 BASE_DIR = Path(__file__).resolve().parent
 PIN_MODO_DEV = "9119"
 
@@ -844,7 +845,7 @@ if _TK_OK:
                 self._log("   📡 Sin conexión: las fichas quedaron guardadas y se "
                           "subirán al reconectar")
             elif r.get("auth"):
-                self._log("   🔑 Falta el token de GitHub: use 'Configurar GitHub' "
+                self._log("   🔑 Falta el token de GitHub: use '⚙️ Configuración' "
                           "en la ventana principal")
             elif r.get("nada_que_subir"):
                 self._log("   (sin cambios por subir)")
@@ -1198,25 +1199,163 @@ if _TK_OK:
                 self._log(f"⚠️ No se pudo subir: {r.get('error', '')}")
 
 
-    class DialogoGitHub(tk.Toplevel):
-        """Configuracion de la sincronizacion: repositorio y token del usuario."""
+    def _probar_openai_key(api_key):
+        """Verifica una API key contra OpenAI. Devuelve ``(ok, mensaje)``.
 
-        def __init__(self, master, bd):
+        Replica la comprobacion de v2.6 (``test_openai``) para no depender de que
+        submitals_gui.py este disponible: aqui v3 es autonomo.
+        """
+        api_key = (api_key or "").strip()
+        if not api_key:
+            return (False, "Ingrese una API Key.")
+        try:
+            from openai import OpenAI
+        except Exception:
+            return (False, "Falta la librería 'openai' (pip install openai).")
+        try:
+            OpenAI(api_key=api_key, timeout=15).models.list()
+            return (True, "Conexión exitosa: la API key funciona.")
+        except Exception as e:
+            try:
+                import openai
+                if isinstance(e, openai.AuthenticationError):
+                    return (False, "API key inválida o sin créditos.")
+            except Exception:
+                pass
+            return (False, f"No se pudo conectar: {str(e)[:150]}")
+
+    class DialogoConfiguracion(tk.Toplevel):
+        """Configuracion unificada del usuario en DOS pestañas:
+
+          * OpenAI: la API key que usa la lectura de fichas (PDF/imagen) con IA.
+          * GitHub: repositorio, rama y token (PAT) para sincronizar la BD.
+
+        Antes la API key solo se podia definir desde la app v2.6; en una PC que
+        solo tiene el .exe de v3 no habia forma de ingresarla. Esta ventana lo
+        resuelve. Ambos secretos se guardan (ofuscados en base64, igual que v2.6)
+        en ``%APPDATA%/GeneradorSubmittals/config.json``.
+        """
+
+        def __init__(self, master, bd, tab_inicial="openai"):
             super().__init__(master)
             self.bd = bd
-            self.cambio = False
-            self.title("Configurar GitHub")
+            self.cambio_github = False      # solo si cambio algo de GitHub -> resync
+            self._probando = False
+            self.title("Configuración")
             self.configure(padx=16, pady=16)
             self.grab_set()
-            gh = bd.cfg.get("github", {}) or {}
-            est = bd.git_status()
 
-            tk.Label(self, text="Sincronización de la Base de Datos",
+            nb = ttk.Notebook(self)
+            nb.pack(fill="both", expand=True)
+            self.tab_openai = tk.Frame(nb, padx=12, pady=12)
+            self.tab_github = tk.Frame(nb, padx=12, pady=12)
+            nb.add(self.tab_openai, text="🔑 OpenAI (lectura de fichas)")
+            nb.add(self.tab_github, text="☁️ GitHub (sincronización)")
+            self._build_openai(self.tab_openai)
+            self._build_github(self.tab_github)
+
+            barra = tk.Frame(self)
+            barra.pack(fill="x", pady=(12, 0))
+            tk.Button(barra, text="💾 Guardar", command=self._guardar, bg=AZUL_ES,
+                      fg="white", width=14).pack(side="left", padx=6)
+            tk.Button(barra, text="Cerrar", command=self.destroy,
+                      width=12).pack(side="left", padx=6)
+
+            nb.select(self.tab_openai if tab_inicial == "openai" else self.tab_github)
+            _traer_al_frente(self)
+
+        # -------------------------------------------------- pestaña OpenAI
+        def _build_openai(self, f):
+            tk.Label(f, text="API Key de OpenAI", font=("Segoe UI", 12, "bold")).grid(
+                row=0, column=0, columnspan=3, sticky="w")
+            tk.Label(f, text="Se usa para leer las fichas técnicas (PDF/imagen) con IA.\n"
+                             "Sin ella, la extracción cae a OCR local y revisión manual.",
+                     fg="#555", justify="left").grid(row=1, column=0, columnspan=3,
+                                                     sticky="w", pady=(0, 8))
+
+            # El entorno TIENE PRIORIDAD sobre la config (ver obtener_api_key):
+            # se distingue la fuente para no mostrar "✅ configurada" por una key
+            # guardada que en realidad no se usa porque la enmascara el entorno.
+            env_key = os.environ.get("OPENAI_API_KEY", "").strip()
+            guardada = bd_manager.descifrar_api_key(
+                self.bd.cfg.get("api", {}).get("openai_key_encrypted", ""))
+            if env_key:
+                estado = ("✅ configurada por variable de entorno OPENAI_API_KEY "
+                          "(tiene prioridad)")
+            elif guardada:
+                estado = "✅ ya configurada"
+            else:
+                estado = "❌ sin configurar"
+            tk.Label(f, text=f"Estado actual: {estado}   ·   deje el campo vacío para "
+                             "conservarla", fg="#555").grid(
+                row=2, column=0, columnspan=3, sticky="w", pady=(0, 6))
+
+            tk.Label(f, text="API Key:").grid(row=3, column=0, sticky="e", pady=4)
+            self.v_openai = tk.StringVar(value="")
+            self.e_openai = tk.Entry(f, textvariable=self.v_openai, width=46, show="•")
+            self.e_openai.grid(row=3, column=1, pady=4)
+            self.v_mostrar = tk.BooleanVar(value=False)
+            tk.Checkbutton(f, text="Mostrar", variable=self.v_mostrar,
+                           command=self._toggle_mostrar).grid(row=3, column=2, padx=(6, 0))
+
+            self.btn_probar = tk.Button(f, text="Probar conexión",
+                                        command=self._probar_openai)
+            self.btn_probar.grid(row=4, column=1, sticky="w", pady=(8, 0))
+            self.lbl_openai_estado = tk.Label(f, text="", fg="#555", justify="left",
+                                              wraplength=420)
+            self.lbl_openai_estado.grid(row=5, column=0, columnspan=3, sticky="w",
+                                        pady=(6, 0))
+            tk.Label(f, text="Cree su API key en platform.openai.com/api-keys",
+                     fg="#555").grid(row=6, column=0, columnspan=3, sticky="w",
+                                     pady=(10, 0))
+
+        def _toggle_mostrar(self):
+            self.e_openai.config(show="" if self.v_mostrar.get() else "•")
+
+        def _probar_openai(self):
+            if self._probando:
+                return
+            key = (self.v_openai.get().strip()
+                   or bd_manager.obtener_api_key(cfg=self.bd.cfg,
+                                                 config_dir=self.bd.config_dir))
+            if not key:
+                self.lbl_openai_estado.config(
+                    text="Ingrese una API Key para probar.", fg=ROJO_ES)
+                return
+            self._probando = True
+            self.btn_probar.config(state="disabled")
+            self.lbl_openai_estado.config(text="Probando conexión…", fg=AZUL_ES)
+
+            def trabajo():
+                ok, msg = _probar_openai_key(key)
+                try:
+                    self.after(0, lambda: self._fin_probar(ok, msg))
+                except tk.TclError:
+                    pass
+
+            threading.Thread(target=trabajo, daemon=True).start()
+
+        def _fin_probar(self, ok, msg):
+            # La prueba corre en un hilo (hasta 15 s). Si el usuario cerró la
+            # ventana mientras tanto, los widgets ya no existen: winfo_exists()
+            # devuelve 0 sin lanzar, y así evitamos un TclError al tocarlos.
+            if not self.winfo_exists():
+                return
+            self._probando = False
+            self.btn_probar.config(state="normal")
+            self.lbl_openai_estado.config(text=("✅ " if ok else "❌ ") + msg,
+                                          fg=(VERDE_OK if ok else ROJO_ES))
+
+        # -------------------------------------------------- pestaña GitHub
+        def _build_github(self, f):
+            gh = self.bd.cfg.get("github", {}) or {}
+            est = self.bd.git_status()
+            tk.Label(f, text="Sincronización de la Base de Datos",
                      font=("Segoe UI", 12, "bold")).grid(row=0, column=0, columnspan=2,
                                                          sticky="w")
             modo = {"git": "git instalado", "rest": "API REST (sin git)"}.get(
                 est.get("backend"), est.get("backend", "?"))
-            tk.Label(self, text=f"Método: {modo}", fg="#555").grid(
+            tk.Label(f, text=f"Método: {modo}", fg="#555").grid(
                 row=1, column=0, columnspan=2, sticky="w", pady=(0, 8))
 
             self.v_repo = tk.StringVar(value=gh.get("repo", ""))
@@ -1226,40 +1365,69 @@ if _TK_OK:
                      ("Rama:", self.v_rama, False),
                      ("Token (PAT):", self.v_token, True)]
             for i, (etiqueta, var, secreto) in enumerate(filas, 2):
-                tk.Label(self, text=etiqueta).grid(row=i, column=0, sticky="e", pady=4)
-                e = tk.Entry(self, textvariable=var, width=44,
-                             show="•" if secreto else "")
-                e.grid(row=i, column=1, pady=4)
+                tk.Label(f, text=etiqueta).grid(row=i, column=0, sticky="e", pady=4)
+                tk.Entry(f, textvariable=var, width=40,
+                         show="•" if secreto else "").grid(row=i, column=1, pady=4)
 
             tiene = "✅ ya configurado" if est.get("autenticado") else "❌ sin configurar"
-            tk.Label(self, text=f"Token actual: {tiene}   ·   deje el campo vacío "
-                                "para conservarlo", fg="#555").grid(
+            tk.Label(f, text=f"Token actual: {tiene}   ·   deje el campo vacío "
+                             "para conservarlo", fg="#555").grid(
                 row=5, column=0, columnspan=2, sticky="w")
-            tk.Label(self, text="Cree el token en github.com/settings/tokens con\n"
-                                "permiso Contents: write SOLO sobre este repositorio.",
+            tk.Label(f, text="Cree el token en github.com/settings/tokens con\n"
+                             "permiso Contents: write SOLO sobre este repositorio.",
                      fg="#555", justify="left").grid(row=6, column=0, columnspan=2,
-                                                     sticky="w", pady=(4, 10))
+                                                     sticky="w", pady=(4, 0))
 
-            barra = tk.Frame(self)
-            barra.grid(row=7, column=0, columnspan=2)
-            tk.Button(barra, text="Guardar", command=self._guardar, bg=AZUL_ES,
-                      fg="white", width=12).pack(side="left", padx=6)
-            tk.Button(barra, text="Cancelar", command=self.destroy,
-                      width=12).pack(side="left", padx=6)
-            _traer_al_frente(self)
-
+        # -------------------------------------------------- guardado
         def _guardar(self):
             cfg = self.bd.cfg
+
+            # --- OpenAI: solo se toca si el usuario escribio algo ---
+            key = self.v_openai.get().strip()
+            if key:
+                cfg.setdefault("api", {})["openai_key_encrypted"] = \
+                    bd_manager.cifrar_api_key(key)
+
+            # --- GitHub ---
             cfg.setdefault("github", {})
-            cfg["github"]["repo"] = self.v_repo.get().strip() or cfg["github"].get("repo", "")
-            cfg["github"]["branch"] = self.v_rama.get().strip() or "main"
+            old_repo = cfg["github"].get("repo")
+            old_rama = cfg["github"].get("branch")
+            repo_nuevo = self.v_repo.get().strip() or old_repo or ""
+            rama_nueva = self.v_rama.get().strip() or "main"
             token = self.v_token.get().strip()
+            repo_o_rama_cambio = (repo_nuevo != old_repo) or (rama_nueva != old_rama)
+            if repo_o_rama_cambio or token:
+                self.cambio_github = True
+            cfg["github"]["repo"] = repo_nuevo
+            cfg["github"]["branch"] = rama_nueva
             if token:
                 cfg["github"]["token_encrypted"] = bd_manager.cifrar_secreto(token)
+
             bd_manager.guardar_config(cfg, self.bd.config_dir)
-            if token and self.bd.sync is not None:
-                self.bd.sync.set_token(token)
-            self.cambio = True
+
+            # Aplicar los cambios al objeto de sincronización EN VIVO (sin reiniciar):
+            #  * repo/rama quedan fijados al CONSTRUIR el transporte, así que un
+            #    cambio de repo/rama exige reconstruir el sync (set_token no basta);
+            #    crear_sync toma repo/rama/token del cfg ya actualizado.
+            #  * si solo cambió el token, basta set_token (camino ya probado).
+            if self.bd.sync is not None:
+                if repo_o_rama_cambio:
+                    self.bd.sync = bd_manager.crear_sync(
+                        cfg, self.bd.config_dir, self.bd.cache_dir, self.bd.log)
+                elif token:
+                    self.bd.sync.set_token(token)
+
+            # Aviso: una variable de entorno OPENAI_API_KEY tiene PRIORIDAD sobre la
+            # key guardada, así que la lectura de fichas la ignoraría en silencio.
+            if key and os.environ.get("OPENAI_API_KEY", "").strip():
+                messagebox.showwarning(
+                    "Variable de entorno detectada",
+                    "Guardé la API key, pero esta computadora tiene una variable de "
+                    "entorno OPENAI_API_KEY que TIENE PRIORIDAD sobre ella.\n\n"
+                    "La lectura de fichas seguirá usando la variable de entorno hasta "
+                    "que la elimine.")
+            else:
+                messagebox.showinfo("Configuración", "Configuración guardada.")
             self.destroy()
 
 
@@ -1271,10 +1439,17 @@ if _TK_OK:
             self.title(f"Generador de Submittals ES v{VERSION}")
             self.configure(bg=GRIS_BG, padx=20, pady=20)
             self.geometry("620x520")
-            self.bd = bd_manager.BDManager(logger=logger)
             self._sincronizando = False
             self.modo_dev = False
             self._construir()
+            # Se revisa/instala Git ANTES de crear el BDManager: la eleccion de
+            # transporte (git vs API REST) se decide una sola vez, al construir
+            # el GitSync de adentro. Solo tarda si esta PC no tiene git (primera
+            # vez); despues git_disponible() es instantaneo.
+            self.lbl_sync.config(text="🔧 Verificando Git…", fg=AZUL_ES)
+            self.update()
+            git_bd.instalar_git_si_falta(logger.info)
+            self.bd = bd_manager.BDManager(logger=logger)
             self.protocol("WM_DELETE_WINDOW", self._cerrar_seguro)
             self.after(100, lambda: self._sincronizar(inicial=True))
 
@@ -1305,8 +1480,8 @@ if _TK_OK:
                       command=self._sincronizar).pack(side="left", padx=4)
             tk.Button(sync, text="☁️ Subir cambios pendientes",
                       command=self._subir_pendientes).pack(side="left", padx=4)
-            tk.Button(sync, text="⚙️ Configurar GitHub",
-                      command=self._config_github).pack(side="left", padx=4)
+            tk.Button(sync, text="⚙️ Configuración",
+                      command=self._configuracion).pack(side="left", padx=4)
 
             barra = tk.Frame(self, bg=GRIS_BG); barra.pack(side="bottom", fill="x")
             tk.Button(barra, text="🏗️ Generar desde carpetas (v2.6)",
@@ -1404,11 +1579,17 @@ if _TK_OK:
             else:
                 self.lbl_sync.config(text=f"⚠️ {str(r.get('error', ''))[:70]}", fg=ROJO_ES)
 
-        def _config_github(self):
-            d = DialogoGitHub(self, self.bd)
+        def _configuracion(self, tab_inicial="openai"):
+            """Abre la configuración unificada (OpenAI + GitHub)."""
+            d = DialogoConfiguracion(self, self.bd, tab_inicial=tab_inicial)
             self.wait_window(d)
-            if d.cambio:
+            if d.cambio_github:
                 self._sincronizar()
+
+        def _config_github(self):
+            """Atajo que abre la configuración directamente en la pestaña GitHub
+            (lo usa el aviso de 'falta el token' al intentar subir)."""
+            self._configuracion(tab_inicial="github")
 
         def _actualizar_estado(self):
             res = self.bd.resumen_por_categoria()
@@ -1490,9 +1671,22 @@ if _TK_OK:
             VentanaGestionarBD(self, self.bd, al_cambiar=self._actualizar_estado)
 
         def _lanzar_v26(self):
+            import subprocess
+            if getattr(sys, "frozen", False):
+                # Empaquetado: no hay interprete de Python al que pasarle un
+                # .py (sys.executable ES este mismo .exe). Se busca el .exe de
+                # v2.6 compilado aparte, en la misma carpeta.
+                exe_v26 = Path(sys.executable).resolve().parent / "GeneradorSubmittalsES.exe"
+                if exe_v26.exists():
+                    subprocess.Popen([str(exe_v26)], cwd=str(exe_v26.parent))
+                else:
+                    messagebox.showinfo(
+                        "v2.6", "No se encontró GeneradorSubmittalsES.exe (v2.6).\n\n"
+                        "Coloque ese archivo en la misma carpeta que este programa "
+                        "para poder abrirlo.")
+                return
             ruta = BASE_DIR / "submitals_gui.py"
             if ruta.exists():
-                import subprocess
                 subprocess.Popen([sys.executable, str(ruta)], cwd=str(BASE_DIR))
             else:
                 messagebox.showinfo("v2.6", "No se encontró submitals_gui.py")

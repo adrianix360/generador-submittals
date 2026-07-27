@@ -133,6 +133,63 @@ def git_disponible():
         return False
 
 
+# Ruta tipica donde Git for Windows queda instalado. winget actualiza el PATH
+# del sistema, pero el PROCESO ya arrancado (este) no lo ve hasta una sesion
+# nueva; se agrega esta carpeta al PATH en memoria para poder usar git de una
+# vez, sin pedirle al usuario que reinicie el programa.
+_GIT_CMD_DEFECTO = Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "Git" / "cmd"
+
+
+def instalar_git_si_falta(logf=None):
+    """Instala Git for Windows con winget si el ejecutable no esta disponible.
+
+    Igual que el bootstrap de Tesseract-OCR (v2.6.8): winget instala un binario
+    del SISTEMA operativo, no un paquete de este interprete, asi que funciona
+    igual empaquetado como .exe (PyInstaller) o corriendo desde codigo fuente.
+    Sin git, la BD sigue funcionando por la API REST de GitHub (mas lenta); esto
+    solo mejora esa experiencia, nunca es obligatorio para que el programa ande.
+
+    Devuelve ``True`` si al terminar ``git`` esta disponible (ya lo estaba o se
+    instalo ahora), ``False`` si no se pudo.
+    """
+    logf = logf or (lambda *_a, **_k: None)
+    if git_disponible():
+        return True
+
+    winget = shutil.which("winget")
+    if not winget:
+        logf("Git no esta instalado y 'winget' no esta disponible en esta PC; "
+             "instalelo manualmente desde https://git-scm.com/download/win")
+        return False
+
+    logf("Git no encontrado; instalando con winget (puede tardar un momento)...")
+    try:
+        subprocess.run(
+            [winget, "install", "--id", "Git.Git", "-e", "--silent",
+             "--accept-package-agreements", "--accept-source-agreements"],
+            timeout=300, check=True, capture_output=True)
+    except Exception as e:
+        logf(f"No se pudo instalar Git automaticamente: {str(e)[:200]}\n"
+             "Instalelo manualmente desde https://git-scm.com/download/win")
+        return False
+
+    if git_disponible():
+        logf("Git instalado correctamente.")
+        return True
+
+    # winget ya lo dejo en disco, pero el PATH de este proceso es el de antes
+    # de instalar: se agrega la carpeta tipica a mano para esta sesion.
+    if (_GIT_CMD_DEFECTO / "git.exe").exists():
+        os.environ["PATH"] = str(_GIT_CMD_DEFECTO) + os.pathsep + os.environ.get("PATH", "")
+        if git_disponible():
+            logf("Git instalado correctamente.")
+            return True
+
+    logf("winget termino pero no se encontro git.exe; puede hacer falta "
+         "reiniciar el programa (o la PC) para que tome efecto.")
+    return False
+
+
 def _json_tolerante(datos, defecto=None):
     """Interpreta JSON aceptando bytes/str vacios o corruptos."""
     if datos is None:
