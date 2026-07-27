@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-27T13:59:26",
+  "ultima_actualizacion": "2026-07-27T14:24:25",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -101,8 +101,28 @@
       "estado": "activo",
       "nombre_ficha": "TUBO ESTRUCTURAL RECTANGULAR CH 13 152.4 x 50.8 x 2.2 - MultiGroup",
       "nombre_ficha_manual": false
+    },
+    {
+      "id": "e802f9f6-b3e6-4047-8b5e-292cc4adc8d3",
+      "nombre_ficha": "BLOQUES DE CONCRETO 12 x 20 x 40 - SIN ESPECIFICAR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Bloques de concreto",
+      "marca": "SIN ESPECIFICAR",
+      "categoria": "ARQ",
+      "tipo_producto": "Bloque de mampostería",
+      "dimensiones": "12x20x40, 15x20x40, 20x20x40",
+      "especificacion": "Clase A, resistencia a la compresión",
+      "normativa": "INTE C-147, INTE C-15, INTE C-50, INTE-C-90, RTCR 479:2015",
+      "descripcion_corta": "Bloques de concreto prefabricados con celdas verticales, aptos para mampostería estructural y no estructural.",
+      "search_keywords": "bloques de concreto 12 x 20 40 sin especificar arq bloque mamposteria 12x20x40 15x20x40 20x20x40 clase a resistencia la compresion inte c 147 15 50 90 rtcr 479 2015 prefabricados con celdas verticales aptos para estructural y no",
+      "ruta_pdf": "ARQ/BLOQUES-DE-CONCRETO-12-x-20-x-40-SIN-ESPECIFICAR.pdf",
+      "hash_archivo": "6209ac9324172491",
+      "fecha_carga": "2026-07-27",
+      "fecha_modificacion": "2026-07-27T14:24:25",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-27T13:57:05"
+  "ultima_sincronizacion_git": "2026-07-27T14:23:08"
 }
