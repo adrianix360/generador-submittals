@@ -1,31 +1,51 @@
 {
-  "version": "2.6.11",
-  "tipo_actualizacion": "ejecutable",
-  "fecha": "2026-07-23",
-  "changelog": "Agrega al final de las notas las tolerancias normativas aplicables a tubos, perfiles, angulares y otros elementos de acero.",
+  "version": "3.0.0",
+  "tipo_actualizacion": "python",
+  "fecha": "2026-07-27",
+  "changelog": "VERSIÓN 3.0.0 - Refactorización radical: Base de Datos centralizada en GitHub con sincronización automática. Menú principal rediseñado (4 botones). Búsqueda inteligente fuzzy. Nomenclatura única para fichas. Hard delete. Multi-PC con resolución automática de conflictos.",
   "archivos": {
-    "submitals_gui.py": {
-      "hash": "58356430f6a2ea59377e28a39bb69e38c4814c751462d5bba0f13212965353c1",
-      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui.py",
+    "submitals_gui_v3.py": {
+      "hash": "a69b23aa5d6048984c3a402b23a662f43fcb8ff799c84082827e0f8245d9adb3",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui_v3.py",
+      "tipo": "python"
+    },
+    "bd_manager.py": {
+      "hash": "d443f16355815be441abde7221d3f9200f2b20d67fa352afe5a4abc4460cdc31",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/bd_manager.py",
+      "tipo": "python"
+    },
+    "fuzzy_search.py": {
+      "hash": "64fdeae58e04c77878ffe6afec4928f5a51336219462a22c38965f3d8c6e4a40",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/fuzzy_search.py",
+      "tipo": "python"
+    },
+    "nomenclatura.py": {
+      "hash": "c6b602ad3a09d3b36dacd4212777141c72ba1f46cb18c6cfe16f1f775fe6740b",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/nomenclatura.py",
+      "tipo": "python"
+    },
+    "ocr_extractor.py": {
+      "hash": "dd590ab6a00bac122cf12aba7cb255765b562eb43b3b8aaacb3cf4ebd6b192d7",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/ocr_extractor.py",
+      "tipo": "python"
+    },
+    "updater_gh.py": {
+      "hash": "d6029275be97ada8ecc9d5c6be2adde318c663268f41a66f1f143f889f000c27",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/updater_gh.py",
       "tipo": "python"
     },
     "generate_caratulas.py": {
-      "hash": "2475e6124485e18e1262f02be4578d452e86ad4c57f789beb63edbc193497755",
+      "hash": "4a415ec65da812477853ad01d056f24e0b6ea8a8079062d8d6e0158d75613a10",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/generate_caratulas.py",
       "tipo": "python"
     },
-    "auto_updater.py": {
-      "hash": "c1bea2b17688eda7568548c0851b004f6dc2321d41b99f4fbea2f7adda8643ec",
-      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/auto_updater.py",
-      "tipo": "python"
-    },
     "requirements.txt": {
-      "hash": "534eb624288108eb1c82b71a05abfb3bb499210fcb40397b48466a71a3545d74",
+      "hash": "40d731663ee5ea788bbf76b4dfd130b8ea0511030be3889fb180a334bc2a4642",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/requirements.txt",
       "tipo": "requirements"
     },
     "template_caratula.html": {
-      "hash": "77620c58a3eedc310f191021d0905b79cbb1ab615134a59048172fb4f885202f",
+      "hash": "4e5165eb3fa1e7fd8189eaa0ced37dbaec414b5e47f85ac154bb3ef1641a5506",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/template_caratula.html",
       "tipo": "html"
     },
@@ -34,16 +54,16 @@
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/template_ministerio_salud.html",
       "tipo": "html"
     },
-    "GeneradorSubmittalsES.exe": {
-      "hash": "647466584d5c772e268161956e571a1d831b1eb84a3ade767a5f57c54a0cd587",
-      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v2.6.11/GeneradorSubmittalsES.exe",
-      "tipo": "ejecutable",
-      "requerido": false
+    "auto_updater.py": {
+      "hash": "c1bea2b17688eda7568548c0851b004f6dc2321d41b99f4fbea2f7adda8643ec",
+      "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/auto_updater.py",
+      "tipo": "python"
     }
   },
   "instrucciones_auto_actualizar": {
-    "si_solo_python": "Descarga los .py/.html cambiados (segundos).",
-    "si_requirements_cambio": "Descarga requirements.txt + pip install.",
-    "si_cambios_mayores": "Descargar el .exe nuevo (opcional)."
+    "arranque": "python submitals_gui_v3.py (en lugar de submitals_gui.py)",
+    "si_solo_python": "Descarga los .py/.html cambiados desde GitHub (segundos).",
+    "si_requirements_cambio": "Descarga requirements.txt + pip install -r requirements.txt",
+    "nota": "La BD se sincroniza automáticamente con GitHub (git pull/push)."
   }
 }

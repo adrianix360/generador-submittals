@@ -141,8 +141,142 @@ def truncate_desc(desc, consec):
 # --------------------------------------------------------------------------
 # MOTORES DE RENDER
 # --------------------------------------------------------------------------
-def render_playwright(html, out_path):
-    """Motor recomendado: Chromium headless. Renderiza identico a Chrome."""
+# --------------------------------------------------------------------------
+# CARATULAS EDITABLES (v2.6.18)
+# --------------------------------------------------------------------------
+# Las caratulas se generan como PDF con CAMPOS DE FORMULARIO (AcroForm) sobre
+# cada valor, para poder corregir un dato a mano en cualquier lector de PDF sin
+# tener que volver a generar la caratula con la app. El HTML solo dibuja las
+# cajas/etiquetas (fondo); el texto del valor va DENTRO de un campo editable.
+#
+# Como funciona:
+#   1) Se renderiza el HTML (ya con los valores) y se leen, por cada campo, su
+#      texto, su posicion y su estilo (fuente/color/alineacion).
+#   2) Se VACIAN esos valores en el DOM (para que no queden "quemados" detras
+#      del campo) y se genera el PDF de fondo, ya sin texto en las cajas.
+#   3) Con PyMuPDF (fitz) se agrega un campo de texto sobre cada caja, ya
+#      precargado con su valor. Resultado: el dato se ve igual que antes, pero
+#      ahora es editable.
+#
+# Los campos editables se detectan por CSS: en la caratula clasica son
+# '#consecutivo, .om-value, #documentacion_adjunta'; en la del Ministerio son
+# las celdas de valor 'td.val, td.val-c'. Si PyMuPDF no esta disponible o algo
+# falla, se cae a un render plano normal (valores "quemados", no editables).
+
+# JS: captura valor/estilo de cada campo (en pantalla, con los valores puestos)
+# y marca cada elemento con data-fld para poder ubicarlo luego.
+_JS_CAPTURAR_CAMPOS = r"""
+() => {
+  const esClasica = !!document.querySelector('.om-sheet');
+  const sel = esClasica
+      ? '#consecutivo, .om-value, #documentacion_adjunta'
+      : 'td.val, td.val-c';
+  const els = Array.from(document.querySelectorAll(sel));
+  const out = [];
+  els.forEach((el, i) => {
+    const cs = getComputedStyle(el);
+    el.setAttribute('data-fld', 'f' + i);
+    let nombre = el.id || '';
+    if (!nombre) {                      // Ministerio: usar la etiqueta de la fila
+      const tr = el.closest('tr');
+      if (tr) { const lb = tr.querySelector('.lbl'); if (lb) nombre = (lb.innerText || '').trim(); }
+    }
+    out.push({
+      key: 'f' + i,
+      nombre: nombre,
+      texto: (el.innerText || '').trim(),
+      align: cs.textAlign,
+      color: cs.color,
+      fontpx: parseFloat(cs.fontSize) || 12
+    });
+  });
+  return out;
+}
+"""
+
+# JS: vacia el texto de todos los campos marcados (deja las cajas en blanco).
+_JS_VACIAR_CAMPOS = "() => { document.querySelectorAll('[data-fld]').forEach(e => { e.textContent = ''; }); }"
+
+# JS: mide la caja de cada campo relativa a la hoja (en modo impresion).
+_JS_MEDIR_CAJAS = r"""
+() => {
+  const hoja = document.querySelector('.om-sheet, .ms-sheet');
+  const s = hoja.getBoundingClientRect();
+  const o = {};
+  document.querySelectorAll('[data-fld]').forEach(e => {
+    const r = e.getBoundingClientRect();
+    o[e.getAttribute('data-fld')] = [r.left - s.left, r.top - s.top, r.width, r.height];
+  });
+  return o;
+}
+"""
+
+
+def _parse_color_css(s):
+    """Convierte 'rgb(42, 46, 53)' / 'rgba(...)' a (r,g,b) en 0..1. Gris oscuro por defecto."""
+    try:
+        nums = re.findall(r"[\d.]+", s or "")
+        if len(nums) >= 3:
+            r, g, b = (float(nums[0]), float(nums[1]), float(nums[2]))
+            return (r / 255.0, g / 255.0, b / 255.0)
+    except Exception:
+        pass
+    return (0.16, 0.18, 0.21)
+
+
+def _agregar_campos_editables(out_path, campos, cajas):
+    """Agrega un campo de texto (AcroForm) sobre cada caja usando PyMuPDF."""
+    import fitz
+    doc = fitz.open(str(out_path))
+    try:
+        page = doc[0]
+        # El PDF se genera a partir de una hoja de 816px de ancho; la escala
+        # px(CSS)->pt(PDF) es el ancho real de la pagina entre 816 (normalmente
+        # 0.75). El origen de fitz es arriba-izquierda con Y hacia abajo, igual
+        # que el DOM, asi que las coordenadas se mapean directo.
+        escala = page.rect.width / 816.0
+        vistos = {}
+        for c in campos:
+            caja = cajas.get(c["key"])
+            if not caja:
+                continue
+            x, y, w, h = caja
+            if w < 4 or h < 6:
+                continue
+            rect = fitz.Rect(x * escala, y * escala, (x + w) * escala, (y + h) * escala)
+
+            # Nombre unico de campo (los lectores lo muestran al navegar con Tab)
+            base = (c.get("nombre") or "campo").strip() or "campo"
+            n = vistos.get(base, 0)
+            vistos[base] = n + 1
+            field_name = base if n == 0 else f"{base}_{n + 1}"
+
+            wd = fitz.Widget()
+            wd.field_name = field_name
+            wd.field_type = fitz.PDF_WIDGET_TYPE_TEXT
+            wd.rect = rect
+            wd.field_value = c.get("texto", "")
+            wd.fill_color = None       # transparente: se ve la caja del HTML
+            wd.border_color = None
+            wd.text_color = _parse_color_css(c.get("color"))
+            wd.text_fontsize = max(7.0, min(13.0, c.get("fontpx", 12) * 0.75))
+            # Cajas altas -> multilinea (descripcion, normativa, observaciones)
+            if h > 50:
+                wd.field_flags = fitz.PDF_TX_FIELD_IS_MULTILINE
+            al = (c.get("align") or "").lower()
+            if al.startswith("center"):
+                wd.text_align = fitz.TEXT_ALIGN_CENTER
+            elif al.startswith("right"):
+                wd.text_align = fitz.TEXT_ALIGN_RIGHT
+            page.add_widget(wd)
+        doc.saveIncr()
+    finally:
+        doc.close()
+
+
+def _render_playwright_editable(html, out_path):
+    """Genera la caratula como PDF con campos de formulario editables."""
+    import fitz  # noqa: F401  (verifica disponibilidad antes de vaciar las cajas)
     import tempfile
     from playwright.sync_api import sync_playwright
     fd, tmp_name = tempfile.mkstemp(suffix=".html", dir=str(BASE_DIR))
@@ -153,9 +287,107 @@ def render_playwright(html, out_path):
         with sync_playwright() as p:
             browser = p.chromium.launch()
             try:
-                page = browser.new_page()
+                page = browser.new_page(viewport={"width": 816, "height": 1000})
                 page.goto(tmp.as_uri(), wait_until="networkidle")
-                page.pdf(path=str(out_path), format="Letter",
+
+                # 1) Capturar valores/estilo de cada campo (con los datos puestos).
+                campos = page.evaluate(_JS_CAPTURAR_CAMPOS)
+                if not campos:
+                    raise RuntimeError("no se encontraron campos editables en la plantilla")
+
+                # 2) Vaciar las cajas para que el texto no quede quemado detras
+                #    del campo editable.
+                page.evaluate(_JS_VACIAR_CAMPOS)
+
+                # 3) Medir el alto de la hoja igual que el render plano (en
+                #    pantalla, sobre .om-sheet/.ms-sheet) para conservar el mismo
+                #    tamano de pagina; ver render plano para el detalle del @page.
+                alto_px = page.evaluate(
+                    "(() => { const el = document.querySelector('.om-sheet, .ms-sheet'); "
+                    "return el ? el.getBoundingClientRect().height : document.body.scrollHeight; })()"
+                )
+                alto_px = max(alto_px, 1)
+
+                # 4) Medir las cajas en modo impresion (las posiciones cambian
+                #    entre pantalla e impresion; el PDF se genera en impresion).
+                page.add_style_tag(content=(
+                    f"@page {{ size: 816px {alto_px:.2f}px; margin: 0; }}"
+                ))
+                page.emulate_media(media="print")
+                cajas = page.evaluate(_JS_MEDIR_CAJAS)
+
+                page.pdf(path=str(out_path),
+                         width="816px", height=f"{alto_px / 96:.3f}in",
+                         print_background=True,
+                         margin={"top": "0", "bottom": "0", "left": "0", "right": "0"})
+            finally:
+                browser.close()
+    finally:
+        try:
+            tmp.unlink()
+        except Exception:
+            pass
+
+    # 5) Agregar los campos de formulario sobre el PDF de fondo ya generado.
+    _agregar_campos_editables(out_path, campos, cajas)
+
+
+def _render_playwright_flat(html, out_path):
+    """Render plano (valores 'quemados', no editables). Respaldo de la version
+    editable y motor original."""
+    import tempfile
+    from playwright.sync_api import sync_playwright
+    fd, tmp_name = tempfile.mkstemp(suffix=".html", dir=str(BASE_DIR))
+    os.close(fd)
+    tmp = Path(tmp_name)
+    try:
+        tmp.write_text(html, encoding="utf-8")
+        with sync_playwright() as p:
+            browser = p.chromium.launch()
+            try:
+                # Las plantillas de caratula (om-sheet/ms-sheet) tienen un ancho
+                # fijo de 816px (8.5in) por diseno; se fija ese mismo ancho como
+                # viewport para que la hoja se renderice a su ancho real, en vez
+                # del viewport por defecto de Playwright (1280px), que dejaria
+                # margenes laterales en blanco y una pagina mas ancha de lo
+                # previsto.
+                page = browser.new_page(viewport={"width": 816, "height": 1000})
+                page.goto(tmp.as_uri(), wait_until="networkidle")
+
+                # La caratula no se imprime en papel, asi que el PDF se
+                # dimensiona exactamente al alto real del contenido en vez de
+                # forzar un tamano fijo: siempre una sola pagina completa, sin
+                # importar cuantos datos u observaciones tenga.
+                #
+                # El alto se mide en modo pantalla (ANTES de activar modo
+                # impresion) sobre el elemento de la hoja (.om-sheet o
+                # .ms-sheet), no sobre el body: en modo impresion, el @page del
+                # CSS (una hoja de respaldo grande, para otros motores de PDF)
+                # hace que el body ocupe el alto completo de esa caja de pagina
+                # en vez del alto real del contenido, e infla la medicion.
+                alto_px = page.evaluate(
+                    "(() => { const el = document.querySelector('.om-sheet, .ms-sheet'); "
+                    "return el ? el.getBoundingClientRect().height : document.body.scrollHeight; })()"
+                )
+                alto_px = max(alto_px, 1)
+
+                # Chromium pagina el contenido segun el tamano de @page (para
+                # decidir DONDE cortar en paginas) de forma independiente al
+                # ancho/alto que se le pida a page.pdf() (que solo define el
+                # tamano fisico de cada pagina resultante); por eso, si el @page
+                # del CSS (fijo, pensado como respaldo para otros motores) es
+                # mas chico que el contenido real, Chromium igual lo parte en
+                # varias paginas aunque se pida un alto mayor. Para evitar ese
+                # desajuste, se reemplaza el @page por uno que coincide
+                # exactamente con el alto recien medido, justo antes de generar
+                # el PDF, de forma que nunca compita con el tamano solicitado.
+                page.add_style_tag(content=(
+                    f"@page {{ size: 816px {alto_px:.2f}px; margin: 0; }}"
+                ))
+                page.emulate_media(media="print")
+                alto_in = alto_px / 96
+                page.pdf(path=str(out_path),
+                         width="816px", height=f"{alto_in:.3f}in",
                          print_background=True,
                          margin={"top": "0", "bottom": "0", "left": "0", "right": "0"})
             finally:
@@ -167,11 +399,39 @@ def render_playwright(html, out_path):
             pass
 
 
+def render_playwright(html, out_path):
+    """Motor recomendado: Chromium headless. Genera la caratula con campos de
+    formulario editables (si PyMuPDF esta disponible); si algo falla, cae a un
+    render plano no editable."""
+    try:
+        import fitz  # noqa: F401
+        editable = True
+    except Exception:
+        editable = False
+
+    if editable:
+        try:
+            _render_playwright_editable(html, out_path)
+            return
+        except Exception as e:
+            log(logging.WARNING,
+                f"Caratula editable fallo ({e}); se genera version plana no editable")
+            try:
+                if Path(out_path).exists():
+                    Path(out_path).unlink()
+            except Exception:
+                pass
+    _render_playwright_flat(html, out_path)
+
+
 def render_pdfkit(html, out_path):
     import pdfkit
     config = pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_PATH) if WKHTMLTOPDF_PATH else None
     options = {
-        "page-size": "Letter",
+        # v2.6.13: la caratula no se imprime, asi que se usa una hoja mas alta
+        # que carta para que quepan todos los campos sin cortarse (wkhtmltopdf
+        # no respeta @page de CSS, por eso el tamano se fija aqui).
+        "page-width": "8.5in", "page-height": "20.8in",
         "margin-top": "0", "margin-bottom": "0",
         "margin-left": "0", "margin-right": "0",
         "dpi": "300", "image-dpi": "300",

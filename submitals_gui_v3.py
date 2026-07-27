@@ -1,0 +1,1786 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+r"""
+================================================================================
+ submitals_gui_v3.py  --  Interfaz principal v3.1.0 (Generador de Submittals ES)
+================================================================================
+Interfaz de la version 3, basada en una **Base de Datos centralizada en GitHub**
+de fichas reutilizables. Coexiste con el sistema v2.6 (generacion desde carpetas)
+sin modificarlo.
+
+Menu principal (2x2):
+   [ Generar desde BD ]        [ Abrir submittal existente ]
+   [ Cargar ficha a BD ]       [ Gestionar BD ]
+
+Este archivo contiene DOS partes:
+  A) Funciones de ORQUESTACION de entregables (sin tkinter): reutilizan el motor
+     de carATulas v2.6 (``generate_caratulas.py``) y replican la compilacion de
+     CMPs/Excel con ``pypdf``/``openpyxl``. Son importables y testeables solas.
+  B) La GUI (tkinter), que solo se carga si tkinter esta disponible.
+
+Sincronizacion (v3.1.0, reemplaza a OneDrive):
+  - Al abrir: ``sync_indice()`` (git pull) en segundo plano, con barra de estado.
+  - Al cargar fichas o generar un submittal: ``git_push()``.
+  - Los conflictos se resuelven solos (fusion por registro) y se avisa al usuario.
+  - Sin conexion: se trabaja con la copia local y se sube al reconectar.
+  - YA NO EXISTE el ``.lock`` ni el dialogo de "forzar acceso": git se encarga.
+================================================================================
+"""
+
+import os
+import re
+import sys
+import json
+import shutil
+import logging
+import threading
+import importlib.util
+from pathlib import Path
+
+import bd_manager
+import fuzzy_search
+import nomenclatura
+import ocr_extractor
+import updater_gh
+
+VERSION = "3.2.0"
+BASE_DIR = Path(__file__).resolve().parent
+PIN_MODO_DEV = "9119"
+
+# Colores tema (coherentes con v2.6)
+ROJO_ES = "#E11D2D"
+AZUL_ES = "#1F3864"
+GRIS_BG = "#F4F5F7"
+VERDE_OK = "#34CA3C"
+
+IMG_EXT = (".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff")
+
+# Plantilla -> (archivo, logo relativo, clave de contexto del logo)
+CARATULAS = {
+    "clasica": ("template_caratula.html",
+                "Tabla visual refresh/assets/logo_es_crop.png", "logo_path"),
+    "ministerio_salud": ("template_ministerio_salud.html",
+                         "Tabla visual refresh/assets/ministerio_salud_banner.png",
+                         "logo_ministerio"),
+}
+
+# --------------------------------------------------------------------------
+# LOGGING
+# --------------------------------------------------------------------------
+LOG_PATH = bd_manager.dir_appdata() / "app.log"
+logger = logging.getLogger("submitals_v3")
+if not logger.handlers:
+    logger.setLevel(logging.INFO)
+    try:
+        fh = logging.FileHandler(LOG_PATH, encoding="utf-8")
+        fh.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+        logger.addHandler(fh)
+    except Exception:
+        pass
+
+
+# ==========================================================================
+# PARTE A) ORQUESTACION DE ENTREGABLES  (reutiliza el motor v2.6)
+# ==========================================================================
+def _cargar_motor(base_dir=BASE_DIR):
+    """Carga ``generate_caratulas.py`` como modulo (import dinamico, igual que
+    hace la GUI v2.6). Devuelve el modulo ``gc``."""
+    ruta = Path(base_dir) / "generate_caratulas.py"
+    if not ruta.exists():
+        raise FileNotFoundError(f"No se encontro el motor de carATulas: {ruta}")
+    spec = importlib.util.spec_from_file_location("generate_caratulas", str(ruta))
+    gc = importlib.util.module_from_spec(spec)
+    sys.modules["generate_caratulas"] = gc
+    spec.loader.exec_module(gc)
+    return gc
+
+
+def _ctx_proyecto(tipo, proyecto, item):
+    """Construye el contexto de proyecto para la plantilla de carATula."""
+    dp = proyecto.get("datos_procedimiento", {}) or {}
+    if tipo == "ministerio_salud":
+        proj = proyecto.get("datos_proyecto", {}) or {}
+        return {
+            "proyecto": proj.get("proyecto", dp.get("detalle", "")),
+            "cliente": proj.get("cliente", dp.get("institucion", "")),
+            "contrato": proj.get("contrato", dp.get("numero_procedimiento", "")),
+            "monto": proj.get("monto", dp.get("monto", "")),
+            "plazo": proj.get("plazo", dp.get("plazo", "")),
+            "nombre_cargo": proj.get("nombre_cargo", ""),
+            "fecha": proj.get("fecha", ""),
+            "fecha_emision": proj.get("fecha_emision", ""),
+            "fecha_revision": proj.get("fecha_revision", ""),
+            "registro": item.get("consecutivo", ""),
+            "revisa": proj.get("revisa", ""),
+            "version": proj.get("version", "v1"),
+            "documentacion_tecnica": "",
+            "observaciones_material": item.get("aspectos_adicionales", ""),
+            "observaciones_respuesta": "",
+            "estado": "",
+        }
+    # clasica
+    return {
+        "numero_procedimiento": dp.get("numero_procedimiento", ""),
+        "nombre_institucion": dp.get("institucion", ""),
+        "detalle_procedimiento": dp.get("detalle", ""),
+        "duracion_contrato": dp.get("plazo", ""),
+        "monto": dp.get("monto", ""),
+    }
+
+
+def generar_caratulas(base_dir, datos, tipo, proyecto, log=print):
+    """Genera la carATula PDF de cada material usando el motor v2.6."""
+    from jinja2 import Template
+    gc = _cargar_motor(base_dir)
+    engines = gc.available_engines()
+    if not engines:
+        raise RuntimeError("No hay motor de PDF (instale playwright + chromium)")
+
+    tpl_rel, logo_rel, logo_key = CARATULAS.get(tipo, CARATULAS["clasica"])
+    tpl_text = (Path(base_dir) / tpl_rel).read_text(encoding="utf-8")
+    template = Template(tpl_text)
+
+    logo_file = Path(base_dir) / logo_rel
+    if logo_file.exists():
+        gc.LOGO_URI = gc.file_uri(logo_file)
+    else:
+        gc.LOGO_URI = ""
+        log(f"AVISO: logo no encontrado ({logo_rel}); se genera sin logo")
+
+    ok = 0
+    for item in datos["materiales"]:
+        extra = _ctx_proyecto(tipo, proyecto, item)
+        if tipo == "ministerio_salud":
+            extra["logo_ministerio"] = gc.LOGO_URI
+        try:
+            gc.process_material(item, template, engines, extra_ctx=extra)
+            ok += 1
+        except Exception as e:
+            log(f"ERROR carATula {item.get('consecutivo')}: {e}")
+    log(f"CarATulas generadas: {ok}/{len(datos['materiales'])}")
+    return ok
+
+
+# --- Compilacion de PDFs (pypdf), replicando la logica de v2.6 ---------------
+def imagen_a_pdf_reader(path):
+    """Convierte una imagen a un PdfReader de una pagina (via PIL)."""
+    import io
+    from PIL import Image
+    from pypdf import PdfReader
+    with Image.open(path) as im:
+        im = im.convert("RGB")
+        buf = io.BytesIO()
+        im.save(buf, format="PDF", resolution=150.0)
+    buf.seek(0)
+    return PdfReader(buf)
+
+
+def generar_compilado(caratula_path, doc_paths, out_path, log=print):
+    """Une la carATula (solo 1a pagina, conservando campos editables) con las
+    fichas de la carpeta -> PDF ``-CMP.pdf``. Replica ``generar_compilado`` v2.6.
+    """
+    from pypdf import PdfWriter, PdfReader
+    w = PdfWriter()
+    if caratula_path and Path(caratula_path).exists():
+        try:
+            w.append(PdfReader(str(caratula_path)), pages=(0, 1))
+        except Exception:
+            w.add_page(PdfReader(str(caratula_path)).pages[0])
+    anexados = 0
+    for d in sorted(doc_paths, key=lambda x: x.name.lower()):
+        ext = d.suffix.lower()
+        try:
+            if ext == ".pdf":
+                w.append(PdfReader(str(d)))
+                anexados += 1
+            elif ext in IMG_EXT:
+                w.append(imagen_a_pdf_reader(d))
+                anexados += 1
+        except Exception as e:
+            log(f"AVISO: no se anexo '{d.name}' ({e})")
+    tmp = out_path.with_suffix(".cmp.tmp")
+    with open(tmp, "wb") as f:
+        w.write(f)
+    os.replace(tmp, out_path)
+    w.close()
+    return anexados
+
+
+def _docs_carpeta(carpeta):
+    """Documentos anexables de una carpeta (excluye carATula y compilados)."""
+    out = []
+    for p in sorted(carpeta.iterdir()):
+        if not p.is_file():
+            continue
+        up = p.name.upper()
+        if up.startswith("CARATULA") or up.endswith("-CMP.PDF"):
+            continue
+        if p.suffix.lower() == ".pdf" or p.suffix.lower() in IMG_EXT:
+            out.append(p)
+    return out
+
+
+def compilar_cmps(datos, log=print):
+    """Genera el ``-CMP.pdf`` de cada material (carATula + fichas)."""
+    total = 0
+    for mat in datos["materiales"]:
+        carpeta = Path(mat["ruta_carpeta"])
+        if not carpeta.is_dir():
+            continue
+        caratulas = sorted(carpeta.glob("CARATULA*.pdf"))
+        caratula = caratulas[0] if caratulas else None
+        docs = _docs_carpeta(carpeta)
+        nombre = bd_manager.sanitizar_nombre(f"{mat['consecutivo']}-{mat['nombre']}-CMP") + ".pdf"
+        out = carpeta / nombre
+        try:
+            generar_compilado(caratula, docs, out, log=log)
+            mat["compilado_generado"] = nombre
+            total += 1
+        except Exception as e:
+            log(f"ERROR CMP {mat['consecutivo']}: {e}")
+    log(f"CMPs por material generados: {total}")
+    return total
+
+
+def compilar_disciplinas(destino, log=print):
+    """Genera ``CMP SUBMITTAL <DISCIPLINA>.pdf`` por cada carpeta madre presente.
+    Replica ``compilar_por_disciplina`` v2.6."""
+    from pypdf import PdfWriter, PdfReader
+    destino = Path(destino)
+    generados = []
+    for cat, madre in bd_manager.CATEGORIAS.items():
+        carpeta_disc = destino / madre
+        if not carpeta_disc.is_dir():
+            continue
+        entradas = []
+        for sub in sorted(carpeta_disc.iterdir()):
+            if not sub.is_dir():
+                continue
+            m = re.match(rf"^({cat})(\d+)-(.*)$", sub.name)
+            if m:
+                entradas.append((int(m.group(2)), sub))
+        entradas.sort(key=lambda e: e[0])
+        if not entradas:
+            continue
+        w = PdfWriter()
+        procesados = 0
+        for _n, sub in entradas:
+            caratulas = sorted(sub.glob("CARATULA*.pdf"))
+            if not caratulas:
+                log(f"AVISO {madre}: '{sub.name}' sin carATula, se omite")
+                continue
+            try:
+                w.append(PdfReader(str(caratulas[0])))
+            except Exception as e:
+                log(f"AVISO {madre}: carATula ilegible en '{sub.name}' ({e})")
+                continue
+            for d in _docs_carpeta(sub):
+                try:
+                    if d.suffix.lower() == ".pdf":
+                        w.append(PdfReader(str(d)))
+                    elif d.suffix.lower() in IMG_EXT:
+                        w.append(imagen_a_pdf_reader(d))
+                except Exception as e:
+                    log(f"AVISO {madre}: no se anexo '{sub.name}/{d.name}' ({e})")
+            procesados += 1
+        if procesados == 0:
+            w.close()
+            continue
+        singular = bd_manager.DISCIPLINA_SINGULAR.get(madre, madre)
+        out = carpeta_disc / f"CMP SUBMITTAL {singular}.pdf"
+        tmp = out.with_suffix(".tmp")
+        with open(tmp, "wb") as f:
+            w.write(f)
+        os.replace(tmp, out)
+        w.close()
+        generados.append(out.name)
+    log(f"Compilados por disciplina: {', '.join(generados) or '(ninguno)'}")
+    return generados
+
+
+# --- Excel (openpyxl), replicando columnas de v2.6 ---------------------------
+def _agrupar_por_disciplina(materiales):
+    nombres = {"ARQ": "Arquitectónicos", "ESTR": "Estructurales",
+               "MEC": "Mecánicos", "ELEC": "Eléctricos"}
+    grupos = {}
+    for it in materiales:
+        pref = re.sub(r"\d.*", "", str(it.get("consecutivo", ""))).upper()
+        grupos.setdefault(nombres.get(pref, pref or "Otros"), []).append(it)
+    return grupos
+
+
+def generar_excel_submittal(datos, destino):
+    """``Guía Submittal.xlsx`` (para administracion): Consecutivo | Descripción |
+    Aprobación | Observaciones (las 2 ultimas en blanco)."""
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment
+    grupos = _agrupar_por_disciplina(datos["materiales"])
+    if not any(grupos.values()):
+        return {"exitoso": False, "error": "Sin materiales"}
+    wb = Workbook(); wb.remove(wb.active)
+    hfill = PatternFill("solid", fgColor="4472C4")
+    hfont = Font(color="FFFFFF", bold=True)
+    halign = Alignment(horizontal="center")
+    for hoja, items in grupos.items():
+        ws = wb.create_sheet(title=hoja[:31])
+        for col, h in enumerate(["Consecutivo", "Descripción", "Aprobación", "Observaciones"], 1):
+            c = ws.cell(row=1, column=col, value=h)
+            c.fill = hfill; c.font = hfont; c.alignment = halign
+        for i, it in enumerate(items, 2):
+            ws.cell(row=i, column=1, value=it.get("consecutivo", ""))
+            ws.cell(row=i, column=2, value=it.get("nombre", ""))
+        for col, w in zip("ABCD", (15, 60, 20, 40)):
+            ws.column_dimensions[col].width = w
+    out = Path(destino) / "Guía Submittal.xlsx"
+    wb.save(out)
+    return {"exitoso": True, "archivo": str(out), "total_materiales": len(datos["materiales"])}
+
+
+def generar_excel_materiales(datos, destino):
+    """``Guía interna materiales.xlsx``: Consecutivo | Familia | Descripción |
+    Normativa | Estado | Proveedor."""
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment
+    grupos = _agrupar_por_disciplina(datos["materiales"])
+    if not any(grupos.values()):
+        return {"exitoso": False, "error": "Sin materiales"}
+    wb = Workbook(); wb.remove(wb.active)
+    hfill = PatternFill("solid", fgColor="4472C4")
+    hfont = Font(color="FFFFFF", bold=True)
+    halign = Alignment(horizontal="center")
+    for hoja, items in grupos.items():
+        ws = wb.create_sheet(title=hoja[:31])
+        for col, h in enumerate(["Consecutivo", "Familia", "Descripción", "Normativa",
+                                 "Estado", "Proveedor"], 1):
+            c = ws.cell(row=1, column=col, value=h)
+            c.fill = hfill; c.font = hfont; c.alignment = halign
+        for i, it in enumerate(items, 2):
+            ws.cell(row=i, column=1, value=it.get("consecutivo", ""))
+            ws.cell(row=i, column=2, value=it.get("marca", ""))
+            ws.cell(row=i, column=3, value=it.get("nombre", ""))
+            ws.cell(row=i, column=4, value=it.get("normativa", "SIN ESPECIFICAR"))
+            estado = "DISPONIBLE" if (it.get("estado") == "FICHA_DISPONIBLE"
+                                      and not it.get("carpeta_vacia")) else "FALTANTE"
+            ws.cell(row=i, column=5, value=estado)
+        for col, w in zip("ABCDEF", (15, 25, 60, 30, 15, 25)):
+            ws.column_dimensions[col].width = w
+    out = Path(destino) / "Guía interna materiales.xlsx"
+    wb.save(out)
+    return {"exitoso": True, "archivo": str(out), "total_materiales": len(datos["materiales"])}
+
+
+def limpiar_entregables(destino, log=print):
+    """Borra carATulas, CMPs por material y compilados/Excel previos para poder
+    regenerar TODO limpiamente (usado al editar un submittal)."""
+    destino = Path(destino)
+    for patron in ("Guía Submittal.xlsx", "Guía interna materiales.xlsx"):
+        p = destino / patron
+        if p.exists():
+            try: p.unlink()
+            except Exception: pass
+    for madre in bd_manager.CATEGORIAS.values():
+        cm = destino / madre
+        if not cm.is_dir():
+            continue
+        for p in cm.glob("CMP SUBMITTAL *.pdf"):
+            try: p.unlink()
+            except Exception: pass
+        for sub in cm.iterdir():
+            if not sub.is_dir():
+                continue
+            for p in list(sub.glob("CARATULA*.pdf")) + list(sub.glob("*-CMP.pdf")):
+                try: p.unlink()
+                except Exception: pass
+    log("Entregables previos limpiados")
+
+
+def generar_entregables(bd, proyecto, destino, tipo="clasica", log=print,
+                        con_caratulas=True, limpiar=True):
+    """Pipeline completo de generacion de entregables desde la BD:
+
+      1. Valida el submittal.
+      2. Materializa la carpeta destino (arbol + copia de fichas + JSONs).
+      3. (opcional) Genera carATulas con el motor v2.6.
+      4. Compila los CMP por material.
+      5. Compila los CMP por disciplina.
+      6. Genera los dos Excel.
+
+    Devuelve un dict con el resultado. Lanza ``bd_manager.BDError`` si la
+    validacion falla.
+    """
+    ok, errores = bd.validar_proyecto(proyecto)
+    if not ok:
+        raise bd_manager.BDError("Validacion fallida:\n - " + "\n - ".join(errores))
+
+    destino = Path(destino)
+    if limpiar and destino.exists():
+        limpiar_entregables(destino, log=log)
+
+    json_path = bd.materializar_proyecto(proyecto, destino)
+    datos = json.loads(json_path.read_text(encoding="utf-8"))
+    log(f"Materializado en {destino} ({len(datos['materiales'])} materiales)")
+
+    if con_caratulas:
+        generar_caratulas(destino if (destino / "generate_caratulas.py").exists() else BASE_DIR,
+                          datos, tipo, proyecto, log=log)
+
+    compilar_cmps(datos, log=log)
+    compilar_disciplinas(destino, log=log)
+    r1 = generar_excel_submittal(datos, destino)
+    r2 = generar_excel_materiales(datos, destino)
+
+    # Persistir estado del submittal
+    proyecto["entregables_generados"] = True
+    proyecto["tipo_caratula"] = tipo
+    bd.guardar_submittal(proyecto, destino=destino)
+    # Reescribir datos_materiales con compilado_generado actualizado
+    json_path.write_text(json.dumps(datos, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    return {"destino": str(destino), "materiales": len(datos["materiales"]),
+            "excel_submittal": r1.get("exitoso"), "excel_materiales": r2.get("exitoso")}
+
+
+# ==========================================================================
+# PARTE B) GUI (tkinter)
+# ==========================================================================
+try:
+    import tkinter as tk
+    from tkinter import ttk, filedialog, messagebox, simpledialog
+    _TK_OK = True
+except Exception:
+    _TK_OK = False
+
+
+if _TK_OK:
+
+    def _traer_al_frente(win):
+        """Fuerza que una ventana nueva quede al frente y con el foco.
+
+        En Windows, un Toplevel recien creado a veces aparece detras de la
+        ventana principal (el usuario "pierde" la ventana que tenia abierta).
+        lift()/focus_force() no siempre alcanzan; el truco de -topmost
+        momentaneo si funciona de forma consistente.
+        """
+        win.lift()
+        win.attributes("-topmost", True)
+        win.after_idle(lambda: win.attributes("-topmost", False))
+        win.focus_force()
+
+    class DatosProyectoDialog(tk.Toplevel):
+        """Dialogo para capturar los datos del procedimiento (obligatorios)."""
+
+        def __init__(self, master, datos=None):
+            super().__init__(master)
+            self.title("Datos del Proyecto")
+            self.resultado = None
+            self.configure(padx=16, pady=16)
+            self.grab_set()
+            datos = datos or {}
+            campos = [
+                ("numero_procedimiento", "Número de procedimiento"),
+                ("institucion", "Institución"),
+                ("detalle", "Detalle"),
+                ("plazo", "Plazo"),
+                ("monto", "Monto"),
+            ]
+            self.vars = {}
+            for i, (clave, etiqueta) in enumerate(campos):
+                tk.Label(self, text=etiqueta + ":").grid(row=i, column=0, sticky="e", pady=4, padx=6)
+                v = tk.StringVar(value=datos.get(clave, ""))
+                tk.Entry(self, textvariable=v, width=44).grid(row=i, column=1, pady=4)
+                self.vars[clave] = v
+            barra = tk.Frame(self)
+            barra.grid(row=len(campos), column=0, columnspan=2, pady=(12, 0))
+            tk.Button(barra, text="Guardar", command=self._guardar,
+                      bg=AZUL_ES, fg="white", width=12).pack(side="left", padx=6)
+            tk.Button(barra, text="Cancelar", command=self.destroy, width=12).pack(side="left", padx=6)
+            _traer_al_frente(self)
+
+        def _guardar(self):
+            datos = {k: v.get().strip() for k, v in self.vars.items()}
+            faltan = [k for k in bd_manager.CAMPOS_PROCEDIMIENTO if not datos.get(k)]
+            if faltan:
+                messagebox.showwarning("Datos incompletos",
+                                       "Complete todos los campos:\n" + ", ".join(faltan))
+                return
+            self.resultado = datos
+            self.destroy()
+
+
+    class TablaMateriales(tk.Frame):
+        """Tabla reutilizable de materiales seleccionados con agregar/editar/
+        eliminar y renumeracion automatica de consecutivos."""
+
+        def __init__(self, master, bd, materiales=None):
+            super().__init__(master)
+            self.bd = bd
+            self.materiales = list(materiales or [])
+            self._build()
+            self._refrescar()
+
+        def _build(self):
+            # Barra de busqueda
+            top = tk.Frame(self); top.pack(fill="x", pady=(0, 6))
+            tk.Label(top, text="Buscar material:").pack(side="left")
+            self.var_busq = tk.StringVar()
+            e = tk.Entry(top, textvariable=self.var_busq, width=36)
+            e.pack(side="left", padx=6)
+            e.bind("<KeyRelease>", lambda _ev: self._sugerir())
+            tk.Button(top, text="＋ Cargar ficha nueva a BD",
+                      command=self._cargar_ficha).pack(side="right")
+
+            self.lst = tk.Listbox(self, height=5)
+            self.lst.pack(fill="x")
+            self.lst.bind("<Double-Button-1>", lambda _ev: self._agregar_seleccion())
+
+            self.tree = ttk.Treeview(self, columns=("cons", "nombre", "marca"),
+                                     show="headings", height=10)
+            for c, t, w in (("cons", "Consecutivo", 90), ("nombre", "Nombre", 320),
+                            ("marca", "Marca", 180)):
+                self.tree.heading(c, text=t); self.tree.column(c, width=w)
+            self.tree.pack(fill="both", expand=True, pady=6)
+
+            bar = tk.Frame(self); bar.pack(fill="x")
+            tk.Button(bar, text="Editar marca(s)", command=self._editar).pack(side="left", padx=4)
+            tk.Button(bar, text="Eliminar", command=self._eliminar).pack(side="left", padx=4)
+            self._sug = []
+
+        def _sugerir(self):
+            q = self.var_busq.get().strip()
+            self.lst.delete(0, "end")
+            self._sug = self.bd.buscar(q) if q else []
+            for r in self._sug:
+                # Se muestra el nombre descriptivo completo: es lo que permite
+                # distinguir dos fichas del mismo material.
+                self.lst.insert("end", f"{bd_manager.BDManager.nombre_de(r)}  ·  "
+                                       f"{r['categoria']}  ({int(r['_similitud']*100)}%)")
+            if q and not self._sug:
+                self.lst.insert("end", "❌ No encontrado — use 'Cargar ficha nueva a BD'")
+
+        def _agregar_seleccion(self):
+            sel = self.lst.curselection()
+            if not sel or sel[0] >= len(self._sug):
+                return
+            ficha = self._sug[sel[0]]
+            cat = ficha["categoria"]
+            cons = self._siguiente_consecutivo(cat)
+            # El material hereda el nombre descriptivo SIN la marca (la marca ya
+            # tiene su propia columna en carátulas y Excel). Así dos tubos del
+            # mismo tipo no aparecen como dos filas idénticas.
+            nombre = nomenclatura.nombre_sin_marca(
+                bd_manager.BDManager.nombre_de(ficha), ficha.get("marca", ""))
+            self.materiales.append({
+                "consecutivo": cons, "id_ficha_bd": ficha["id"],
+                "nombre_material": nombre or ficha["nombre_material"],
+                "marca": ficha["marca"],
+                "categoria": cat, "marcas_alternativas": [], "justificacion_stock": False,
+            })
+            self.var_busq.set(""); self._sugerir(); self._refrescar()
+
+        def _siguiente_consecutivo(self, cat):
+            nums = [int(re.match(rf"{cat}(\d+)", m["consecutivo"]).group(1))
+                    for m in self.materiales
+                    if re.match(rf"{cat}(\d+)", m.get("consecutivo", ""))]
+            return f"{cat}{(max(nums) + 1 if nums else 1):02d}"
+
+        def _renumerar(self):
+            contadores = {}
+            for m in sorted(self.materiales, key=lambda x: bd_manager._clave_orden(x["consecutivo"])):
+                cat = m["categoria"]
+                contadores[cat] = contadores.get(cat, 0) + 1
+                m["consecutivo"] = f"{cat}{contadores[cat]:02d}"
+
+        def _refrescar(self):
+            self._renumerar()
+            self.materiales.sort(key=lambda x: bd_manager._clave_orden(x["consecutivo"]))
+            for i in self.tree.get_children():
+                self.tree.delete(i)
+            for m in self.materiales:
+                marca = bd_manager._marcas_material(m, {})
+                self.tree.insert("", "end", iid=m["consecutivo"],
+                                 values=(m["consecutivo"], m["nombre_material"], marca))
+
+        def _sel_material(self):
+            sel = self.tree.selection()
+            if not sel:
+                return None
+            return next((m for m in self.materiales if m["consecutivo"] == sel[0]), None)
+
+        def _editar(self):
+            m = self._sel_material()
+            if not m:
+                return
+            alt = ", ".join(m.get("marcas_alternativas", []))
+            top = tk.Toplevel(self); top.title("Editar marcas"); top.grab_set(); top.configure(padx=14, pady=14)
+            tk.Label(top, text=f"{m['consecutivo']} — {m['nombre_material']}").grid(row=0, column=0, columnspan=2)
+            tk.Label(top, text="Marca principal:").grid(row=1, column=0, sticky="e", pady=4)
+            v_p = tk.StringVar(value=m["marca"]); tk.Entry(top, textvariable=v_p, width=32).grid(row=1, column=1)
+            tk.Label(top, text="Marcas alternativas (coma):").grid(row=2, column=0, sticky="e", pady=4)
+            v_a = tk.StringVar(value=alt); tk.Entry(top, textvariable=v_a, width=32).grid(row=2, column=1)
+            v_s = tk.BooleanVar(value=m.get("justificacion_stock", False))
+            tk.Checkbutton(top, text="Justificar por stock (marcas alternativas aprobadas)",
+                           variable=v_s).grid(row=3, column=0, columnspan=2, sticky="w", pady=4)
+
+            def _ok():
+                m["marca"] = v_p.get().strip()
+                m["marcas_alternativas"] = [a.strip() for a in v_a.get().split(",") if a.strip()]
+                m["justificacion_stock"] = v_s.get()
+                top.destroy(); self._refrescar()
+            tk.Button(top, text="Confirmar", command=_ok, bg=AZUL_ES, fg="white").grid(
+                row=4, column=0, columnspan=2, pady=(10, 0))
+            _traer_al_frente(top)
+
+        def _eliminar(self):
+            m = self._sel_material()
+            if m and messagebox.askyesno("Eliminar", f"¿Quitar {m['consecutivo']} — {m['nombre_material']}?"):
+                self.materiales.remove(m); self._refrescar()
+
+        def _cargar_ficha(self):
+            VentanaCargarFicha(self.winfo_toplevel(), self.bd,
+                               al_terminar=lambda: (self._sugerir()))
+
+
+    class VentanaCargarFicha(tk.Toplevel):
+        """Flujo 3: cargar una o varias fichas a la BD (con extraccion OCR/IA)."""
+
+        def __init__(self, master, bd, al_terminar=None):
+            super().__init__(master)
+            self.bd = bd; self.al_terminar = al_terminar
+            self._cancelado = False
+            self._cerrada = False
+            self._procesando = False
+            self.title("Cargar ficha(s) a la BD"); self.configure(padx=16, pady=16); self.grab_set()
+            tk.Label(self, text="Cargar fichas técnicas a la Base de Datos",
+                     font=("Segoe UI", 12, "bold")).pack(anchor="w")
+            botones = tk.Frame(self); botones.pack(anchor="w", pady=8)
+            self.btn_archivos = tk.Button(botones, text="Seleccionar archivo(s)…",
+                                           command=self._seleccionar, bg=AZUL_ES, fg="white")
+            self.btn_archivos.pack(side="left")
+            self.btn_carpetas = tk.Button(botones, text="Seleccionar carpeta(s)…",
+                                           command=self._seleccionar_carpetas,
+                                           bg=AZUL_ES, fg="white")
+            self.btn_carpetas.pack(side="left", padx=(8, 0))
+            self.btn_cancelar = tk.Button(botones, text="⛔ Cancelar extracción",
+                                           command=self._cancelar, bg=ROJO_ES, fg="white",
+                                           state="disabled")
+            self.btn_cancelar.pack(side="left", padx=(8, 0))
+            self.prog = ttk.Progressbar(self, length=460, mode="determinate")
+            self.prog.pack(fill="x", pady=4)
+            self.txt = tk.Text(self, height=12, width=70); self.txt.pack(fill="both", expand=True)
+            self.btn_cerrar = tk.Button(self, text="Cerrar", command=self._on_close)
+            self.btn_cerrar.pack(pady=(8, 0))
+            self.protocol("WM_DELETE_WINDOW", self._on_close)
+            _traer_al_frente(self)
+
+        def _on_close(self):
+            if self._procesando:
+                if not messagebox.askyesno(
+                        "Cancelar extracción",
+                        "Hay una extracción en curso. ¿Cancelarla y cerrar la ventana?"):
+                    return
+                self._cancelado = True
+            self._cerrada = True
+            self.destroy()
+
+        def _cancelar(self):
+            self._cancelado = True
+            self.btn_cancelar.config(state="disabled")
+            self._log("\n⛔ Cancelando… se detendrá después del archivo en curso.")
+
+        def _log(self, msg):
+            self.txt.insert("end", msg + "\n"); self.txt.see("end"); self.update_idletasks()
+
+        EXTENSIONES = (".pdf", ".png", ".jpg", ".jpeg", ".tif", ".tiff")
+
+        def _seleccionar(self):
+            rutas = filedialog.askopenfilenames(
+                title="Fichas técnicas",
+                filetypes=[("Fichas", "*.pdf *.png *.jpg *.jpeg *.tif *.tiff"), ("Todos", "*.*")])
+            if not rutas:
+                return
+            self._procesar_archivos(rutas)
+
+        def _seleccionar_carpetas(self):
+            """Elige varias carpetas (una a la vez) y extrae todas las fichas
+            técnicas que encuentre dentro de ellas, incluidas subcarpetas."""
+            carpetas = []
+            while True:
+                titulo = "Seleccione una carpeta con fichas técnicas"
+                if carpetas:
+                    titulo += f"  (ya elegidas: {len(carpetas)} — Cancelar para terminar)"
+                c = filedialog.askdirectory(title=titulo)
+                if not c:
+                    break
+                carpetas.append(c)
+
+            if not carpetas:
+                return
+
+            rutas = []
+            for c in carpetas:
+                rutas.extend(str(p) for p in Path(c).rglob("*")
+                             if p.is_file() and p.suffix.lower() in self.EXTENSIONES)
+
+            if not rutas:
+                messagebox.showinfo(
+                    "Sin fichas",
+                    f"No se encontraron archivos de ficha (PDF/imagen) en "
+                    f"{len(carpetas)} carpeta(s) seleccionada(s).")
+                return
+
+            self._log(f"📁 {len(carpetas)} carpeta(s) escaneada(s) — "
+                      f"{len(rutas)} ficha(s) encontrada(s).")
+            self._procesar_archivos(rutas)
+
+        def _procesar_archivos(self, rutas):
+            self._rutas = list(rutas)
+            self._indice = 0
+            self._ok = self._adv = self._fallo = 0
+            self._cancelado = False
+            self._procesando = True
+            self.prog["maximum"] = len(self._rutas)
+            self.prog["value"] = 0
+            self.btn_archivos.config(state="disabled")
+            self.btn_carpetas.config(state="disabled")
+            self.btn_cancelar.config(state="normal")
+            self._procesar_siguiente()
+
+        def _procesar_siguiente(self):
+            if self._cerrada:
+                return
+            if self._cancelado or self._indice >= len(self._rutas):
+                self._finalizar_lote()
+                return
+
+            r = self._rutas[self._indice]
+            i = self._indice + 1
+            self._indice += 1
+            self._log(f"[{i}/{len(self._rutas)}] {Path(r).name} — extrayendo…")
+
+            def trabajo():
+                try:
+                    datos, error = ocr_extractor.extraer([r]), None
+                except Exception as e:
+                    datos, error = None, e
+                if self._cerrada:
+                    return
+                try:
+                    self.after(0, lambda: self._tras_extraer(r, i, datos, error))
+                except tk.TclError:
+                    pass
+
+            threading.Thread(target=trabajo, daemon=True).start()
+
+        def _tras_extraer(self, r, i, datos, error):
+            if self._cerrada:
+                return
+            if self._cancelado:
+                self._finalizar_lote()
+                return
+
+            if error is not None:
+                self._fallo += 1
+                self._log(f"   ❌ {error}")
+            else:
+                res = self._preview(r, datos)
+                accion = res.get("accion", "omitir")
+
+                if accion == "omitir":
+                    self._log("   (omitido)")
+                elif accion == "usar_existente":
+                    f = res["ficha"]
+                    self._log(f"   ↩️ ya existía: {self.bd.nombre_de(f)}")
+                elif accion == "reemplazar":
+                    f = res["ficha"]
+                    try:
+                        self.bd.reemplazar_pdf_ficha(f["id"], r)
+                        self._ok += 1
+                        self._log(f"   🔁 PDF reemplazado en {self.bd.nombre_de(f)}")
+                    except Exception as e:
+                        self._fallo += 1; self._log(f"   ❌ {e}")
+                else:
+                    d = res.get("datos") or {}
+                    try:
+                        ficha = self.bd.agregar_ficha(r, d)
+                        if d.get("_requiere_manual"):
+                            self._adv += 1
+                            self._log(f"   ⚠️ cargada (revisada a mano): {ficha['nombre_ficha']}")
+                        else:
+                            self._ok += 1
+                            self._log(f"   ✅ {ficha['nombre_ficha']}")
+                    except Exception as e:
+                        self._fallo += 1; self._log(f"   ❌ {e}")
+
+            self.prog["value"] = i
+            self._procesar_siguiente()
+
+        def _finalizar_lote(self):
+            self._procesando = False
+            self.btn_archivos.config(state="normal")
+            self.btn_carpetas.config(state="normal")
+            self.btn_cancelar.config(state="disabled")
+            if self._cancelado:
+                self._log(f"\n⛔ Extracción cancelada por el usuario "
+                          f"({self._indice}/{len(self._rutas)} archivo(s) revisados).")
+            self._log(f"\nResultado: ✅ {self._ok} ok · ⚠️ {self._adv} advertencias · "
+                      f"❌ {self._fallo} fallos")
+            if self._ok + self._adv:
+                self._subir(self._ok + self._adv)
+            if self.al_terminar:
+                self.al_terminar()
+
+        def _subir(self, cantidad):
+            """Sube las fichas nuevas a GitHub (Flujo 2, paso 6)."""
+            self._log("\n🔄 Subiendo a GitHub…")
+            r = self.bd.git_push(f"agregar {cantidad} ficha(s) desde "
+                                 f"{bd_manager.socket.gethostname()}")
+            if r.get("desactivado"):
+                self._log("   (sincronización desactivada: BD local)")
+            elif r.get("subido"):
+                extra = (f" · {r['conflictos']} conflicto(s) resuelto(s)"
+                         if r.get("conflictos") else "")
+                self._log(f"   ✅ Cambios subidos a GitHub{extra}")
+            elif r.get("offline"):
+                self._log("   📡 Sin conexión: las fichas quedaron guardadas y se "
+                          "subirán al reconectar")
+            elif r.get("auth"):
+                self._log("   🔑 Falta el token de GitHub: use 'Configurar GitHub' "
+                          "en la ventana principal")
+            elif r.get("nada_que_subir"):
+                self._log("   (sin cambios por subir)")
+            else:
+                self._log(f"   ⚠️ No se pudo subir: {r.get('error', 'error desconocido')}")
+
+        def _preview(self, ruta, datos):
+            """Abre el formulario de revisión y devuelve la acción elegida."""
+            d = DialogoRevisarFicha(self, self.bd, ruta, datos)
+            self.wait_window(d)
+            return d.resultado
+
+
+    class DialogoRevisarFicha(tk.Toplevel):
+        """Revisión de una ficha antes de guardarla (Mejora 1, paso 4).
+
+        Muestra el NOMBRE AUTO-GENERADO arriba, editable, y lo recalcula solo
+        mientras el usuario no lo escriba a mano. Antes de guardar:
+
+          * exige los campos obligatorios;
+          * exige que el nombre sea distinguible (dimensiones, presentación o
+            modelo), para que no vuelvan a entrar fichas como "Tubería
+            Estructural" que no se pueden diferenciar;
+          * si el nombre ya existe en la BD, ofrece usar la ficha existente,
+            reemplazar su PDF o guardar esta como variante.
+        """
+
+        CAMPOS = [
+            ("nombre_material", "Nombre del material"),
+            ("marca", "Marca"),
+            ("categoria", "Categoría (ARQ/ESTR/MEC/ELEC)"),
+            ("dimensiones", "Dimensiones (ej: 8\"x8\"x3/16\", 60x60 cm)"),
+            ("tipo_producto", "Tipo / forma (ej: cuadrado, rectangular)"),
+            ("especificacion", "Especificación / modelo (ej: CH 13, QO260)"),
+            ("normativa", "Normativa (no entra en el nombre)"),
+            ("descripcion_corta", "Descripción corta / presentación"),
+        ]
+
+        def __init__(self, master, bd, ruta, datos, titulo=None, es_edicion=False):
+            super().__init__(master)
+            self.bd = bd
+            self.datos_origen = dict(datos or {})
+            self.es_edicion = es_edicion
+            self.resultado = {"accion": "omitir"}
+            self._nombre_auto = ""
+            self._nombre_editado = bool(self.datos_origen.get("nombre_ficha_manual"))
+            self.title(titulo or f"Revisar: {Path(ruta).name if ruta else 'ficha'}")
+            self.configure(padx=16, pady=14)
+            self.grab_set()
+            self._construir()
+            self._recalcular()
+            _traer_al_frente(self)
+
+        # ------------------------------------------------------------ armado
+        def _construir(self):
+            fila = 0
+            if not self.es_edicion:
+                metodo = self.datos_origen.get("_metodo", "?")
+                manual = self.datos_origen.get("_requiere_manual")
+                tk.Label(self, text=f"Método de extracción: {metodo}"
+                         + ("  ·  revise los datos" if manual else ""),
+                         fg=(ROJO_ES if manual else VERDE_OK)).grid(
+                    row=fila, column=0, columnspan=3, sticky="w")
+                fila += 1
+
+            tk.Label(self, text="Nombre de la ficha (se genera solo):",
+                     font=("Segoe UI", 10, "bold")).grid(
+                row=fila, column=0, columnspan=3, sticky="w", pady=(8, 2))
+            fila += 1
+            # Si la ficha ya trae un nombre escrito a mano, se muestra tal cual
+            # (no se regenera solo: para eso está el botón Regenerar).
+            self.v_nombre = tk.StringVar(
+                value=str(self.datos_origen.get("nombre_ficha", "") or ""))
+            e = tk.Entry(self, textvariable=self.v_nombre, width=68,
+                         font=("Segoe UI", 10, "bold"), fg=AZUL_ES)
+            e.grid(row=fila, column=0, columnspan=2, sticky="we")
+            e.bind("<KeyRelease>", self._nombre_a_mano)
+            tk.Button(self, text="↻ Regenerar", command=self._regenerar).grid(
+                row=fila, column=2, padx=(6, 0))
+            fila += 1
+
+            self.lbl_aviso = tk.Label(self, text="", justify="left", wraplength=560)
+            self.lbl_aviso.grid(row=fila, column=0, columnspan=3, sticky="w", pady=(4, 8))
+            fila += 1
+
+            self.vars = {}
+            for clave, etiqueta in self.CAMPOS:
+                tk.Label(self, text=etiqueta + ":").grid(row=fila, column=0,
+                                                         sticky="e", pady=3, padx=(0, 6))
+                v = tk.StringVar(value=str(self.datos_origen.get(clave, "") or ""))
+                ent = tk.Entry(self, textvariable=v, width=56)
+                ent.grid(row=fila, column=1, columnspan=2, sticky="we", pady=3)
+                ent.bind("<KeyRelease>", lambda _ev: self._recalcular())
+                self.vars[clave] = v
+                fila += 1
+                if clave == "dimensiones":
+                    self.v_sin_medidas = tk.BooleanVar(
+                        value=bool(self.datos_origen.get("sin_medidas")))
+                    tk.Checkbutton(
+                        self, variable=self.v_sin_medidas, command=self._recalcular,
+                        text="Este material no tiene medidas/dimensiones "
+                             "(ej: sacos, cubetas, unidades)."
+                    ).grid(row=fila, column=1, columnspan=2, sticky="w")
+                    fila += 1
+
+            barra = tk.Frame(self)
+            barra.grid(row=fila, column=0, columnspan=3, pady=(12, 0))
+            self.btn_ok = tk.Button(barra, text="✅ Confirmar y guardar",
+                                    command=self._confirmar, bg=VERDE_OK, fg="white",
+                                    width=22)
+            self.btn_ok.pack(side="left", padx=6)
+            tk.Button(barra, text="Cancelar" if self.es_edicion else "Omitir",
+                      command=self.destroy, width=14).pack(side="left", padx=6)
+
+        # -------------------------------------------------------- nomenclatura
+        def _datos_actuales(self):
+            d = dict(self.datos_origen)
+            d.update({k: v.get().strip() for k, v in self.vars.items()})
+            d["categoria"] = d.get("categoria", "").strip().upper()
+            d["sin_medidas"] = bool(self.v_sin_medidas.get())
+            return d
+
+        def _nombre_a_mano(self, _ev=None):
+            """Si el usuario CAMBIA el nombre, deja de regenerarse solo.
+
+            Se compara contra el último valor autogenerado en vez de reaccionar a
+            cualquier tecla: con una flecha, un Tab o un Ctrl se marcaba como
+            "manual" un nombre que en realidad no se había tocado, y entonces ya
+            no se volvía a regenerar nunca.
+            """
+            self._nombre_editado = self.v_nombre.get().strip() != self._nombre_auto
+            self._recalcular(solo_aviso=True)
+
+        def _regenerar(self):
+            self._nombre_editado = False
+            self._recalcular()
+
+        def _recalcular(self, solo_aviso=False):
+            d = self._datos_actuales()
+            self.analisis = nomenclatura.analizar(d)
+            self._nombre_auto = self.analisis["nombre"]
+            if not solo_aviso and not self._nombre_editado:
+                self.v_nombre.set(self._nombre_auto)
+            self._pintar_aviso()
+
+        def _pintar_aviso(self):
+            if self._suficiente():
+                if self.v_sin_medidas.get() and not self.analisis["distintivos"]:
+                    texto = ("✔ Marcado como material sin medidas/dimensiones: "
+                             "se guardará así.")
+                else:
+                    texto = "✔ El nombre distingue esta ficha de otras similares."
+                self.lbl_aviso.config(text=texto, fg=VERDE_OK)
+                self.btn_ok.config(state="normal")
+                return
+            self.lbl_aviso.config(
+                text="⚠ " + " ".join(self.analisis["faltantes"])
+                     + "\nComplete el dato que falta (o escriba el nombre a mano) "
+                       "para poder guardar.",
+                fg=ROJO_ES)
+            self.btn_ok.config(state="disabled")
+
+        def _suficiente(self):
+            """¿El nombre permite distinguir la ficha?
+
+            Vale si el análisis encontró algo distintivo (dimensiones,
+            presentación, designación o modelo) o si el usuario escribió un
+            nombre a mano que sí lo tiene: la persona sabe más que la heurística.
+            """
+            if self.analisis["suficiente"]:
+                return True
+            nombre = self.v_nombre.get().strip()
+            if not nombre or not self._nombre_editado:
+                return False
+            if not self.analisis["base"] or not self.analisis["marca"]:
+                return False
+            return bool(re.search(r"\d", nombre)) or len(nombre.split()) >= 5
+
+        # ------------------------------------------------------------ guardar
+        def _confirmar(self):
+            d = self._datos_actuales()
+            faltan = [c for c in bd_manager.CAMPOS_OBLIGATORIOS_FICHA if not d.get(c)]
+            if faltan:
+                messagebox.showwarning("Faltan datos",
+                                       "Campos obligatorios: " + ", ".join(faltan))
+                return
+            if d["categoria"] not in bd_manager.CATEGORIAS:
+                messagebox.showwarning("Categoría", "Use ARQ, ESTR, MEC o ELEC")
+                return
+            if not self._suficiente():
+                messagebox.showwarning("Ficha indistinguible",
+                                       "\n".join(self.analisis["faltantes"]))
+                return
+
+            escrito = self.v_nombre.get().strip()
+            if not escrito:
+                # Campo vacío: vuelve a mandar el nombre automático (y NO se
+                # marca como manual, que era el error).
+                escrito = self.analisis["nombre"]
+                self._nombre_editado = False
+            nombre = escrito
+            d["nombre_ficha"] = nombre if self._nombre_editado else ""
+            d["_requiere_manual"] = self.datos_origen.get("_requiere_manual", False)
+
+            existente = self.bd.buscar_por_nombre(
+                nombre, excluir_id=self.datos_origen.get("id"))
+            if existente is not None:
+                accion = self._preguntar_duplicado(existente, nombre)
+                if accion is None:
+                    return                       # el usuario canceló
+                if accion != "guardar":
+                    self.resultado = {"accion": accion, "ficha": existente}
+                    self.destroy()
+                    return
+                d["nombre_ficha"] = nombre       # variante: nombre explícito
+            self.resultado = {"accion": "guardar", "datos": d, "nombre_ficha": nombre}
+            self.destroy()
+
+        def _preguntar_duplicado(self, existente, nombre):
+            """Tres salidas ante un nombre repetido; ``None`` si cancela."""
+            top = tk.Toplevel(self)
+            top.title("Ficha repetida")
+            top.configure(padx=16, pady=14)
+            top.grab_set()
+            estado = existente.get("estado", "activo")
+            tk.Label(top, text="Ya existe una ficha con este nombre:",
+                     font=("Segoe UI", 10, "bold")).pack(anchor="w")
+            tk.Label(top, text=self.bd.nombre_de(existente), fg=AZUL_ES,
+                     wraplength=520, justify="left").pack(anchor="w", pady=(2, 6))
+            tk.Label(top, text=f"Cargada el {existente.get('fecha_carga', '?')}"
+                               f"  ·  estado: {estado}", fg="#555").pack(anchor="w")
+            tk.Label(top, text="¿Qué desea hacer?", justify="left").pack(anchor="w",
+                                                                        pady=(10, 6))
+            eleccion = {"v": None}
+
+            def _elegir(valor):
+                eleccion["v"] = valor
+                top.destroy()
+
+            if self.es_edicion:
+                # Editando NO hay archivo nuevo que usar ni ficha que reemplazar:
+                # las otras dos salidas no tienen sentido y antes descartaban la
+                # edición en silencio.
+                opciones = [
+                    ("Guardar con este nombre igual", "guardar",
+                     "Quedarán dos fichas con el mismo nombre."),
+                ]
+            else:
+                opciones = [
+                    ("Usar la ficha que ya existe", "usar_existente",
+                     "No se carga nada nuevo."),
+                    ("Reemplazar su archivo por este", "reemplazar",
+                     "Corrige el archivo y conserva el nombre y las referencias."),
+                    ("Guardar como variante", "guardar",
+                     "Se agrega otra ficha con el mismo nombre."),
+                ]
+            for texto, valor, ayuda in opciones:
+                f = tk.Frame(top)
+                f.pack(fill="x", pady=3)
+                tk.Button(f, text=texto, width=30,
+                          command=lambda v=valor: _elegir(v)).pack(side="left")
+                tk.Label(f, text=ayuda, fg="#555").pack(side="left", padx=8)
+            tk.Button(top, text="Cancelar", command=top.destroy).pack(pady=(10, 0))
+            _traer_al_frente(top)
+            self.wait_window(top)
+            return eleccion["v"]
+
+
+    class _VentanaSubmittal(tk.Toplevel):
+        """Base comun para 'Generar desde BD' y 'Abrir existente'."""
+
+        def __init__(self, master, bd, proyecto, destino, titulo):
+            super().__init__(master)
+            self.bd = bd; self.proyecto = proyecto; self.destino = destino
+            self.title(titulo); self.configure(padx=14, pady=14); self.geometry("780x600")
+            tk.Label(self, text=titulo, font=("Segoe UI", 13, "bold")).pack(anchor="w")
+            top = tk.Frame(self); top.pack(fill="x", pady=6)
+            tk.Button(top, text="⚙️ Datos del Proyecto", command=self._datos).pack(side="left")
+            tk.Label(top, text="  Carpeta destino:").pack(side="left")
+            self.var_dest = tk.StringVar(value=destino or "")
+            tk.Entry(top, textvariable=self.var_dest, width=48).pack(side="left", padx=4)
+            tk.Button(top, text="…", command=self._elegir_destino).pack(side="left")
+
+            self.tabla = TablaMateriales(self, bd, proyecto.get("materiales_seleccionados", []))
+            self.tabla.pack(fill="both", expand=True, pady=8)
+
+            self.txt = tk.Text(self, height=7, bg="#111", fg="#7CFC7C"); self.txt.pack(fill="x")
+            tk.Button(self, text="🚀 Generar / Confirmar cambios", command=self._generar,
+                      bg=ROJO_ES, fg="white", font=("Segoe UI", 11, "bold")).pack(pady=8)
+            _traer_al_frente(self)
+
+        def _log(self, m):
+            self.txt.insert("end", str(m) + "\n"); self.txt.see("end"); self.update_idletasks()
+
+        def _datos(self):
+            d = DatosProyectoDialog(self, self.proyecto.get("datos_procedimiento", {}))
+            self.wait_window(d)
+            if d.resultado:
+                self.proyecto["datos_procedimiento"] = d.resultado
+
+        def _elegir_destino(self):
+            c = filedialog.askdirectory(title="Carpeta destino del submittal")
+            if c:
+                self.var_dest.set(c)
+
+        def _generar(self):
+            self.proyecto["materiales_seleccionados"] = self.tabla.materiales
+            destino = self.var_dest.get().strip()
+            if not destino:
+                messagebox.showwarning("Destino", "Elija una carpeta destino"); return
+            ok, errores = self.bd.validar_proyecto(self.proyecto)
+            if not ok:
+                messagebox.showerror("No se puede generar", "\n".join(errores)); return
+            if not messagebox.askyesno("Confirmar",
+                                       "Se regenerarán carátulas, compilados y Excel. ¿Continuar?"):
+                return
+            tipo = self.proyecto.get("tipo_caratula", "clasica")
+            try:
+                res = generar_entregables(self.bd, self.proyecto, destino, tipo=tipo, log=self._log)
+                self._log(f"\n✅ Listo: {res['materiales']} materiales en {res['destino']}")
+                self._subir_metadatos()
+                try:
+                    os.startfile(destino)  # Windows: abre el explorador
+                except Exception:
+                    pass
+            except Exception as e:
+                self._log(f"\n❌ {e}")
+                messagebox.showerror("Error al generar", str(e))
+
+        def _subir_metadatos(self):
+            """Sube a GitHub el ``submittal_proyecto.json`` del proyecto.
+
+            Solo metadatos: las carátulas, los CMP y los Excel se quedan en la
+            carpeta local y se regeneran cuando se necesiten.
+            """
+            nombre = self.proyecto.get("nombre_proyecto", "proyecto")
+            self._log("🔄 Sincronizando con GitHub…")
+            r = self.bd.git_push(f"submittal {nombre}")
+            if r.get("desactivado"):
+                return
+            if r.get("subido"):
+                extra = (f" · {r['conflictos']} conflicto(s) resuelto(s)"
+                         if r.get("conflictos") else "")
+                self._log(f"☁️ Metadatos del submittal subidos a GitHub{extra}")
+            elif r.get("offline"):
+                self._log("📡 Sin conexión: los entregables están listos; los "
+                          "metadatos se subirán al reconectar")
+            elif r.get("auth"):
+                self._log("🔑 Falta el token de GitHub para subir los metadatos")
+            elif not r.get("nada_que_subir"):
+                self._log(f"⚠️ No se pudo subir: {r.get('error', '')}")
+
+
+    class DialogoGitHub(tk.Toplevel):
+        """Configuracion de la sincronizacion: repositorio y token del usuario."""
+
+        def __init__(self, master, bd):
+            super().__init__(master)
+            self.bd = bd
+            self.cambio = False
+            self.title("Configurar GitHub")
+            self.configure(padx=16, pady=16)
+            self.grab_set()
+            gh = bd.cfg.get("github", {}) or {}
+            est = bd.git_status()
+
+            tk.Label(self, text="Sincronización de la Base de Datos",
+                     font=("Segoe UI", 12, "bold")).grid(row=0, column=0, columnspan=2,
+                                                         sticky="w")
+            modo = {"git": "git instalado", "rest": "API REST (sin git)"}.get(
+                est.get("backend"), est.get("backend", "?"))
+            tk.Label(self, text=f"Método: {modo}", fg="#555").grid(
+                row=1, column=0, columnspan=2, sticky="w", pady=(0, 8))
+
+            self.v_repo = tk.StringVar(value=gh.get("repo", ""))
+            self.v_rama = tk.StringVar(value=gh.get("branch", "main"))
+            self.v_token = tk.StringVar(value="")
+            filas = [("Repositorio (usuario/repo):", self.v_repo, False),
+                     ("Rama:", self.v_rama, False),
+                     ("Token (PAT):", self.v_token, True)]
+            for i, (etiqueta, var, secreto) in enumerate(filas, 2):
+                tk.Label(self, text=etiqueta).grid(row=i, column=0, sticky="e", pady=4)
+                e = tk.Entry(self, textvariable=var, width=44,
+                             show="•" if secreto else "")
+                e.grid(row=i, column=1, pady=4)
+
+            tiene = "✅ ya configurado" if est.get("autenticado") else "❌ sin configurar"
+            tk.Label(self, text=f"Token actual: {tiene}   ·   deje el campo vacío "
+                                "para conservarlo", fg="#555").grid(
+                row=5, column=0, columnspan=2, sticky="w")
+            tk.Label(self, text="Cree el token en github.com/settings/tokens con\n"
+                                "permiso Contents: write SOLO sobre este repositorio.",
+                     fg="#555", justify="left").grid(row=6, column=0, columnspan=2,
+                                                     sticky="w", pady=(4, 10))
+
+            barra = tk.Frame(self)
+            barra.grid(row=7, column=0, columnspan=2)
+            tk.Button(barra, text="Guardar", command=self._guardar, bg=AZUL_ES,
+                      fg="white", width=12).pack(side="left", padx=6)
+            tk.Button(barra, text="Cancelar", command=self.destroy,
+                      width=12).pack(side="left", padx=6)
+            _traer_al_frente(self)
+
+        def _guardar(self):
+            cfg = self.bd.cfg
+            cfg.setdefault("github", {})
+            cfg["github"]["repo"] = self.v_repo.get().strip() or cfg["github"].get("repo", "")
+            cfg["github"]["branch"] = self.v_rama.get().strip() or "main"
+            token = self.v_token.get().strip()
+            if token:
+                cfg["github"]["token_encrypted"] = bd_manager.cifrar_secreto(token)
+            bd_manager.guardar_config(cfg, self.bd.config_dir)
+            if token and self.bd.sync is not None:
+                self.bd.sync.set_token(token)
+            self.cambio = True
+            self.destroy()
+
+
+    class App(tk.Tk):
+        """Ventana principal con el menu 2x2 y la sincronizacion con GitHub."""
+
+        def __init__(self):
+            super().__init__()
+            self.title(f"Generador de Submittals ES v{VERSION}")
+            self.configure(bg=GRIS_BG, padx=20, pady=20)
+            self.geometry("620x520")
+            self.bd = bd_manager.BDManager(logger=logger)
+            self._sincronizando = False
+            self.modo_dev = False
+            self._construir()
+            self.protocol("WM_DELETE_WINDOW", self._cerrar_seguro)
+            self.after(100, lambda: self._sincronizar(inicial=True))
+
+        def _construir(self):
+            tk.Label(self, text="Generador de Submittals ES", bg=GRIS_BG, fg=AZUL_ES,
+                     font=("Segoe UI", 18, "bold")).pack(pady=(0, 4))
+            self.lbl_estado = tk.Label(self, text="", bg=GRIS_BG, fg="#555")
+            self.lbl_estado.pack()
+            self.lbl_sync = tk.Label(self, text="⏳ Iniciando…", bg=GRIS_BG, fg="#555")
+            self.lbl_sync.pack()
+            self.prog = ttk.Progressbar(self, length=360, mode="indeterminate")
+
+            grid = tk.Frame(self, bg=GRIS_BG); grid.pack(pady=16)
+            botones = [
+                ("📤 Generar desde BD", self._generar_desde_bd),
+                ("📂 Abrir submittal existente", self._abrir_existente),
+                ("➕ Cargar ficha a BD", self._cargar_ficha),
+                ("🗂️ Gestionar BD", self._gestionar_bd),
+            ]
+            for i, (txt, cmd) in enumerate(botones):
+                b = tk.Button(grid, text=txt, command=cmd, width=24, height=3,
+                              bg="white", fg=AZUL_ES, font=("Segoe UI", 11, "bold"),
+                              relief="groove")
+                b.grid(row=i // 2, column=i % 2, padx=10, pady=10)
+
+            sync = tk.Frame(self, bg=GRIS_BG); sync.pack(pady=(0, 8))
+            tk.Button(sync, text="🔄 Sincronizar ahora",
+                      command=self._sincronizar).pack(side="left", padx=4)
+            tk.Button(sync, text="☁️ Subir cambios pendientes",
+                      command=self._subir_pendientes).pack(side="left", padx=4)
+            tk.Button(sync, text="⚙️ Configurar GitHub",
+                      command=self._config_github).pack(side="left", padx=4)
+
+            barra = tk.Frame(self, bg=GRIS_BG); barra.pack(side="bottom", fill="x")
+            tk.Button(barra, text="🏗️ Generar desde carpetas (v2.6)",
+                      command=self._lanzar_v26).pack(side="left")
+            tk.Button(barra, text="🔄 Buscar actualización",
+                      command=self._buscar_update).pack(side="left", padx=6)
+            self.btn_modo_dev = tk.Button(barra, text="🛠️ Modo desarrollador",
+                                           command=self._toggle_modo_dev)
+            self.btn_modo_dev.pack(side="left", padx=6)
+            tk.Button(barra, text="❌ Cerrar", command=self._cerrar_seguro,
+                      bg=ROJO_ES, fg="white").pack(side="right")
+
+        # ------------------------------------------------ sincronizacion
+        def _sincronizar(self, inicial=False):
+            """Flujo 1: ``git pull`` en segundo plano para no congelar la GUI."""
+            if self._sincronizando:
+                return
+            self._sincronizando = True
+            self.lbl_sync.config(text="🔄 Sincronizando con GitHub…", fg=AZUL_ES)
+            self.prog.pack(pady=(0, 6))
+            self.prog.start(12)
+
+            def trabajo():
+                try:
+                    _data, resumen = self.bd.sync_indice()
+                except Exception as e:      # no debería ocurrir: sync_indice absorbe
+                    resumen = {"error": str(e)}
+                self.after(0, lambda: self._fin_sincronizar(resumen, inicial))
+
+            threading.Thread(target=trabajo, daemon=True).start()
+
+        def _fin_sincronizar(self, resumen, inicial=False):
+            self.prog.stop()
+            self.prog.pack_forget()
+            self._sincronizando = False
+            self._actualizar_estado()
+
+            if resumen.get("conflictos"):
+                self.lbl_sync.config(
+                    text=f"✅ Conflicto resuelto y sincronizado "
+                         f"({resumen['conflictos']} archivo(s))", fg=VERDE_OK)
+                messagebox.showinfo(
+                    "Conflicto resuelto",
+                    "Otra computadora había subido cambios a la vez.\n\n"
+                    "Se fusionaron automáticamente sin perder datos: se "
+                    "conservaron las fichas de ambos lados.")
+                return
+            if resumen.get("indice_invalido"):
+                self.lbl_sync.config(text="⚠️ Índice con problemas: usando caché local",
+                                     fg=ROJO_ES)
+                messagebox.showwarning(
+                    "Índice inconsistente",
+                    "El índice descargado no pasó la validación; se está usando la "
+                    "copia local.\n\nDetalle:\n- " +
+                    "\n- ".join(resumen["indice_invalido"][:6]))
+                return
+            if resumen.get("auth") and inicial:
+                self.lbl_sync.config(text="🔑 Sin token de GitHub (solo lectura)",
+                                     fg=ROJO_ES)
+                return
+            if resumen.get("offline"):
+                self.lbl_sync.config(text="📡 Sin conexión — trabajando con la copia local",
+                                     fg=ROJO_ES)
+                return
+            if resumen.get("error"):
+                self.lbl_sync.config(text=f"⚠️ {resumen['error'][:70]}", fg=ROJO_ES)
+                return
+            self.lbl_sync.config(text=self.bd.texto_estado_sync(), fg=VERDE_OK)
+
+        def _subir_pendientes(self):
+            if not self.bd.hay_cambios_sin_subir():
+                messagebox.showinfo("Sincronización", "No hay cambios pendientes de subir.")
+                return
+            self.lbl_sync.config(text="🔄 Subiendo cambios…", fg=AZUL_ES)
+            self.update_idletasks()
+            r = self.bd.git_push("subir cambios pendientes")
+            self._reportar_push(r)
+
+        def _reportar_push(self, r):
+            if r.get("subido"):
+                extra = (f" ({r['conflictos']} conflicto(s) resuelto(s))"
+                         if r.get("conflictos") else "")
+                self.lbl_sync.config(text=f"☁️ Cambios subidos a GitHub{extra}", fg=VERDE_OK)
+            elif r.get("offline"):
+                self.lbl_sync.config(text="📡 Sin conexión — se subirán al reconectar",
+                                     fg=ROJO_ES)
+            elif r.get("auth"):
+                self.lbl_sync.config(text="🔑 Falta el token de GitHub", fg=ROJO_ES)
+                if messagebox.askyesno("Token requerido",
+                                       "Para subir cambios hace falta un token de "
+                                       "GitHub.\n\n¿Configurarlo ahora?"):
+                    self._config_github()
+            elif r.get("nada_que_subir"):
+                self.lbl_sync.config(text="Sin cambios por subir", fg="#555")
+            else:
+                self.lbl_sync.config(text=f"⚠️ {str(r.get('error', ''))[:70]}", fg=ROJO_ES)
+
+        def _config_github(self):
+            d = DialogoGitHub(self, self.bd)
+            self.wait_window(d)
+            if d.cambio:
+                self._sincronizar()
+
+        def _actualizar_estado(self):
+            res = self.bd.resumen_por_categoria()
+            cache = "  ·  ⚠️ usando caché anterior" if self.bd.usando_cache else ""
+            pend = self.bd.pendientes
+            sin_subir = f"  ·  ☁️ {len(pend)} cambio(s) sin subir" if pend else ""
+            self.lbl_estado.config(
+                text=f"BD: {res['TOTAL']} fichas  (ARQ {res['ARQ']} · ESTR {res['ESTR']} · "
+                     f"MEC {res['MEC']} · ELEC {res['ELEC']}){cache}{sin_subir}", fg="#555")
+
+        # -------- modo desarrollador
+        def _toggle_modo_dev(self):
+            if self.modo_dev:
+                self.modo_dev = False
+                self.btn_modo_dev.config(text="🛠️ Modo desarrollador", bg="SystemButtonFace",
+                                          fg="black")
+                self.title(f"Generador de Submittals ES v{VERSION}")
+                return
+
+            pin = simpledialog.askstring("Modo desarrollador", "Ingrese el PIN:",
+                                          show="*", parent=self)
+            if pin is None:
+                return
+            if pin != PIN_MODO_DEV:
+                messagebox.showerror("PIN incorrecto", "El PIN ingresado no es correcto.")
+                return
+
+            self.modo_dev = True
+            self.btn_modo_dev.config(text="🛠️ Modo desarrollador: ACTIVO", bg=ROJO_ES, fg="white")
+            self.title(f"Generador de Submittals ES v{VERSION} — MODO DESARROLLADOR")
+            messagebox.showinfo(
+                "Modo desarrollador activado",
+                "Modo desarrollador activado.\n\n"
+                "Al generar un submittal desde BD ya no se pedirán los datos del "
+                "proyecto: se completan automáticamente con datos de prueba.\n\n"
+                "Use este modo solo para pruebas, nunca para submittals reales.")
+
+        # -------- flujos
+        def _pedir_datos_proyecto(self):
+            if self.modo_dev:
+                return {
+                    "numero_procedimiento": "PRUEBA-0000",
+                    "institucion": "Institución de prueba",
+                    "detalle": "Submittal de prueba (modo desarrollador)",
+                    "plazo": "N/A",
+                    "monto": "0",
+                }
+            d = DatosProyectoDialog(self)
+            self.wait_window(d)
+            return d.resultado
+
+        def _generar_desde_bd(self):
+            datos = self._pedir_datos_proyecto()
+            if not datos:
+                return
+            destino = filedialog.askdirectory(title="Carpeta destino del submittal")
+            if not destino:
+                return
+            proyecto = {"nombre_proyecto": Path(destino).name,
+                        "datos_procedimiento": datos, "tipo_caratula": "clasica",
+                        "materiales_seleccionados": []}
+            _VentanaSubmittal(self, self.bd, proyecto, destino, "Generar submittal desde BD")
+
+        def _abrir_existente(self):
+            carpeta = filedialog.askdirectory(title="Carpeta del submittal (con submittal_proyecto.json)")
+            if not carpeta:
+                return
+            try:
+                proyecto = bd_manager.BDManager.cargar_submittal(carpeta)
+            except Exception as e:
+                messagebox.showerror("No se pudo abrir", str(e)); return
+            _VentanaSubmittal(self, self.bd, proyecto, carpeta,
+                              f"Editando: {proyecto.get('nombre_proyecto', '')}")
+
+        def _cargar_ficha(self):
+            VentanaCargarFicha(self, self.bd, al_terminar=self._actualizar_estado)
+
+        def _gestionar_bd(self):
+            VentanaGestionarBD(self, self.bd, al_cambiar=self._actualizar_estado)
+
+        def _lanzar_v26(self):
+            ruta = BASE_DIR / "submitals_gui.py"
+            if ruta.exists():
+                import subprocess
+                subprocess.Popen([sys.executable, str(ruta)], cwd=str(BASE_DIR))
+            else:
+                messagebox.showinfo("v2.6", "No se encontró submitals_gui.py")
+
+        def _buscar_update(self):
+            info = updater_gh.hay_actualizacion(logf=logger.info)
+            if info.get("error"):
+                messagebox.showinfo("Actualización", info["error"]); return
+            if not info.get("disponible"):
+                messagebox.showinfo("Actualización", "No hay actualizaciones."); return
+            if messagebox.askyesno("Actualización disponible",
+                                   f"Nueva versión {info.get('version_remota')}.\n"
+                                   f"{info.get('changelog', '')}\n\n"
+                                   "Se actualizará el programa y la Base de Datos.\n"
+                                   "¿Aplicar ahora?"):
+                ok, msg, reinicio, _bd = updater_gh.aplicar_y_sincronizar(
+                    info, bd=self.bd, logf=logger.info)
+                messagebox.showinfo("Actualización", msg)
+                self._actualizar_estado()
+                if ok and reinicio:
+                    updater_gh.reiniciar()
+
+        def _cerrar_seguro(self):
+            """Cierre seguro: ofrece subir lo que quedó pendiente.
+
+            Ya no hay lock que liberar; lo único que puede quedar a medias es un
+            cambio local sin subir (por ejemplo si se trabajó sin conexión).
+            """
+            try:
+                pendiente = self.bd.hay_cambios_sin_subir()
+            except Exception:
+                pendiente = False
+            if pendiente:
+                r = messagebox.askyesnocancel(
+                    "Cambios sin subir",
+                    "Hay cambios en la BD que todavía no están en GitHub.\n\n"
+                    "¿Subirlos antes de cerrar?")
+                if r is None:
+                    return
+                if r:
+                    self.lbl_sync.config(text="🔄 Subiendo cambios…", fg=AZUL_ES)
+                    self.update_idletasks()
+                    res = self.bd.git_push("subir cambios antes de cerrar")
+                    if not res.get("subido") and not res.get("nada_que_subir"):
+                        if not messagebox.askyesno(
+                                "No se pudo subir",
+                                f"{res.get('error', 'Error desconocido')}\n\n"
+                                "Los cambios están guardados localmente y se "
+                                "subirán la próxima vez.\n\n¿Cerrar de todos modos?"):
+                            return
+            self.destroy()
+
+
+    class VentanaGestionarBD(tk.Toplevel):
+        """Flujo 4: gestionar la BD (buscar, filtrar, editar, desactivar).
+
+        v3.2.0: la columna principal es el NOMBRE DESCRIPTIVO completo, y se
+        puede EDITAR una ficha (regenerando su nombre). Poder corregir es lo que
+        faltaba; por eso el borrado sigue siendo lógico y reversible.
+        """
+
+        def __init__(self, master, bd, al_cambiar=None):
+            super().__init__(master)
+            self.bd = bd; self.al_cambiar = al_cambiar
+            self.title("Gestionar Base de Datos"); self.geometry("980x600")
+            self.configure(padx=12, pady=12)
+            top = tk.Frame(self); top.pack(fill="x")
+            tk.Label(top, text="Buscar:").pack(side="left")
+            self.var_q = tk.StringVar(); e = tk.Entry(top, textvariable=self.var_q, width=30)
+            e.pack(side="left", padx=4); e.bind("<KeyRelease>", lambda _e: self._refrescar())
+            tk.Label(top, text="Categoría:").pack(side="left", padx=(10, 2))
+            self.var_cat = tk.StringVar(value="TODAS")
+            ttk.Combobox(top, textvariable=self.var_cat, width=8, state="readonly",
+                         values=["TODAS"] + list(bd_manager.CATEGORIAS)).pack(side="left")
+            self.var_cat.trace_add("write", lambda *_: self._refrescar())
+            self.var_inact = tk.BooleanVar(value=False)
+            tk.Checkbutton(top, text="Mostrar desactivadas", variable=self.var_inact,
+                           command=self._refrescar).pack(side="left", padx=(12, 0))
+
+            self.tree = ttk.Treeview(self, columns=("n", "c", "e", "f"), show="headings")
+            for c, t, w in (("n", "Nombre de la ficha", 600), ("c", "Categoría", 80),
+                            ("e", "Estado", 90), ("f", "Cargada", 100)):
+                self.tree.heading(c, text=t); self.tree.column(c, width=w)
+            self.tree.pack(fill="both", expand=True, pady=8)
+            self.tree.bind("<Double-Button-1>", lambda _ev: self._editar())
+
+            bar = tk.Frame(self); bar.pack(fill="x")
+            tk.Button(bar, text="✏️ Editar ficha", command=self._editar,
+                      bg=AZUL_ES, fg="white").pack(side="left")
+            tk.Button(bar, text="📄 Reemplazar PDF",
+                      command=self._reemplazar_pdf).pack(side="left", padx=6)
+            tk.Button(bar, text="🗑️ Desactivar", command=self._eliminar,
+                      bg=ROJO_ES, fg="white").pack(side="left", padx=6)
+            tk.Button(bar, text="♻️ Reactivar", command=self._reactivar).pack(side="left")
+            self.lbl = tk.Label(bar, text=""); self.lbl.pack(side="right")
+            self._map = {}
+            self._refrescar()
+            self._ofrecer_migracion()
+            _traer_al_frente(self)
+
+        # ------------------------------------------------------------ listado
+        def _refrescar(self):
+            q = self.var_q.get().strip()
+            cat = self.var_cat.get()
+            cat = None if cat == "TODAS" else cat
+            inact = self.var_inact.get()
+            if q:
+                fichas = fuzzy_search.buscar(
+                    q, self.bd.listar_fichas(incluir_inactivas=inact),
+                    categoria=cat, top_n=200, incluir_inactivas=inact)
+            else:
+                fichas = [f for f in self.bd.listar_fichas(incluir_inactivas=inact)
+                          if not cat or f.get("categoria") == cat]
+            for i in self.tree.get_children():
+                self.tree.delete(i)
+            self._map.clear()
+            for f in fichas:
+                iid = f.get("id")
+                if not iid:
+                    continue          # índice inconsistente: no reventar la lista
+                self._map[iid] = f
+                estado = f.get("estado", "activo")
+                self.tree.insert("", "end", iid=iid,
+                                 values=(self.bd.nombre_de(f), f.get("categoria", ""),
+                                         "desactivada" if estado != "activo" else "activa",
+                                         f.get("fecha_carga", "")))
+            r = self.bd.resumen_por_categoria()
+            self.lbl.config(text=f"{r['TOTAL']} activas · ARQ {r['ARQ']} · ESTR {r['ESTR']} · "
+                                 f"MEC {r['MEC']} · ELEC {r['ELEC']}")
+
+        def _sel(self):
+            sel = self.tree.selection()
+            if not sel:
+                messagebox.showinfo("Seleccione una ficha",
+                                    "Elija una ficha de la lista.")
+                return None
+            return self._map.get(sel[0])
+
+        def _ofrecer_migracion(self):
+            """Fichas de versiones anteriores sin nombre descriptivo."""
+            pendientes = self.bd.fichas_sin_nombre()
+            if not pendientes:
+                return
+            if not messagebox.askyesno(
+                    "Generar nombres",
+                    f"Hay {len(pendientes)} ficha(s) sin nombre descriptivo "
+                    "(cargadas con una versión anterior).\n\n"
+                    "¿Generar sus nombres ahora?"):
+                return
+            # Sincronizar primero: si otra PC editó esas fichas, se trabaja sobre
+            # la versión al día en vez de pisarla.
+            self.bd.sincronizar()
+            n = self.bd.migrar_nombres_ficha()
+            r = self.bd.git_push(f"generar nombre de {n} ficha(s)")
+            self._refrescar()
+            self._avisar_push(r, f"Nombres generados para {n} ficha(s).")
+
+        # ------------------------------------------------------------ acciones
+        def _editar(self):
+            f = self._sel()
+            if not f:
+                return
+            datos = dict(f)
+            d = DialogoRevisarFicha(self, self.bd, None, datos,
+                                    titulo=f"Editar: {self.bd.nombre_de(f)}",
+                                    es_edicion=True)
+            self.wait_window(d)
+            res = d.resultado
+            if res.get("accion") != "guardar":
+                return
+            cambios = {k: v for k, v in res["datos"].items()
+                       if not k.startswith("_") and k in
+                       ("nombre_material", "marca", "categoria", "dimensiones",
+                        "sin_medidas", "tipo_producto", "especificacion",
+                        "normativa", "descripcion_corta")}
+            manual = res["datos"].get("nombre_ficha", "")
+            if manual:
+                cambios["nombre_ficha"] = manual
+            try:
+                # Sin nombre manual se regenera SIEMPRE: es lo que hace efectivo
+                # el botón "Regenerar" incluso sobre una ficha que antes tenía el
+                # nombre escrito a mano.
+                ficha = self.bd.editar_ficha(f["id"], cambios,
+                                             regenerar_nombre=not bool(manual))
+            except Exception as e:
+                messagebox.showerror("No se pudo editar", str(e)); return
+            r = self.bd.git_push(f"editar ficha {ficha['nombre_ficha']}")
+            self._refrescar()
+            self._avisar_push(r, f"Ficha actualizada:\n{ficha['nombre_ficha']}")
+            if self.al_cambiar:
+                self.al_cambiar()
+
+        def _reemplazar_pdf(self):
+            f = self._sel()
+            if not f:
+                return
+            ruta = filedialog.askopenfilename(
+                title=f"PDF correcto para {self.bd.nombre_de(f)}",
+                filetypes=[("Fichas", "*.pdf *.png *.jpg *.jpeg *.tif *.tiff"),
+                           ("Todos", "*.*")])
+            if not ruta:
+                return
+            try:
+                self.bd.reemplazar_pdf_ficha(f["id"], ruta)
+            except Exception as e:
+                messagebox.showerror("No se pudo reemplazar", str(e)); return
+            r = self.bd.git_push(f"reemplazar archivo de {self.bd.nombre_de(f)}")
+            self._avisar_push(r, "Archivo reemplazado. El nombre y las referencias "
+                                 "de los submittals se conservan.")
+            self._refrescar()
+            if self.al_cambiar:
+                self.al_cambiar()
+
+        def _eliminar(self):
+            f = self._sel()
+            if not f:
+                return
+            nombre = self.bd.nombre_de(f)
+            en_uso = self.bd.proyectos_que_usan(f["id"])
+            aviso = ""
+            if en_uso:
+                detalle = "\n".join(f"  · {p['nombre_proyecto']} ({p['consecutivo']})"
+                                    for p in en_uso[:8])
+                aviso = ("\n\n⚠️ Esta ficha se usa en "
+                         f"{len(en_uso)} submittal(s):\n{detalle}\n"
+                         "Esos submittals no podrán regenerarse hasta que se "
+                         "cambie el material.")
+            if not messagebox.askyesno(
+                    "Desactivar ficha",
+                    f"¿Desactivar '{nombre}'?\n\n"
+                    "Dejará de aparecer en las búsquedas. El PDF NO se borra y la "
+                    "ficha se puede reactivar después." + aviso):
+                return
+            if not self.bd.soft_delete_ficha(f["id"]):
+                messagebox.showerror(
+                    "No se pudo desactivar",
+                    "La ficha ya no está en el índice. Sincronice y vuelva a "
+                    "intentar.")
+                self._refrescar()
+                return
+            r = self.bd.git_push(f"desactivar ficha {nombre}")
+            self._refrescar()
+            self._avisar_push(r, "Ficha desactivada.")
+            if self.al_cambiar:
+                self.al_cambiar()
+
+        def _reactivar(self):
+            f = self._sel()
+            if not f:
+                return
+            if f.get("estado", "activo") == "activo":
+                messagebox.showinfo("Reactivar", "La ficha ya está activa.")
+                return
+            if not self.bd.reactivar_ficha(f["id"]):
+                messagebox.showerror(
+                    "No se pudo reactivar",
+                    "La ficha ya no está en el índice. Sincronice y vuelva a "
+                    "intentar.")
+                self._refrescar()
+                return
+            r = self.bd.git_push(f"reactivar ficha {self.bd.nombre_de(f)}")
+            self._refrescar()
+            self._avisar_push(r, "Ficha reactivada.")
+            if self.al_cambiar:
+                self.al_cambiar()
+
+        def _avisar_push(self, r, mensaje_ok):
+            if r.get("offline"):
+                messagebox.showinfo("Sin conexión",
+                                    mensaje_ok + "\n\nEl cambio se guardó localmente "
+                                    "y se subirá al reconectar.")
+            elif r.get("auth"):
+                messagebox.showwarning("Falta el token",
+                                       mensaje_ok + "\n\nNo se pudo subir a GitHub: "
+                                       "configure el token.")
+            elif r.get("subido") or r.get("nada_que_subir") or r.get("desactivado"):
+                messagebox.showinfo("Listo", mensaje_ok)
+            else:
+                messagebox.showwarning("No se pudo subir",
+                                       mensaje_ok + f"\n\n{r.get('error', '')}")
+
+
+def main():
+    if not _TK_OK:
+        print("tkinter no disponible en este entorno; la GUI no puede iniciarse.")
+        return
+    App().mainloop()
+
+
+if __name__ == "__main__":
+    main()

@@ -53,3 +53,33 @@ Copia de seguridad*
 !assets/**
 !Icono Generador de Submittals/
 !Icono Generador de Submittals/**
+
+# ==========================================================================
+# v3.1.0: BASE DE DATOS DE FICHAS EN ESTE REPOSITORIO (BD_Submittals/)
+# ==========================================================================
+# Las reglas de arriba ignoran *.pdf y *.xlsx para no subir documentos de obra.
+# La BD de fichas SI debe versionarse: se re-incluyen unicamente los PDFs de las
+# cuatro carpetas de categoria. Todo lo demas (entregables generados) sigue
+# fuera del repositorio.
+!BD_Submittals/ARQ/**/*.pdf
+!BD_Submittals/ESTR/**/*.pdf
+!BD_Submittals/MEC/**/*.pdf
+!BD_Submittals/ELEC/**/*.pdf
+
+# De los proyectos solo se versionan los METADATOS (submittal_proyecto.json).
+# Las caratulas, los CMP y los Excel se regeneran: versionarlos haria crecer el
+# repositorio cientos de MB por proyecto (y GitHub rechaza archivos >100 MB).
+BD_Submittals/Proyectos/**/CARATULA*.pdf
+BD_Submittals/Proyectos/**/*-CMP.pdf
+BD_Submittals/Proyectos/**/CMP SUBMITTAL *.pdf
+
+# Temporales de la escritura atomica del indice
+*.tmp
+BD_Submittals/**/*.tmp
+
+# NOTA: la configuracion local (con el token de GitHub y la API key) y el cache
+# de fichas NO viven en el repositorio, sino en:
+#   %APPDATA%/GeneradorSubmittals/config.json
+#   %LOCALAPPDATA%/GeneradorSubmittals/cache/
+#   %LOCALAPPDATA%/GeneradorSubmittals/bd_repo/   (clon de trabajo de la BD)
+# Por eso no hace falta (ni sirve) listarlos aqui con variables de entorno.
