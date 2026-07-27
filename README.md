@@ -2,7 +2,7 @@
 
 # 🏗️ Generador de Submittals ES
 
-[![Version](https://img.shields.io/badge/version-3.0.0-blue?style=for-the-badge&logo=github)](https://github.com/adrianix360/generador-submittals/releases)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue?style=for-the-badge&logo=github)](https://github.com/adrianix360/generador-submittals/releases)
 [![Python](https://img.shields.io/badge/Python-3.8+-green?style=for-the-badge&logo=python)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Active%20Development-brightgreen?style=for-the-badge)]()
