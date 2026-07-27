@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-27T14:42:15",
+  "ultima_actualizacion": "2026-07-27T14:55:19",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -141,8 +141,28 @@
       "fecha_modificacion": "2026-07-27T14:42:15",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "33b0c532-b359-4816-a547-7ea59ec825ab",
+      "nombre_ficha": "REPELLO PARA MURO SECO MPR 150 M 0 x 0 - Kermill",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Repello para Muro Seco MPR 150 M",
+      "marca": "Kermill",
+      "categoria": "ARQ",
+      "tipo_producto": "Repello para muros secos",
+      "dimensiones": "0x0",
+      "especificacion": "Adherencia a los 28 días: 12 kg/cm²",
+      "normativa": "ASTM C-109, EN 1015/12",
+      "descripcion_corta": "Repello para revoques sobre paneles de muro seco, formulado con cemento Portland y aditivos para mejorar adherencia y fraguado.",
+      "search_keywords": "repello para muro seco mpr 150 m 0 x kermill arq muros secos 0x0 adherencia a los 28 dias 12 kg cm astm c 109 en 1015 revoques sobre paneles de formulado con cemento portland y aditivos mejorar fraguado",
+      "ruta_pdf": "ARQ/REPELLO-PARA-MURO-SECO-MPR-150-M-0-x-0-Kermill.pdf",
+      "hash_archivo": "d2fee05cacf0e4e4",
+      "fecha_carga": "2026-07-27",
+      "fecha_modificacion": "2026-07-27T14:55:18",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-27T14:41:30"
+  "ultima_sincronizacion_git": "2026-07-27T14:54:02"
 }
