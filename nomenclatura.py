@@ -182,6 +182,13 @@ RE_MEDIDA_SUELTA = re.compile(
 
 DENOMINADORES_PULGADA = (2, 4, 8, 16, 32, 64)
 
+# Algunas marcas usan UNA sola ficha tecnica para todo un lineal de productos
+# (ej: tubos Amanco, bloques Bloquera PC), sin una medida unica que las
+# distinga. "MULTIPLE"/"MULTIPLES" en el campo de dimensiones/medidas se
+# acepta como valor valido (cuenta como distintivo) en vez de exigir una
+# medida numerica que esa ficha no tiene.
+RE_MULTIPLE = re.compile(r"\bmultiples?\b")
+
 
 # --------------------------------------------------------------------------
 # HELPERS DE TEXTO
@@ -318,6 +325,9 @@ def formatear_dimensiones(origen):
       * texto libre: ``'8"x8"x3/16"'``, ``'150x100x1.5 mm'``, ``'60x60'``
       * dict (``dimensiones_detectadas``): ``{'ancho': 8, 'largo': 8,
         'espesor': 0.1875}``
+      * la palabra ``'MULTIPLE'``/``'MULTIPLES'`` (una ficha para todo un
+        lineal de productos, sin medida unica): se devuelve tal cual, en
+        mayusculas.
 
     Convencion: la pulgada se repite en cada medida (``8" x 8" x 3/16"``); las
     unidades con letras se escriben una sola vez al final (``60 x 60 cm``).
@@ -326,6 +336,8 @@ def formatear_dimensiones(origen):
         return ""
     if isinstance(origen, dict):
         return _formatear_dim_dict(origen)
+    if RE_MULTIPLE.search(normalizar(origen)):
+        return "MULTIPLE"
 
     texto = str(origen)
     m = RE_GRUPO_DIM.search(texto)

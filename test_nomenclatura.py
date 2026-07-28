@@ -210,6 +210,23 @@ class TestDimensiones(unittest.TestCase):
         for valor in (None, "", {}, "sin medidas"):
             self.assertEqual(nm.formatear_dimensiones(valor), "")
 
+    def test_multiple_se_acepta_como_medida(self):
+        """Algunas marcas usan una sola ficha para todo un lineal de productos
+        (tubos Amanco, bloques Bloquera PC): MULTIPLE/MULTIPLES es una medida
+        valida, no una medida faltante."""
+        self.assertEqual(nm.formatear_dimensiones("MULTIPLE"), "MULTIPLE")
+        self.assertEqual(nm.formatear_dimensiones("multiples"), "MULTIPLE")
+        self.assertEqual(nm.formatear_dimensiones("Múltiples"), "MULTIPLE")
+        self.assertEqual(nm.formatear_dimensiones("  Multiple  "), "MULTIPLE")
+
+    def test_multiple_cuenta_como_distintivo_en_analizar(self):
+        ficha = {"nombre_material": "Tuberia PVC", "marca": "Amanco",
+                 "categoria": "MEC", "dimensiones": "MULTIPLE"}
+        r = nm.analizar(ficha)
+        self.assertTrue(r["suficiente"])
+        self.assertEqual(r["faltantes"], [])
+        self.assertIn("MULTIPLE", r["nombre"])
+
 
 # ==========================================================================
 # BORDES

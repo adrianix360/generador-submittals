@@ -1,11 +1,11 @@
 {
-  "version": "3.3.4",
+  "version": "3.3.5",
   "tipo_actualizacion": "ejecutable",
   "fecha": "2026-07-28",
-  "changelog": "Fix: el hash de VERSION.json para archivos de texto (.py/.html) se calculaba sobre el archivo local en CRLF (Windows), pero raw.githubusercontent.com sirve el blob de git en LF (autocrlf); el auto-actualizador rechazaba toda descarga de codigo como 'corrupta'. Ahora se normaliza CRLF->LF antes de hashear en ambos lados (deployment.py y auto_updater.py)",
+  "changelog": "La palabra MULTIPLE/MULTIPLES ahora se acepta como medida valida en el campo de dimensiones: algunas marcas (Amanco, Bloquera PC) usan una sola ficha tecnica para todo un lineal de productos, sin una medida unica que las distinga",
   "archivos": {
     "submitals_gui_v3.py": {
-      "hash": "260cb4064534a69340bd4dd973c2b653f1dbeea89ad85538f9917b38808a8906",
+      "hash": "af2a73b44f2da516515ea84b6b36fd565915bf85783f0930c06f17df4ab23ce4",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui_v3.py",
       "tipo": "python"
     },
@@ -25,7 +25,7 @@
       "tipo": "python"
     },
     "nomenclatura.py": {
-      "hash": "c6b602ad3a09d3b36dacd4212777141c72ba1f46cb18c6cfe16f1f775fe6740b",
+      "hash": "97468a754e1e6f6b846c9513226f4b280e8b1003d445b6b58ebaa9976640f985",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/nomenclatura.py",
       "tipo": "python"
     },
@@ -65,8 +65,8 @@
       "tipo": "html"
     },
     "GeneradorSubmittalsES_v3.exe": {
-      "hash": "965a2120ae877b98ee3323958a17122bcae18d7c4b22687a4d17380ad0a48be6",
-      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.4/GeneradorSubmittalsES_v3.exe",
+      "hash": "8fe1c960c484d3082b222979bd714567dafa6529a48d211769c1a3b66dc39a68",
+      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.5/GeneradorSubmittalsES_v3.exe",
       "tipo": "ejecutable",
       "requerido": false
     }

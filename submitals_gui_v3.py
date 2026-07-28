@@ -44,7 +44,7 @@ import nomenclatura
 import ocr_extractor
 import updater_gh
 
-VERSION = "3.3.4"
+VERSION = "3.3.5"
 BASE_DIR = Path(__file__).resolve().parent
 PIN_MODO_DEV = "9119"
 
@@ -1101,7 +1101,8 @@ if _TK_OK:
             ("nombre_material", "Nombre del material"),
             ("marca", "Marca"),
             ("categoria", "Categoría (ARQ/ESTR/MEC/ELEC)"),
-            ("dimensiones", "Dimensiones (ej: 8\"x8\"x3/16\", 60x60 cm)"),
+            ("dimensiones", "Dimensiones (ej: 8\"x8\"x3/16\", 60x60 cm, o "
+                            "\"MULTIPLE\" si la ficha cubre varias medidas)"),
             ("tipo_producto", "Tipo / forma (ej: cuadrado, rectangular)"),
             ("especificacion", "Especificación / modelo (ej: CH 13, QO260)"),
             ("normativa", "Normativa (no entra en el nombre)"),
