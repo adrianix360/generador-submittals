@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:20:08",
+  "ultima_actualizacion": "2026-07-28T16:21:20",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -771,8 +771,29 @@
       "fecha_modificacion": "2026-07-28T16:20:08",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "15c388f8-6b91-4d6d-84ee-9a9f43d1ca7b",
+      "nombre_ficha": "PERFILES DE ACERO GALVANIZADO (CANAL CIELO) MULTIPLE - Macopa",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Perfiles de Acero Galvanizado (CANAL CIELO)",
+      "marca": "Macopa",
+      "categoria": "ARQ",
+      "tipo_producto": "Perfil metálico",
+      "dimensiones": "MULTIPLE",
+      "sin_medidas": false,
+      "especificacion": "Acero galvanizado G40",
+      "normativa": "ASTM A653, ASTM C645",
+      "descripcion_corta": "Perfiles de acero galvanizado para soporte y refuerzo en sistemas de paredes livianas y cielos.",
+      "search_keywords": "perfiles de acero galvanizado canal cielo multiple macopa arq perfil metalico g40 astm a653 c645 para soporte y refuerzo en sistemas paredes livianas cielos",
+      "ruta_pdf": "ARQ/PERFILES-DE-ACERO-GALVANIZADO-CANAL-CIELO-MULTIPLE-Macopa.pdf",
+      "hash_archivo": "2577eb643864b587",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:21:20",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:18:46"
+  "ultima_sincronizacion_git": "2026-07-28T16:20:11"
 }
