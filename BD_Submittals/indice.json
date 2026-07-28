@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:30:57",
+  "ultima_actualizacion": "2026-07-28T17:04:46",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1065,8 +1065,29 @@
       "fecha_modificacion": "2026-07-28T16:30:57",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "892499c5-3f87-400d-bc8a-29a8b1e394be",
+      "nombre_ficha": "EMT COMPRESSION CONNECTOR-STEEL 1/2\" - PST Wiring System",
+      "nombre_ficha_manual": false,
+      "nombre_material": "EMT Compression Connector-Steel",
+      "marca": "PST Wiring System",
+      "categoria": "ELEC",
+      "tipo_producto": "Conector de compresión",
+      "dimensiones": "1/2\" a 4\"",
+      "sin_medidas": false,
+      "especificacion": "Acero con recubrimiento de zinc",
+      "normativa": "UL E358076",
+      "descripcion_corta": "Conector de compresión para EMT, con garganta aislada, para unir EMT a cajas o recintos en ubicaciones secas.",
+      "search_keywords": "emt compression connector steel 1 2 pst wiring system elec conector de compresion a 4 acero con recubrimiento zinc ul e358076 para garganta aislada unir cajas o recintos en ubicaciones secas",
+      "ruta_pdf": "ELEC/EMT-COMPRESSION-CONNECTOR-STEEL-1-2-PST-Wiring-System.pdf",
+      "hash_archivo": "17e1c3ab37f0c97e",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T17:04:46",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:30:01"
+  "ultima_sincronizacion_git": "2026-07-28T16:30:59"
 }
