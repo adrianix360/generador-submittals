@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:06:31",
+  "ultima_actualizacion": "2026-07-28T16:07:25",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -393,8 +393,29 @@
       "fecha_modificacion": "2026-07-28T16:06:31",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "4d149756-339d-44ff-a93d-fe6c37180853",
+      "nombre_ficha": "HIERRO EN FORMAS (ANGULAR) 1/4\" x 4\" - MultiGroup",
+      "nombre_ficha_manual": false,
+      "nombre_material": "HIERRO EN FORMAS (ANGULAR)",
+      "marca": "MultiGroup",
+      "categoria": "ESTR",
+      "tipo_producto": "Barra angular de acero",
+      "dimensiones": "1/4\" x 4\"",
+      "sin_medidas": false,
+      "especificacion": "ASTM A36",
+      "normativa": "ASTM A36, ASTM A36/A36M",
+      "descripcion_corta": "Barras de sección transversal en ángulo recto, usadas en estructuras metálicas y telecomunicaciones.",
+      "search_keywords": "hierro en formas angular 1 4 x multigroup estr barra de acero astm a36 a36m barras seccion transversal angulo recto usadas estructuras metalicas y telecomunicaciones",
+      "ruta_pdf": "ESTR/HIERRO-EN-FORMAS-ANGULAR-1-4-x-4-MultiGroup.pdf",
+      "hash_archivo": "7b227136b841b049",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:07:25",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:06:01"
+  "ultima_sincronizacion_git": "2026-07-28T16:06:35"
 }
