@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:28:33",
+  "ultima_actualizacion": "2026-07-28T16:29:34",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1002,8 +1002,29 @@
       "fecha_modificacion": "2026-07-28T16:28:33",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "966bbf7a-4028-4f7c-82bf-dbd073866443",
+      "nombre_ficha": "CAJA RECTANGULAR DE ALUMINIO (INTERPERIE) 2 x 4 - PST",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Caja Rectangular de Aluminio (INTERPERIE)",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "tipo_producto": "Caja FS 2X4",
+      "dimensiones": "2x4",
+      "sin_medidas": false,
+      "especificacion": "Profundidad 2\", Ancho 2-13/16\", Largo 4-9/16\"",
+      "normativa": "UL File # E482630",
+      "descripcion_corta": "Caja de aluminio resistente a la intemperie para cableado en lugares húmedos o secos, utilizada como caja de empalmes o carcasa para receptáculos.",
+      "search_keywords": "caja rectangular de aluminio interperie 2 x 4 pst elec fs 2x4 profundidad ancho 13 16 largo 9 ul file e482630 resistente a la intemperie para cableado en lugares humedos o secos utilizada como empalmes carcasa receptaculos",
+      "ruta_pdf": "ELEC/CAJA-RECTANGULAR-DE-ALUMINIO-INTERPERIE-2-x-4-PST.pdf",
+      "hash_archivo": "43b86e4b495f8a53",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:29:34",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:27:48"
+  "ultima_sincronizacion_git": "2026-07-28T16:28:35"
 }
