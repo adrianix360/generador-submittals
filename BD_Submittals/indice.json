@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:22:20",
+  "ultima_actualizacion": "2026-07-28T16:22:38",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -834,8 +834,29 @@
       "fecha_modificacion": "2026-07-28T16:22:20",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "bf5802b7-9805-4c3d-92fe-e15e2bd43235",
+      "nombre_ficha": "PLETINA 25 x 3 - ArcelorMittal",
+      "nombre_ficha_manual": false,
+      "nombre_material": "PLETINA 25mm x 3mm",
+      "marca": "ArcelorMittal",
+      "categoria": "ESTR",
+      "tipo_producto": "Pletina de acero",
+      "dimensiones": "25x3",
+      "sin_medidas": false,
+      "especificacion": "Peso lineal 0,589 g/m",
+      "normativa": "ASTM A36",
+      "descripcion_corta": "Pletina de acero estructural con esfuerzo de fluencia mínimo de 250 MPa y tensión máxima de 550 MPa.",
+      "search_keywords": "pletina 25 x 3 arcelormittal 25mm 3mm estr de acero 25x3 peso lineal 0 589 g m astm a36 estructural con esfuerzo fluencia minimo 250 mpa y tension maxima 550",
+      "ruta_pdf": "ESTR/PLETINA-25-x-3-ArcelorMittal.pdf",
+      "hash_archivo": "697721859a8db2c7",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:22:38",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:21:44"
+  "ultima_sincronizacion_git": "2026-07-28T16:22:23"
 }
