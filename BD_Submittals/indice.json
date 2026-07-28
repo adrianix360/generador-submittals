@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T17:09:25",
+  "ultima_actualizacion": "2026-07-28T17:09:58",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1212,8 +1212,29 @@
       "fecha_modificacion": "2026-07-28T17:09:25",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "9142c922-555d-4a27-a95e-c1ce39450d48",
+      "nombre_ficha": "TGP/TC-ER MULTIPLE - Prysmian Group",
+      "nombre_ficha_manual": false,
+      "nombre_material": "TGP/TC-ER",
+      "marca": "Prysmian Group",
+      "categoria": "ELEC",
+      "tipo_producto": "Multiconductor de cobre",
+      "dimensiones": "MULTIPLE",
+      "sin_medidas": false,
+      "especificacion": "Multiconductor formado por cables individuales de cobre suave",
+      "normativa": "ASTM B3, ASTM B8, ASTM B787, CIDET # 06061, RETIE 20.2, UL 1277, UL 83, UL E07079",
+      "descripcion_corta": "Multiconductor de cobre con cubierta de PVC resistente al agua, corrosivos y luz UV, certificado para enterrado directo.",
+      "search_keywords": "tgp tc er multiple prysmian group elec multiconductor de cobre formado por cables individuales suave astm b3 b8 b787 cidet 06061 retie 20 2 ul 1277 83 e07079 con cubierta pvc resistente al agua corrosivos y luz uv certificado para enterrado directo",
+      "ruta_pdf": "ELEC/TGP-TC-ER-MULTIPLE-Prysmian-Group.pdf",
+      "hash_archivo": "1caaffb144a9265f",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T17:09:58",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T17:08:58"
+  "ultima_sincronizacion_git": "2026-07-28T17:09:28"
 }
