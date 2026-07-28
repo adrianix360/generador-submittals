@@ -44,7 +44,7 @@ import nomenclatura
 import ocr_extractor
 import updater_gh
 
-VERSION = "3.3.1"
+VERSION = "3.3.2"
 BASE_DIR = Path(__file__).resolve().parent
 PIN_MODO_DEV = "9119"
 

@@ -1,11 +1,11 @@
 {
-  "version": "3.3.1",
+  "version": "3.3.2",
   "tipo_actualizacion": "ejecutable",
   "fecha": "2026-07-28",
-  "changelog": "Fix: terminales de Windows parpadeando al abrir la app (subprocess de git/pip/updater sin consola visible); fix: Buscar actualizacion ahora descarga e instala el .exe nuevo automaticamente (antes se quedaba sin hacer nada en modo empaquetado); git_bd.py agregado a los archivos versionados.",
+  "changelog": "Fix: Cargar ficha a BD no funcionaba (boton .config() invalido en CustomTkinter, crasheaba al seleccionar un archivo)",
   "archivos": {
     "submitals_gui_v3.py": {
-      "hash": "7deadc65eddbd0f010a0917ab32f4df12ce5241bf7f97e6c8928154e858c2847",
+      "hash": "7742955de2e438c397002767a6075f5e0875c5228874d9b68754c4a59400e858",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui_v3.py",
       "tipo": "python"
     },
@@ -65,8 +65,8 @@
       "tipo": "html"
     },
     "GeneradorSubmittalsES_v3.exe": {
-      "hash": "114e80ee69f88e4785f9bae905465497912eb8f1bbadb7ee639f2bdbea58231b",
-      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.1/GeneradorSubmittalsES_v3.exe",
+      "hash": "8c11029c8beed429c6bb3b67ceeb1f38405d948bd1f5a3495678813012686f68",
+      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.2/GeneradorSubmittalsES_v3.exe",
       "tipo": "ejecutable",
       "requerido": false
     }
