@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:24:24",
+  "ultima_actualizacion": "2026-07-28T16:25:54",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -918,8 +918,29 @@
       "fecha_modificacion": "2026-07-28T16:24:24",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "40d174e4-df26-409a-adb2-1a44482f2ecc",
+      "nombre_ficha": "DISYUNTOR 2P70 (EATON CH270) 1.5 x 3.2 x 2.6 2P 70 A 240 V - Eaton",
+      "nombre_ficha_manual": false,
+      "nombre_material": "DISYUNTOR 2P70 (Eaton CH270)",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "tipo_producto": "Interruptor termomagnético",
+      "dimensiones": "1.5x3.2x2.6",
+      "sin_medidas": false,
+      "especificacion": "70A, 120/240V, 10 kAIC",
+      "normativa": "UL 489",
+      "descripcion_corta": "Interruptor termomagnético tipo CH, 70A, 120/240V, 10 kAIC, 2 polos, para centros de carga tipo CH.",
+      "search_keywords": "disyuntor 2p70 eaton ch270 1 5 x 3 2 6 2p 70 a 240 v elec interruptor termomagnetico 5x3 2x2 70a 120 240v 10 kaic ul 489 tipo ch polos para centros de carga",
+      "ruta_pdf": "ELEC/DISYUNTOR-2P70-EATON-CH270-1-5-x-3-2-x-2-6-2P-70-A-240-V-Eaton.pdf",
+      "hash_archivo": "b8f372787eec7abc",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:25:54",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:24:10"
+  "ultima_sincronizacion_git": "2026-07-28T16:24:27"
 }
