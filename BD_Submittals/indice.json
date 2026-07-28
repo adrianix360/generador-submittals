@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:09:50",
+  "ultima_actualizacion": "2026-07-28T16:11:09",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -519,8 +519,29 @@
       "fecha_modificacion": "2026-07-28T16:09:50",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "73defccb-c461-4d99-9237-c535d3178399",
+      "nombre_ficha": "PERFILES DE ACERO GALVANIZADO (TRACK) MULTIPLE - MACOPA",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Perfiles de Acero Galvanizado (TRACK)",
+      "marca": "MACOPA",
+      "categoria": "ARQ",
+      "tipo_producto": "Perfil de acero",
+      "dimensiones": "MULTIPLE",
+      "sin_medidas": false,
+      "especificacion": "",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Perfil de acero galvanizado para sistemas de paredes livianas y cielos, usado como guía estructural para studs.",
+      "search_keywords": "perfiles de acero galvanizado track multiple macopa arq perfil sin especificar para sistemas paredes livianas y cielos usado como guia estructural studs",
+      "ruta_pdf": "ARQ/PERFILES-DE-ACERO-GALVANIZADO-TRACK-MULTIPLE-MACOPA.pdf",
+      "hash_archivo": "61d2bd48a032153a",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:11:09",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:09:19"
+  "ultima_sincronizacion_git": "2026-07-28T16:09:55"
 }
