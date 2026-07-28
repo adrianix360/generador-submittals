@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:27:45",
+  "ultima_actualizacion": "2026-07-28T16:28:33",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -981,8 +981,29 @@
       "fecha_modificacion": "2026-07-28T16:27:45",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "db304197-5238-4e86-aef7-0cdcbdfb90b1",
+      "nombre_ficha": "SUPRESOR 50 KA (EATON CHSPT2SURGE10) 7.5 x 5 x 2 240 V - Eaton",
+      "nombre_ficha_manual": false,
+      "nombre_material": "SUPRESOR 50 KA (Eaton CHSPT2SURGE10)",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "tipo_producto": "Dispositivo de protección contra sobretensiones",
+      "dimensiones": "7.5x5x2",
+      "sin_medidas": false,
+      "especificacion": "10 kA corriente nominal de descarga",
+      "normativa": "CBC2007, IBC 2006, UL 1449, UBC Zone 4",
+      "descripcion_corta": "Dispositivo de protección contra sobretensiones tipo 2, 120/240V, monofásico, NEMA 4, 60 Hz, 60 kA corriente de sobretensión.",
+      "search_keywords": "supresor 50 ka eaton chspt2surge10 7 5 x 2 240 v elec dispositivo de proteccion contra sobretensiones 5x5x2 10 corriente nominal descarga cbc2007 ibc 2006 ul 1449 ubc zone 4 tipo 120 240v monofasico nema 60 hz sobretension",
+      "ruta_pdf": "ELEC/SUPRESOR-50-KA-EATON-CHSPT2SURGE10-7-5-x-5-x-2-240-V-Eaton.pdf",
+      "hash_archivo": "db18481c5328e3cd",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:28:33",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:26:59"
+  "ultima_sincronizacion_git": "2026-07-28T16:27:48"
 }
