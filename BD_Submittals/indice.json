@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:17:12",
+  "ultima_actualizacion": "2026-07-28T16:17:38",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -708,8 +708,29 @@
       "fecha_modificacion": "2026-07-28T16:17:12",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "10d5fcea-4df0-4913-8dd4-806d863f463a",
+      "nombre_ficha": "PERFILERÍA LIVIANA EN ACERO GALVANIZADO 38.1 x 4.88 x 0.7 - Macopa",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Perfilería Liviana en Acero Galvanizado",
+      "marca": "Macopa",
+      "categoria": "ARQ",
+      "tipo_producto": "Sistema de paredes livianas y cielos",
+      "dimensiones": "38.1x4.88x0.70",
+      "sin_medidas": false,
+      "especificacion": "Elemento estructural principal de soporte del cielo",
+      "normativa": "ASTM A653, ASTM C645",
+      "descripcion_corta": "Perfilería de acero galvanizado para soporte y refuerzo en sistemas de paredes livianas y cielos.",
+      "search_keywords": "perfileria liviana en acero galvanizado 38 1 x 4 88 0 7 macopa arq sistema de paredes livianas y cielos 1x4 88x0 70 elemento estructural principal soporte del cielo astm a653 c645 para refuerzo sistemas",
+      "ruta_pdf": "ARQ/PERFILERIA-LIVIANA-EN-ACERO-GALVANIZADO-38-1-x-4-88-x-0-7-Macopa.pdf",
+      "hash_archivo": "e1a82adf7732f779",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:17:38",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:16:34"
+  "ultima_sincronizacion_git": "2026-07-28T16:17:16"
 }
