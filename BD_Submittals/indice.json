@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T17:11:15",
+  "ultima_actualizacion": "2026-07-28T17:11:44",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1275,8 +1275,29 @@
       "fecha_modificacion": "2026-07-28T17:11:15",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "d605b37c-a16e-46f6-a7a8-eb82b480028a",
+      "nombre_ficha": "CONEXIONES SANITARIAS DWV PG MULTIPLE - Amanco Wavin",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Conexiones Sanitarias DWV PG",
+      "marca": "Amanco Wavin",
+      "categoria": "ARQ",
+      "tipo_producto": "Conexiones sanitarias",
+      "dimensiones": "MULTIPLE",
+      "sin_medidas": false,
+      "especificacion": "Resistencia al impacto",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Conexiones sanitarias de pared gruesa con resistencia al impacto de 15 LB/PIE y altura en tubo de 1.5 PIE.",
+      "search_keywords": "conexiones sanitarias dwv pg multiple amanco wavin arq resistencia al impacto sin especificar de pared gruesa con 15 lb pie y altura en tubo 1 5",
+      "ruta_pdf": "ARQ/CONEXIONES-SANITARIAS-DWV-PG-MULTIPLE-Amanco-Wavin.pdf",
+      "hash_archivo": "a7981d80dee37bd5",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T17:11:44",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T17:10:33"
+  "ultima_sincronizacion_git": "2026-07-28T17:11:17"
 }
