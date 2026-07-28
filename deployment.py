@@ -256,26 +256,72 @@ def git_push(version, changelog):
 
 
 # --------------------------------------------------- 7. release ------------
+def _subir_asset_verificado(tag, ruta, intentos=2):
+    """Sube un asset al Release y verifica su hash contra el de GitHub.
+
+    Subir el .exe y el instalador juntos en un solo ``gh release create``
+    corrompio (trunco) el asset mas grande dos publicaciones seguidas (el
+    digest reportado por GitHub no coincidia con el archivo local) mientras
+    el otro asset de la misma llamada subia bien. Subir de a uno y verificar
+    el digest evita publicar un binario corrupto sin darse cuenta.
+    """
+    hash_local = sha256_file(ruta)
+    for intento in range(1, intentos + 1):
+        r = _run(["gh", "release", "upload", f"v{version_tag(tag)}", str(ruta),
+                  "--clobber"])
+        if r.returncode != 0:
+            print(f"  intento {intento}/{intentos}: 'gh release upload' fallo")
+            continue
+        digest = subprocess.run(
+            ["gh", "release", "view", f"v{version_tag(tag)}", "--repo", REPO_SLUG,
+             "--json", "assets", "--jq",
+             f'.assets[] | select(.name=="{ruta.name}") | .digest'],
+            cwd=str(BASE), capture_output=True, text=True).stdout.strip()
+        hash_remoto = digest.split(":")[-1] if digest else ""
+        if hash_remoto == hash_local:
+            print(f"  {ruta.name}: subido y verificado (hash coincide)")
+            return True
+        print(f"  intento {intento}/{intentos}: {ruta.name} subio con hash distinto "
+              f"al local (posible corrupcion en la subida); reintentando…")
+    print(f"  ERROR: no se pudo subir {ruta.name} con el hash correcto tras "
+          f"{intentos} intento(s).")
+    return False
+
+
+def version_tag(version_o_tag):
+    """Acepta version ('3.3.4') o tag ('v3.3.4') y devuelve solo 'X.Y.Z'."""
+    return version_o_tag[1:] if version_o_tag.startswith("v") else version_o_tag
+
+
 def crear_release(version):
     """Sube AMBOS artefactos al Release: el .exe suelto (lo descarga el
     auto-updater para el swap en caliente de instalaciones existentes) y el
     instalador (lo que se comparte para instalar de cero -- deja accesos
     directos y entrada de desinstalacion, en vez de un .exe suelto que hay
-    que andar buscando)."""
+    que andar buscando).
+
+    Los assets se suben DE A UNO con verificacion de hash (ver
+    ``_subir_asset_verificado``): subirlos juntos en la creacion del Release
+    corrompio el binario mas grande en mas de una publicacion."""
     exe = BASE / "dist" / EXE_NOMBRE
     instalador = BASE / INSTALLER_DIR / _instalador_nombre(version)
-    activos = [str(p) for p in (exe, instalador) if p.exists()]
+    activos = [p for p in (exe, instalador) if p.exists()]
     if not activos:
         print("  aviso: no hay .exe ni instalador; se omite Release")
         return False
     if shutil.which("gh"):
-        r = _run(["gh", "release", "create", f"v{version}", *activos,
+        r = _run(["gh", "release", "create", f"v{version}",
                   "--title", f"v{version}", "--notes", f"Release v{version}"])
-        if r.returncode == 0 and instalador.exists():
+        if r.returncode != 0:
+            return False
+        ok = True
+        for p in activos:
+            ok = _subir_asset_verificado(version, p) and ok
+        if ok and instalador.exists():
             print(f"  Instalador para compartir: "
                   f"https://github.com/{REPO_SLUG}/releases/download/v{version}/"
                   f"{instalador.name}")
-        return r.returncode == 0
+        return ok
     print("  aviso: no se encontro 'gh' (GitHub CLI). Suba los archivos manualmente a\n"
           f"  https://github.com/{REPO_SLUG}/releases/new?tag=v{version}")
     return False
