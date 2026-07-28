@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:09:00",
+  "ultima_actualizacion": "2026-07-28T16:09:16",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -477,8 +477,29 @@
       "fecha_modificacion": "2026-07-28T16:09:00",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "214f4d56-03f6-4463-933a-7d3918089dfa",
+      "nombre_ficha": "TUBO ESTRUCT. CUADRADO GALVANIZADO CH-14 101.6 x 101.6 x 1.8 - MultiGroup",
+      "nombre_ficha_manual": false,
+      "nombre_material": "TUBO ESTRUCT. CUADRADO GALVANIZADO 4\" X 4\" CH-14",
+      "marca": "MultiGroup",
+      "categoria": "ESTR",
+      "tipo_producto": "Tubería estructural",
+      "dimensiones": "101.60x101.60x1.80",
+      "sin_medidas": false,
+      "especificacion": "Galvanizado 20 micras",
+      "normativa": "ASTM A123, ASTM A500, ASTM A653",
+      "descripcion_corta": "Tubería estructural soldada, galvanizada por inmersión, con alta resistencia eléctrica y mecánica.",
+      "search_keywords": "tubo estruct cuadrado galvanizado ch 14 101 6 x 1 8 multigroup 4 estr tuberia estructural 60x101 60x1 80 20 micras astm a123 a500 a653 soldada galvanizada por inmersion con alta resistencia electrica y mecanica",
+      "ruta_pdf": "ESTR/TUBO-ESTRUCT-CUADRADO-GALVANIZADO-CH-14-101-6-x-101-6-x-1-8-MultiGroup.pdf",
+      "hash_archivo": "0072212400ccefcc",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:09:16",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:08:34"
+  "ultima_sincronizacion_git": "2026-07-28T16:09:03"
 }
