@@ -44,7 +44,7 @@ import nomenclatura
 import ocr_extractor
 import updater_gh
 
-VERSION = "3.3.5"
+VERSION = "3.3.6"
 BASE_DIR = Path(__file__).resolve().parent
 PIN_MODO_DEV = "9119"
 
@@ -1107,6 +1107,8 @@ if _TK_OK:
             ("especificacion", "Especificación / modelo (ej: CH 13, QO260)"),
             ("normativa", "Normativa (no entra en el nombre)"),
             ("descripcion_corta", "Descripción corta / presentación"),
+            ("aspectos_adicionales", "Notas adicionales para la carátula (opcional; "
+                                     "ej: ficha de un sistema completo)"),
         ]
 
         def __init__(self, master, bd, ruta, datos, titulo=None, es_edicion=False):
@@ -2224,7 +2226,7 @@ if _TK_OK:
                        if not k.startswith("_") and k in
                        ("nombre_material", "marca", "categoria", "dimensiones",
                         "sin_medidas", "tipo_producto", "especificacion",
-                        "normativa", "descripcion_corta")}
+                        "normativa", "descripcion_corta", "aspectos_adicionales")}
             manual = res["datos"].get("nombre_ficha", "")
             if manual:
                 cambios["nombre_ficha"] = manual
