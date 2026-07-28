@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:07:25",
+  "ultima_actualizacion": "2026-07-28T16:07:55",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -414,8 +414,29 @@
       "fecha_modificacion": "2026-07-28T16:07:25",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "6f9f532d-0921-4f75-a489-7412709b1ee5",
+      "nombre_ficha": "POLÍN TIPO C 6 x 2 - MultiGroup",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Polín Tipo C",
+      "marca": "MultiGroup",
+      "categoria": "ESTR",
+      "tipo_producto": "Costanera tipo C galvanizada",
+      "dimensiones": "6x2",
+      "sin_medidas": false,
+      "especificacion": "Lámina rolada galvanizada",
+      "normativa": "ASTM A-36, ASTM A-6, ASTM A-653",
+      "descripcion_corta": "Costanera tipo C galvanizada, cumple con normas ASTM en resistencia y dimensiones, ideal para construcción.",
+      "search_keywords": "polin tipo c 6 x 2 multigroup estr costanera galvanizada 6x2 lamina rolada astm a 36 653 cumple con normas en resistencia y dimensiones ideal para construccion",
+      "ruta_pdf": "ESTR/POLIN-TIPO-C-6-x-2-MultiGroup.pdf",
+      "hash_archivo": "caffb1301da47df6",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:07:55",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:06:35"
+  "ultima_sincronizacion_git": "2026-07-28T16:07:28"
 }
