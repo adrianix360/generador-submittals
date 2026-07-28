@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T17:05:26",
+  "ultima_actualizacion": "2026-07-28T17:06:14",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1086,8 +1086,29 @@
       "fecha_modificacion": "2026-07-28T17:05:26",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "6dc2add6-3011-4dee-9a35-46b7081b49fb",
+      "nombre_ficha": "CONECTOR BIEX RECTO PARA LIQUIDTIGHT MULTIPLE - PST",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Conector BIEX Recto para Liquidtight",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "tipo_producto": "Conector para conductos",
+      "dimensiones": "MULTIPLE",
+      "sin_medidas": false,
+      "especificacion": "Fundición de zinc",
+      "normativa": "UL",
+      "descripcion_corta": "Conector para sellar conductos metálicos flexibles herméticos a líquidos, aceite o lluvia.",
+      "search_keywords": "conector biex recto para liquidtight multiple pst elec conductos fundicion de zinc ul sellar metalicos flexibles hermeticos a liquidos aceite o lluvia",
+      "ruta_pdf": "ELEC/CONECTOR-BIEX-RECTO-PARA-LIQUIDTIGHT-MULTIPLE-PST.pdf",
+      "hash_archivo": "4234af93c0a3775c",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T17:06:14",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T17:04:49"
+  "ultima_sincronizacion_git": "2026-07-28T17:05:28"
 }
