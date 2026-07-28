@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:08:31",
+  "ultima_actualizacion": "2026-07-28T16:09:00",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -456,8 +456,29 @@
       "fecha_modificacion": "2026-07-28T16:08:31",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "2a9c0573-3fce-441b-b8a3-f884512af7d3",
+      "nombre_ficha": "TUBO ESTRUCT. CUADRADO GALVANIZADO CH-14 76.2 x 76.2 x 1.8 - MultiGroup",
+      "nombre_ficha_manual": false,
+      "nombre_material": "TUBO ESTRUCT. CUADRADO GALVANIZADO 3\" X 3\" CH-14",
+      "marca": "MultiGroup",
+      "categoria": "ESTR",
+      "tipo_producto": "Tubería estructural",
+      "dimensiones": "76.20x76.20x1.80",
+      "sin_medidas": false,
+      "especificacion": "Galvanizado 20",
+      "normativa": "ASTM A123, ASTM A500, ASTM A653",
+      "descripcion_corta": "Tubería estructural cuadrada, soldada y galvanizada, fabricada según normas ASTM A500, A653 y A123.",
+      "search_keywords": "tubo estruct cuadrado galvanizado ch 14 76 2 x 1 8 multigroup 3 estr tuberia estructural 20x76 20x1 80 20 astm a123 a500 a653 cuadrada soldada y galvanizada fabricada segun normas",
+      "ruta_pdf": "ESTR/TUBO-ESTRUCT-CUADRADO-GALVANIZADO-CH-14-76-2-x-76-2-x-1-8-MultiGroup.pdf",
+      "hash_archivo": "c13d3b56b4a74c8f",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:09:00",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:07:58"
+  "ultima_sincronizacion_git": "2026-07-28T16:08:34"
 }
