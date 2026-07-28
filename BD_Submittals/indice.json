@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:21:41",
+  "ultima_actualizacion": "2026-07-28T16:22:20",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -813,8 +813,29 @@
       "fecha_modificacion": "2026-07-28T16:21:41",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "e030a0c9-c7f2-4b40-9268-3c7a8cf493c3",
+      "nombre_ficha": "USG OLYMPIA MICRO ACOUSTICAL PANELS 24\" x 24\" x 5/8\" - USG Ceiling Solutions",
+      "nombre_ficha_manual": false,
+      "nombre_material": "USG OLYMPIA MICRO ACOUSTICAL PANELS",
+      "marca": "USG Ceiling Solutions",
+      "categoria": "ARQ",
+      "tipo_producto": "Panel acústico",
+      "dimensiones": "24x24x5/8",
+      "sin_medidas": false,
+      "especificacion": "Clase A, LR 0.86",
+      "normativa": "ASTM E1264, ASTM E84, CAN/ULC S102",
+      "descripcion_corta": "Panel acústico de textura fina, reduce el tiempo de instalación y el desperdicio, con alta reflectancia de luz y resistencia al moho.",
+      "search_keywords": "usg olympia micro acoustical panels 24 x 5 8 ceiling solutions arq panel acustico 24x24x5 clase a lr 0 86 astm e1264 e84 can ulc s102 de textura fina reduce el tiempo instalacion y desperdicio con alta reflectancia luz resistencia al moho",
+      "ruta_pdf": "ARQ/USG-OLYMPIA-MICRO-ACOUSTICAL-PANELS-24-x-24-x-5-8-USG-Ceiling-Solutions.pdf",
+      "hash_archivo": "5309682319dd616c",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:22:20",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:21:23"
+  "ultima_sincronizacion_git": "2026-07-28T16:21:44"
 }
