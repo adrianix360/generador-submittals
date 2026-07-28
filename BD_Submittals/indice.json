@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:09:16",
+  "ultima_actualizacion": "2026-07-28T16:09:50",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -498,8 +498,29 @@
       "fecha_modificacion": "2026-07-28T16:09:16",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "1be0a2a1-10ba-4b00-aafc-ebb652396f6f",
+      "nombre_ficha": "CEMENTO FUERTE ECOPLANET SACO 50 kg - Holcim",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Cemento Fuerte ECOPlanet",
+      "marca": "Holcim",
+      "categoria": "ESTR",
+      "tipo_producto": "Cemento hidráulico",
+      "dimensiones": "Saco 50 kg",
+      "sin_medidas": false,
+      "especificacion": "Tipo MM/C (C-P) 28",
+      "normativa": "ASTM C451, ASTM C1038, ASTM C595 IP, ASTM C1157 GU, INTE 06-02-20, INTE 06-11-03, INTE 06-11-04, INTE 06-11-05, INTE 06-11-10, INTE 06-11-06, RTCR 479:2015",
+      "descripcion_corta": "Cemento hidráulico para construcción general, ideal para concretos y morteros de uso general con durabilidad garantizada.",
+      "search_keywords": "cemento fuerte ecoplanet saco 50 kg holcim estr hidraulico tipo mm c p 28 astm c451 c1038 c595 ip c1157 gu inte 06 02 20 11 03 04 05 10 rtcr 479 2015 para construccion general ideal concretos y morteros de uso con durabilidad garantizada",
+      "ruta_pdf": "ESTR/CEMENTO-FUERTE-ECOPLANET-SACO-50-kg-Holcim.pdf",
+      "hash_archivo": "2043d1f6750c014f",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:09:50",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:09:03"
+  "ultima_sincronizacion_git": "2026-07-28T16:09:19"
 }
