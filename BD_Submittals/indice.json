@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T12:25:28",
+  "ultima_actualizacion": "2026-07-28T12:26:11",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -226,21 +226,21 @@
     },
     {
       "id": "0b0aa3c5-71ac-4cde-a52f-38a21b44ee9b",
-      "nombre_ficha": "TUBERÍA PVC PARA AGUA POTABLE 1/2\" - Amanco Wavin",
+      "nombre_ficha": "TUBERÍA PVC PARA AGUA POTABLE 12mm 1/2\" - Amanco Wavin",
       "nombre_ficha_manual": true,
       "nombre_material": "Tubería PVC para Agua Potable",
       "marca": "Amanco Wavin",
       "categoria": "MEC",
       "tipo_producto": "Tubería de PVC",
-      "dimensiones": "1/2”",
+      "dimensiones": "12 mm, 1/2”",
       "especificacion": "Diámetros de 1/2” a 12”",
       "normativa": "ASTM D-1784, ASTM D-2241, ASTM D-2466, ASTM D-2672, ASTM D-3139, ASTM F-477",
       "descripcion_corta": "Tubería PVC para conducción de agua a presión en edificaciones, infraestructura y sistemas de riego.",
-      "search_keywords": "tuberia pvc para agua potable 1 2 amanco wavin mec de diametros a 12 astm d 1784 2241 2466 2672 3139 f 477 conduccion presion en edificaciones infraestructura y sistemas riego",
+      "search_keywords": "tuberia pvc para agua potable 12mm 1 2 amanco wavin mec de 12 mm diametros a astm d 1784 2241 2466 2672 3139 f 477 conduccion presion en edificaciones infraestructura y sistemas riego",
       "ruta_pdf": "ARQ/TUBERIA-PVC-PARA-AGUA-POTABLE-DRENAJE-1-2-Amanco-Wavin.pdf",
       "hash_archivo": "5d741ab6d911106d",
       "fecha_carga": "2026-07-27",
-      "fecha_modificacion": "2026-07-28T12:22:51",
+      "fecha_modificacion": "2026-07-28T12:26:11",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo",
       "sin_medidas": false
@@ -289,5 +289,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T12:23:15"
+  "ultima_sincronizacion_git": "2026-07-28T12:25:30"
 }
