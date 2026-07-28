@@ -1,13 +1,14 @@
 {
-  "version": "3.2.0",
+  "version": "3.2.1",
   "nombre": "Generador de Submittals ES - BD en GitHub con nomenclatura inteligente",
   "fecha": "2026-07-27",
   "tipo": "python",
-  "descripcion": "v3.2.0: nomenclatura inteligente de fichas. Cada ficha recibe un nombre descriptivo y unico generado segun su familia (tubos: forma + dimensiones + calibre; acabados: dimensiones + unidad; agregados: presentacion; electricos: tipo/modelo), editable en un preview antes de guardar. El PDF se guarda con ese nombre. Nuevo: edicion de fichas ya cargadas, reemplazo de PDF y deteccion de nombres repetidos. Se CONSERVA el soft delete (reversible) porque el borrado logico es lo que permite fusionar dos BDs sin resucitar fichas eliminadas.",
+  "descripcion": "v3.2.1: menu de configuracion unificado dentro de v3. Nueva ventana '⚙️ Configuracion' con dos pestanas: OpenAI (la API key que usa la lectura de fichas PDF/imagen con IA, con boton 'Probar conexion') y GitHub (repositorio, rama y token). Antes la API key solo se podia definir desde la app v2.6; en una PC que solo tiene el .exe de v3 no habia forma de ingresarla, y la extraccion de fichas caia a OCR/manual sin avisar donde configurarla.",
   "historial": {
     "3.0.0": "BD centralizada en OneDrive con control de acceso por archivo .lock.",
     "3.1.0": "La BD se movio a GitHub (subcarpeta BD_Submittals/ del mismo repositorio). Se elimino el .lock: git resuelve la concurrencia y los conflictos se fusionan a nivel de registro.",
-    "3.2.0": "Nomenclatura inteligente + edicion/correccion de fichas."
+    "3.2.0": "Nomenclatura inteligente + edicion/correccion de fichas.",
+    "3.2.1": "Menu de configuracion unificado (API key de OpenAI + token de GitHub) accesible desde v3, sin depender de la app v2.6."
   },
   "modulos_nuevos": [
     "git_bd.py",
