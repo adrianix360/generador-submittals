@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:13:11",
+  "ultima_actualizacion": "2026-07-28T16:13:28",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -582,8 +582,29 @@
       "fecha_modificacion": "2026-07-28T16:13:11",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "971df67e-a8bb-4c1d-b013-e98c0e636b5c",
+      "nombre_ficha": "MAXIEMPASTE EXTRA LISO EXTERIOR 0 mm - INTACO",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Maxiempaste Extra Liso Exterior",
+      "marca": "INTACO",
+      "categoria": "ARQ",
+      "tipo_producto": "Empaste cementicio",
+      "dimensiones": "",
+      "sin_medidas": false,
+      "especificacion": "Empaste cementicio de acabado extra liso para exteriores",
+      "normativa": "ASTM D6886-03",
+      "descripcion_corta": "Empaste cementicio modificado con polímeros para un acabado extra liso en paredes exteriores, de 0 mm a 2 mm de espesor.",
+      "search_keywords": "maxiempaste extra liso exterior 0 mm intaco arq empaste cementicio de acabado para exteriores astm d6886 03 modificado con polimeros un en paredes a 2 espesor",
+      "ruta_pdf": "ARQ/MAXIEMPASTE-EXTRA-LISO-EXTERIOR-0-mm-INTACO.pdf",
+      "hash_archivo": "6d95a1fade0321bd",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:13:28",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:12:24"
+  "ultima_sincronizacion_git": "2026-07-28T16:13:14"
 }
