@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:15:16",
+  "ultima_actualizacion": "2026-07-28T16:15:45",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -645,8 +645,29 @@
       "fecha_modificacion": "2026-07-28T16:15:16",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "9899dbf7-3950-45b2-ae7a-da66e952a9f1",
+      "nombre_ficha": "ALAMBRE GALVANIZADO 4.15 mm - ArcelorMittal",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Alambre Galvanizado",
+      "marca": "ArcelorMittal",
+      "categoria": "ARQ",
+      "tipo_producto": "Alambre",
+      "dimensiones": "1.68-4.15 mm",
+      "sin_medidas": false,
+      "especificacion": "Carga de rotura 40-48 Kg/mm2",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Alambre ideal para riendas, ataduras y alambrados, con capa de zinc para durabilidad y resistencia a la oxidación.",
+      "search_keywords": "alambre galvanizado 4 15 mm arcelormittal arq 1 68 carga de rotura 40 48 kg mm2 sin especificar ideal para riendas ataduras y alambrados con capa zinc durabilidad resistencia a la oxidacion",
+      "ruta_pdf": "ARQ/ALAMBRE-GALVANIZADO-4-15-mm-ArcelorMittal.pdf",
+      "hash_archivo": "b439cc326c6388e9",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:15:45",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:14:56"
+  "ultima_sincronizacion_git": "2026-07-28T16:15:18"
 }
