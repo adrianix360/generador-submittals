@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:05:56",
+  "ultima_actualizacion": "2026-07-28T16:06:31",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -372,8 +372,29 @@
       "fecha_modificacion": "2026-07-28T16:05:56",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "d42497c4-5d31-4e6a-b63c-c76c35b2ecd7",
+      "nombre_ficha": "CORROSTOP PRIMARIO DE POLIURETANO TIPO MINIO II - SUR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "CORROSTOP PRIMARIO DE POLIURETANO TIPO MINIO II",
+      "marca": "SUR",
+      "categoria": "ARQ",
+      "tipo_producto": "Primario anticorrosivo",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Acabado mate, color rojo óxido",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Primario de poliuretano con resinas y pigmentos anticorrosivos, fácil aplicación, sin metales tóxicos, buena humectación y alto contenido de sólidos.",
+      "search_keywords": "corrostop primario de poliuretano tipo minio ii sur arq anticorrosivo acabado mate color rojo oxido sin especificar con resinas y pigmentos anticorrosivos facil aplicacion metales toxicos buena humectacion alto contenido solidos",
+      "ruta_pdf": "ARQ/CORROSTOP-PRIMARIO-DE-POLIURETANO-TIPO-MINIO-II-SUR.pdf",
+      "hash_archivo": "3ed48dd56610e111",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:06:31",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:05:20"
+  "ultima_sincronizacion_git": "2026-07-28T16:06:01"
 }
