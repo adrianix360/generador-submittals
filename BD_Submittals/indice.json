@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:12:21",
+  "ultima_actualizacion": "2026-07-28T16:13:11",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -561,8 +561,29 @@
       "fecha_modificacion": "2026-07-28T16:12:21",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "a73942e0-7385-40a7-826a-52ab5c638865",
+      "nombre_ficha": "REPEMAX MURO SECO 125-W1 1.5 mm - INTACO",
+      "nombre_ficha_manual": false,
+      "nombre_material": "REPEMAX MURO SECO 125-W1",
+      "marca": "INTACO",
+      "categoria": "ARQ",
+      "tipo_producto": "Mortero flexible",
+      "dimensiones": "",
+      "sin_medidas": false,
+      "especificacion": "Mortero de 125 kg/cm² flexible y repelente de agua",
+      "normativa": "ASTM C 109, ASTM D6866-03, UNE-EN 1015-11, UNE-EN 1015-12, UNE-EN 1015-18, UNE-EN 998-1, UNE-EN 998-1-5.3.3",
+      "descripcion_corta": "Mortero flexible para repellos de 1,5 mm, modificado con polímeros, repelente de agua, para uso en interiores y exteriores.",
+      "search_keywords": "repemax muro seco 125 w1 1 5 mm intaco arq mortero flexible de kg cm y repelente agua astm c 109 d6866 03 une en 1015 11 12 18 998 3 para repellos modificado con polimeros uso interiores exteriores",
+      "ruta_pdf": "ARQ/REPEMAX-MURO-SECO-125-W1-1-5-mm-INTACO.pdf",
+      "hash_archivo": "e4a3a98f116dcf7a",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:13:11",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:11:15"
+  "ultima_sincronizacion_git": "2026-07-28T16:12:24"
 }
