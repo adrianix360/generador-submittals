@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:29:34",
+  "ultima_actualizacion": "2026-07-28T16:29:58",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1023,8 +1023,29 @@
       "fecha_modificacion": "2026-07-28T16:29:34",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "27d2730e-9bbd-4402-b190-678dd068712a",
+      "nombre_ficha": "SCOTCH SÚPER 33 18 x 20 m - 3M",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Scotch Súper 33",
+      "marca": "3M",
+      "categoria": "ELEC",
+      "tipo_producto": "Cinta Premium de PVC",
+      "dimensiones": "18,0 mm x 20,0 m",
+      "sin_medidas": false,
+      "especificacion": "Cinta aislante de vinilo",
+      "normativa": "NMX-J-541/3-1-ANCE-2004, RoHS, UL 510, UL 539H",
+      "descripcion_corta": "Cinta eléctrica de PVC con alta resistencia dieléctrica, autoextinguible, para temperaturas de -5°C a 90°C.",
+      "search_keywords": "scotch super 33 18 x 20 m 3m elec cinta premium de pvc 0 mm aislante vinilo nmx j 541 3 1 ance 2004 rohs ul 510 539h electrica con alta resistencia dielectrica autoextinguible para temperaturas 5 c a 90",
+      "ruta_pdf": "ELEC/SCOTCH-SUPER-33-18-x-20-m-3M.pdf",
+      "hash_archivo": "a10ea7279d39238e",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:29:58",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:28:35"
+  "ultima_sincronizacion_git": "2026-07-28T16:29:37"
 }
