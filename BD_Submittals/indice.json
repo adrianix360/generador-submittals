@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-27T15:11:13",
+  "ultima_actualizacion": "2026-07-28T11:46:43",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -261,8 +261,29 @@
       "fecha_modificacion": "2026-07-27T15:11:13",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "21ba7ca8-3d92-412b-9066-c8cd0e194669",
+      "nombre_ficha": "ENCHUFE 80 63.5 x 80.2 x 35.8 3P 250 V - Eagle",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Enchufe 80",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "tipo_producto": "Enchufe eléctrico",
+      "dimensiones": "63.5x80.2x35.8",
+      "sin_medidas": false,
+      "especificacion": "50A 125/250V~ 60 Hz, 3 polos, 3 hilos",
+      "normativa": "NOM 190OM05168, RETIE 230000, UL E493433",
+      "descripcion_corta": "Enchufe de alta resistencia mecánica, grado comercial, con contactos de bronce y cuerpo termoplástico.",
+      "search_keywords": "enchufe 80 63 5 x 2 35 8 3p 250 v eagle elec electrico 5x80 2x35 50a 125 250v 60 hz 3 polos hilos nom 190om05168 retie 230000 ul e493433 de alta resistencia mecanica grado comercial con contactos bronce y cuerpo termoplastico",
+      "ruta_pdf": "ELEC/ENCHUFE-80-63-5-x-80-2-x-35-8-3P-250-V-Eagle.pdf",
+      "hash_archivo": "71755eff52742200",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T11:46:43",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-27T16:18:17"
+  "ultima_sincronizacion_git": "2026-07-28T11:45:55"
 }
