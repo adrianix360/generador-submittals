@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T12:21:46",
+  "ultima_actualizacion": "2026-07-28T12:22:10",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -209,17 +209,17 @@
       "nombre_ficha_manual": false,
       "nombre_material": "TUBERÍA PVC",
       "marca": "AMANCO",
-      "categoria": "ARQ",
+      "categoria": "MEC",
       "tipo_producto": "Tubería PVC",
       "dimensiones": "",
       "especificacion": "Tubería de PVC fabricada según la norma ASTM D-2241",
       "normativa": "ASTM D-2241",
       "descripcion_corta": "Tubería de PVC adecuada para aplicaciones de presión, conforme a ASTM D-2241.",
-      "search_keywords": "tuberia pvc amanco arq de fabricada segun la norma astm d 2241 adecuada para aplicaciones presion conforme a",
+      "search_keywords": "tuberia pvc amanco mec de fabricada segun la norma astm d 2241 adecuada para aplicaciones presion conforme a",
       "ruta_pdf": "ARQ/TUBERIA-PVC-0-x-0-SIN-ESPECIFICAR.pdf",
       "hash_archivo": "428b0a3da075da4e",
       "fecha_carga": "2026-07-27",
-      "fecha_modificacion": "2026-07-28T12:21:46",
+      "fecha_modificacion": "2026-07-28T12:22:10",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo",
       "sin_medidas": true
@@ -287,5 +287,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T12:21:26"
+  "ultima_sincronizacion_git": "2026-07-28T12:21:48"
 }
