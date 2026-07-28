@@ -42,6 +42,7 @@ import json
 import shutil
 import hashlib
 import argparse
+import tempfile
 import subprocess
 from pathlib import Path
 
@@ -248,41 +249,66 @@ def compilar_installer(version):
 
 
 # --------------------------------------------------- 6. git ----------------
-def git_push(version, changelog):
+def git_push(version, changelog, intentos=5):
+    """Commitea y sube a origin/main, reintentando con fetch+rebase si el
+    push es rechazado.
+
+    El repositorio recibe pushes de datos (BD_Submittals: fichas/submittals)
+    desde varias PCs en tiempo real, ademas de este push de codigo. Un solo
+    intento fallaba justo cuando alguien mas subia algo a la vez: el commit
+    quedaba local nada mas y ``crear_release()`` igual creaba el Release con
+    un tag apuntando al commit VIEJO del remoto (sin el codigo nuevo), no al
+    commit real que se acababa de compilar y hashear en VERSION.json.
+    """
     _run(["git", "add", "-A"])
     _run(["git", "commit", "-m", f"v{version}: {changelog}"])
-    r = _run(["git", "push"])
-    return r.returncode == 0
+    for intento in range(1, intentos + 1):
+        r = _run(["git", "push"])
+        if r.returncode == 0:
+            return True
+        print(f"  push rechazado (intento {intento}/{intentos}); "
+              f"haciendo fetch + rebase y reintentando…")
+        _run(["git", "fetch", "origin"])
+        rb = _run(["git", "rebase", "origin/main"])
+        if rb.returncode != 0:
+            print("  ERROR: rebase con conflictos; se detiene (resolver a mano).")
+            return False
+    print(f"  ERROR: no se pudo subir el commit tras {intentos} intento(s).")
+    return False
 
 
 # --------------------------------------------------- 7. release ------------
 def _subir_asset_verificado(tag, ruta, intentos=2):
-    """Sube un asset al Release y verifica su hash contra el de GitHub.
+    """Sube un asset al Release y lo verifica DESCARGANDOLO de nuevo.
 
     Subir el .exe y el instalador juntos en un solo ``gh release create``
-    corrompio (trunco) el asset mas grande dos publicaciones seguidas (el
-    digest reportado por GitHub no coincidia con el archivo local) mientras
-    el otro asset de la misma llamada subia bien. Subir de a uno y verificar
-    el digest evita publicar un binario corrupto sin darse cuenta.
+    corrompio (trunco) el asset mas grande en varias publicaciones (~150 MB).
+    Verificar solo el ``digest`` que reporta la API justo despues de subir NO
+    alcanza: en una publicacion el digest coincidio en el momento y, al
+    volver a descargar el archivo mas tarde, el contenido real ya no
+    coincidia (aparente inconsistencia eventual de GitHub con assets
+    grandes). La unica verificacion confiable es volver a descargar el
+    archivo y comparar su hash con el local.
     """
     hash_local = sha256_file(ruta)
+    tag_version = version_tag(tag)
     for intento in range(1, intentos + 1):
-        r = _run(["gh", "release", "upload", f"v{version_tag(tag)}", str(ruta),
-                  "--clobber"])
+        r = _run(["gh", "release", "upload", f"v{tag_version}", str(ruta), "--clobber"])
         if r.returncode != 0:
             print(f"  intento {intento}/{intentos}: 'gh release upload' fallo")
             continue
-        digest = subprocess.run(
-            ["gh", "release", "view", f"v{version_tag(tag)}", "--repo", REPO_SLUG,
-             "--json", "assets", "--jq",
-             f'.assets[] | select(.name=="{ruta.name}") | .digest'],
-            cwd=str(BASE), capture_output=True, text=True).stdout.strip()
-        hash_remoto = digest.split(":")[-1] if digest else ""
+        with tempfile.TemporaryDirectory() as tmp:
+            subprocess.run(
+                ["gh", "release", "download", f"v{tag_version}", "--repo", REPO_SLUG,
+                 "--dir", tmp, "--clobber", "--pattern", ruta.name],
+                cwd=str(BASE), capture_output=True, text=True)
+            descargado = Path(tmp) / ruta.name
+            hash_remoto = sha256_file(descargado) if descargado.exists() else ""
         if hash_remoto == hash_local:
-            print(f"  {ruta.name}: subido y verificado (hash coincide)")
+            print(f"  {ruta.name}: subido y verificado con descarga real (hash coincide)")
             return True
-        print(f"  intento {intento}/{intentos}: {ruta.name} subio con hash distinto "
-              f"al local (posible corrupcion en la subida); reintentando…")
+        print(f"  intento {intento}/{intentos}: {ruta.name} bajo con hash distinto "
+              f"al local al volver a descargarlo (subida corrupta); reintentando…")
     print(f"  ERROR: no se pudo subir {ruta.name} con el hash correcto tras "
           f"{intentos} intento(s).")
     return False
@@ -310,7 +336,13 @@ def crear_release(version):
         print("  aviso: no hay .exe ni instalador; se omite Release")
         return False
     if shutil.which("gh"):
-        r = _run(["gh", "release", "create", f"v{version}",
+        # --target <sha exacto>: si se usara el nombre de rama ("main"), un
+        # push de otra PC llegando justo entre el commit y este paso haria que
+        # el tag apunte al commit de ESE OTRO push, no al codigo recien
+        # compilado y hasheado en VERSION.json.
+        sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(BASE),
+                             capture_output=True, text=True).stdout.strip()
+        r = _run(["gh", "release", "create", f"v{version}", "--target", sha,
                   "--title", f"v{version}", "--notes", f"Release v{version}"])
         if r.returncode != 0:
             return False
@@ -366,13 +398,20 @@ def main():
         print("5b) Compilando instalador (Inno Setup)")
         compilar_installer(version)
 
+    subido = True
     if not args.no_git:
         print("6) git commit/push")
-        git_push(version, changelog)
+        subido = git_push(version, changelog)
+        if not subido:
+            print("   ❌ No se pudo subir el commit; se omite el Release "
+                  "(el tag quedaria apuntando a un commit viejo).")
 
     if args.release:
-        print("7) GitHub Release")
-        crear_release(version)
+        if subido:
+            print("7) GitHub Release")
+            crear_release(version)
+        else:
+            sys.exit(1)
 
     print(f"\n✅ v{version} publicada. Los usuarios veran la actualizacion al abrir la app.")
 
