@@ -166,7 +166,7 @@ from tkinter import ttk, filedialog, messagebox
 # ============================================================================
 # CONSTANTES / TEMA
 # ============================================================================
-VERSION   = "2.6.18"
+VERSION   = "3.3.1"
 AUTOR     = "Adrián Castro"
 ROJO_ES   = "#E11D2D"
 AZUL_ES   = "#1F3864"

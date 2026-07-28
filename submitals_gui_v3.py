@@ -44,7 +44,7 @@ import nomenclatura
 import ocr_extractor
 import updater_gh
 
-VERSION = "3.2.1"
+VERSION = "3.3.1"
 BASE_DIR = Path(__file__).resolve().parent
 PIN_MODO_DEV = "9119"
 
@@ -1925,17 +1925,57 @@ if _TK_OK:
                 messagebox.showinfo("Actualización", info["error"]); return
             if not info.get("disponible"):
                 messagebox.showinfo("Actualización", "No hay actualizaciones."); return
-            if messagebox.askyesno("Actualización disponible",
-                                   f"Nueva versión {info.get('version_remota')}.\n"
-                                   f"{info.get('changelog', '')}\n\n"
-                                   "Se actualizará el programa y la Base de Datos.\n"
-                                   "¿Aplicar ahora?"):
-                ok, msg, reinicio, _bd = updater_gh.aplicar_y_sincronizar(
-                    info, bd=self.bd, logf=logger.info)
-                messagebox.showinfo("Actualización", msg)
+            if not messagebox.askyesno("Actualización disponible",
+                                       f"Nueva versión {info.get('version_remota')}.\n"
+                                       f"{info.get('changelog', '')}\n\n"
+                                       "Se actualizará el programa y la Base de Datos.\n"
+                                       "¿Aplicar ahora?"):
+                return
+            # Modo empaquetado con .exe nuevo: aplicar_y_sincronizar() ignora el
+            # .exe a proposito (solo reemplaza .py/.html en vivo), asi que sin
+            # esta rama el boton nunca descargaba/instalaba el ejecutable nuevo
+            # y "no hay actualizaciones" seguia apareciendo para siempre.
+            if info.get("requiere_exe"):
+                self._aplicar_update_exe(info)
+                return
+            ok, msg, reinicio, _bd = updater_gh.aplicar_y_sincronizar(
+                info, bd=self.bd, logf=logger.info)
+            messagebox.showinfo("Actualización", msg)
+            self._actualizar_estado()
+            if ok and reinicio:
+                updater_gh.reiniciar()
+
+        def _aplicar_update_exe(self, info):
+            """Descarga el .exe nuevo en segundo plano y prepara el swap: al
+            cerrar la app, un .bat lo reemplaza y la reabre solo."""
+            self.lbl_sync.configure(text="⬇️ Descargando actualización…", text_color=AZUL_ES)
+            self.prog.pack(pady=(0, 6))
+            self.prog.start()
+
+            def _prog(_pct, texto):
+                self.after(0, lambda: self.lbl_sync.configure(text=f"⬇️ {texto}"))
+
+            def trabajo():
+                ok, msg = updater_gh.preparar_exe(info, progreso=_prog, logf=logger.info)
+                self.after(0, lambda: self._fin_update_exe(ok, msg))
+
+            threading.Thread(target=trabajo, daemon=True).start()
+
+        def _fin_update_exe(self, ok, msg):
+            self.prog.stop()
+            self.prog.pack_forget()
+            if not ok:
+                messagebox.showerror("Actualización", msg)
                 self._actualizar_estado()
-                if ok and reinicio:
-                    updater_gh.reiniciar()
+                return
+            try:
+                self.bd.sync_indice()
+            except Exception:
+                pass
+            messagebox.showinfo(
+                "Actualización descargada",
+                msg + "\n\nEl programa se cerrará y reabrirá con la nueva versión.")
+            updater_gh.lanzar_swap()
 
         def _cerrar_seguro(self):
             """Cierre seguro: ofrece subir lo que quedó pendiente.

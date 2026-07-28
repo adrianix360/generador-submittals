@@ -46,6 +46,7 @@ BASE = Path(__file__).resolve().parent
 ARCHIVOS_VERSIONADOS = [
     ("submitals_gui_v3.py", "python"),
     ("bd_manager.py", "python"),
+    ("git_bd.py", "python"),
     ("fuzzy_search.py", "python"),
     ("nomenclatura.py", "python"),
     ("ocr_extractor.py", "python"),
