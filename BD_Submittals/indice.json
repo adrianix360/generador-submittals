@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T11:46:43",
+  "ultima_actualizacion": "2026-07-28T12:20:45",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -188,19 +188,20 @@
       "nombre_ficha_manual": false,
       "nombre_material": "TUBERÍA PVC",
       "marca": "Amanco Wavin",
-      "categoria": "ARQ",
+      "categoria": "MEC",
       "tipo_producto": "Tubería para agua potable y drenaje",
       "dimensiones": "12-300 mm",
       "especificacion": "Tubería de PVC para conducción de agua a presión",
       "normativa": "ASTM D-1784, ASTM D-2241, ASTM D-2466, ASTM D-2672, ASTM D-3139, ASTM F-477",
       "descripcion_corta": "Tubería PVC para agua a presión en edificaciones, infraestructura y sistemas de riego.",
-      "search_keywords": "tuberia pvc 300 mm amanco wavin arq para agua potable y drenaje 12 de conduccion a presion astm d 1784 2241 2466 2672 3139 f 477 en edificaciones infraestructura sistemas riego",
+      "search_keywords": "tuberia pvc 300 mm amanco wavin mec para agua potable y drenaje 12 de conduccion a presion astm d 1784 2241 2466 2672 3139 f 477 en edificaciones infraestructura sistemas riego",
       "ruta_pdf": "ARQ/TUBERIA-PVC-300-mm-Amanco-Wavin.pdf",
       "hash_archivo": "896128596bb61016",
       "fecha_carga": "2026-07-27",
-      "fecha_modificacion": "2026-07-27T15:10:37",
+      "fecha_modificacion": "2026-07-28T12:20:45",
       "cargada_por": "ProBook_de_Adri",
-      "estado": "activo"
+      "estado": "activo",
+      "sin_medidas": false
     },
     {
       "id": "71bb6284-c215-4723-acc8-4e0ed47ea18b",
@@ -285,5 +286,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T11:45:55"
+  "ultima_sincronizacion_git": "2026-07-28T11:47:26"
 }
