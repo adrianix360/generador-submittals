@@ -10,19 +10,26 @@ r"""
      python deployment.py
 
  Hace, en orden (cada paso es tolerante a fallos y se puede saltar con flags):
-   1. Actualiza el numero de version en submitals_gui_v3.py, submitals_gui.py y
-      generate_caratulas.py (constante VERSION = "x.y.z") y en submitals_config.json.
+   1. Actualiza el numero de version en submitals_gui_v3.py, submitals_gui.py,
+      generate_caratulas.py (constante VERSION = "x.y.z"), submitals_config.json
+      y GeneradorSubmittalsES.iss (AppVersion / OutputBaseFilename).
    2. (Opcional) Ejecuta tests rapidos: TESTS_RAPIDOS.py si existe.
    3. Calcula SHA-256 de los archivos versionados.
    4. Genera/actualiza VERSION.json (con hashes + URLs del repo).
    5. (Opcional) Compila GeneradorSubmittalsES_v3.exe con PyInstaller
-      (GeneradorSubmittalsES_v3.spec).
+      (GeneradorSubmittalsES_v3.spec) y luego el INSTALADOR con Inno Setup
+      (GeneradorSubmittalsES.iss) -- ese instalador, no el .exe suelto, es lo
+      que se comparte con usuarios nuevos: deja accesos directos en el Menu
+      Inicio/Escritorio y entrada en "Agregar o quitar programas", sin pedirle
+      a nadie que ande buscando un .exe. El .exe suelto SI sigue subiendose al
+      Release (sin el, el auto-actualizador no tiene que descargar para el
+      swap en caliente de instalaciones existentes).
    6. git add / commit / push.
-   7. (Opcional) Crea Release en GitHub con el .exe (gh CLI o PyGithub).
+   7. (Opcional) Crea Release en GitHub con el .exe + el instalador (gh CLI).
 
  Flags:
    --no-tests      salta los tests
-   --build         compila el .exe (por defecto NO compila)
+   --build         compila el .exe y el instalador (por defecto NO compila)
    --release       crea el Release de GitHub con el .exe (requiere --build)
    --no-git        no hace commit/push
 ================================================================================
@@ -32,6 +39,7 @@ import os
 import re
 import sys
 import json
+import shutil
 import hashlib
 import argparse
 import subprocess
@@ -69,6 +77,31 @@ ARCHIVOS_VERSIONADOS = [
 # carpetas (v2.6)" y no participa del auto-updater.
 EXE_NOMBRE = "GeneradorSubmittalsES_v3.exe"
 EXE_SPEC = "GeneradorSubmittalsES_v3.spec"
+
+# Instalador Inno Setup (per-usuario, sin UAC): lo que se comparte para
+# instalaciones nuevas. Se compila DESPUES del .exe (su [Files] lo empaqueta).
+INSTALLER_ISS = "GeneradorSubmittalsES.iss"
+INSTALLER_DIR = "Instalador"
+
+
+def _instalador_nombre(version):
+    return f"GeneradorSubmittalsES_Setup_v{version}.exe"
+
+
+def _iscc():
+    """Ubica ISCC.exe (compilador de Inno Setup); None si no esta instalado."""
+    exe = shutil.which("ISCC.exe") or shutil.which("iscc")
+    if exe:
+        return exe
+    candidatos = [
+        Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Inno Setup 6" / "ISCC.exe",
+        Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "Inno Setup 6" / "ISCC.exe",
+        Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / "Inno Setup 6" / "ISCC.exe",
+    ]
+    for c in candidatos:
+        if c.exists():
+            return str(c)
+    return None
 
 
 def raw_url(rel):
@@ -113,6 +146,15 @@ def bump_version(version):
             cambios.append("submitals_config.json")
         except Exception:
             pass
+    iss = BASE / INSTALLER_ISS
+    if iss.exists():
+        txt = iss.read_text(encoding="utf-8")
+        nuevo = re.sub(r'(AppVersion=)\S+', rf'\g<1>{version}', txt, count=1)
+        nuevo = re.sub(r'(OutputBaseFilename=GeneradorSubmittalsES_Setup_v)\S+',
+                       rf'\g<1>{version}', nuevo, count=1)
+        if nuevo != txt:
+            iss.write_text(nuevo, encoding="utf-8")
+            cambios.append(INSTALLER_ISS)
     print(f"  version -> {version}  (actualizada en: {', '.join(cambios) or 'nada'})")
 
 
@@ -170,6 +212,32 @@ def compilar_exe():
     return r.returncode == 0
 
 
+def compilar_installer(version):
+    """Empaqueta dist/<exe> en un instalador Inno Setup (per-usuario, sin
+    UAC). Devuelve la ruta al .exe generado, o None si no se pudo (falta
+    Inno Setup, o el .iss no existe) -- nunca detiene la publicacion: el
+    Release sigue sirviendo el .exe suelto para el auto-updater."""
+    iss = BASE / INSTALLER_ISS
+    if not iss.exists():
+        print(f"  aviso: no se encontro {INSTALLER_ISS}; se omite el instalador")
+        return None
+    iscc = _iscc()
+    if not iscc:
+        print("  aviso: no se encontro ISCC.exe (Inno Setup); se omite el instalador.\n"
+              "  Instalelo con: winget install JRSoftware.InnoSetup")
+        return None
+    r = _run([iscc, str(iss)])
+    if r.returncode != 0:
+        print("   ERROR: fallo la compilacion del instalador (ISCC).")
+        return None
+    salida = BASE / INSTALLER_DIR / _instalador_nombre(version)
+    if not salida.exists():
+        print(f"  aviso: ISCC no genero {salida.name} donde se esperaba.")
+        return None
+    print(f"  Instalador generado: {salida}")
+    return salida
+
+
 # --------------------------------------------------- 6. git ----------------
 def git_push(version, changelog):
     _run(["git", "add", "-A"])
@@ -180,16 +248,26 @@ def git_push(version, changelog):
 
 # --------------------------------------------------- 7. release ------------
 def crear_release(version):
-    from shutil import which
+    """Sube AMBOS artefactos al Release: el .exe suelto (lo descarga el
+    auto-updater para el swap en caliente de instalaciones existentes) y el
+    instalador (lo que se comparte para instalar de cero -- deja accesos
+    directos y entrada de desinstalacion, en vez de un .exe suelto que hay
+    que andar buscando)."""
     exe = BASE / "dist" / EXE_NOMBRE
-    if not exe.exists():
-        print("  aviso: no hay dist/.exe; se omite Release")
+    instalador = BASE / INSTALLER_DIR / _instalador_nombre(version)
+    activos = [str(p) for p in (exe, instalador) if p.exists()]
+    if not activos:
+        print("  aviso: no hay .exe ni instalador; se omite Release")
         return False
-    if which("gh"):
-        r = _run(["gh", "release", "create", f"v{version}", str(exe),
+    if shutil.which("gh"):
+        r = _run(["gh", "release", "create", f"v{version}", *activos,
                   "--title", f"v{version}", "--notes", f"Release v{version}"])
+        if r.returncode == 0 and instalador.exists():
+            print(f"  Instalador para compartir: "
+                  f"https://github.com/{REPO_SLUG}/releases/download/v{version}/"
+                  f"{instalador.name}")
         return r.returncode == 0
-    print("  aviso: no se encontro 'gh' (GitHub CLI). Suba el .exe manualmente a\n"
+    print("  aviso: no se encontro 'gh' (GitHub CLI). Suba los archivos manualmente a\n"
           f"  https://github.com/{REPO_SLUG}/releases/new?tag=v{version}")
     return False
 
@@ -230,6 +308,8 @@ def main():
             print("   ❌ Compilacion fallo."); sys.exit(1)
         # recalcular VERSION.json con hash real del exe
         generar_version_json(version, changelog, incluir_exe=True)
+        print("5b) Compilando instalador (Inno Setup)")
+        compilar_installer(version)
 
     if not args.no_git:
         print("6) git commit/push")
