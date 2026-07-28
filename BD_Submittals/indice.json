@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T17:10:31",
+  "ultima_actualizacion": "2026-07-28T17:11:15",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1254,8 +1254,29 @@
       "fecha_modificacion": "2026-07-28T17:10:31",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "8e2ff1b7-3acb-4113-baa7-4370d344200d",
+      "nombre_ficha": "TUBERÍA PVC PARA AGUA POTABLE DRENAJE 12 mm - Amanco Wavin",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tubería PVC para agua potable y drenaje",
+      "marca": "Amanco Wavin",
+      "categoria": "ARQ",
+      "tipo_producto": "Tubería de PVC",
+      "dimensiones": "12 mm a 300 mm",
+      "sin_medidas": false,
+      "especificacion": "Diámetros de 1/2” a 12”",
+      "normativa": "ASTM D-1784, ASTM D-2241, ASTM D-2466, ASTM D-2672, ASTM D-3139, ASTM F-477",
+      "descripcion_corta": "Tubería PVC para conducción de agua a presión en edificaciones, infraestructura y sistemas de riego.",
+      "search_keywords": "tuberia pvc para agua potable drenaje 12 mm amanco wavin y arq de a 300 diametros 1 2 astm d 1784 2241 2466 2672 3139 f 477 conduccion presion en edificaciones infraestructura sistemas riego",
+      "ruta_pdf": "ARQ/TUBERIA-PVC-PARA-AGUA-POTABLE-DRENAJE-12-mm-Amanco-Wavin.pdf",
+      "hash_archivo": "5d741ab6d911106d",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T17:11:15",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T17:10:01"
+  "ultima_sincronizacion_git": "2026-07-28T17:10:33"
 }
