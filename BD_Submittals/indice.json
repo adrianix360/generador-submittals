@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T15:53:56",
+  "ultima_actualizacion": "2026-07-28T15:54:44",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -306,11 +306,11 @@
       "ruta_pdf": "ELEC/CONDULETA-LB-PST.pdf",
       "hash_archivo": "198fe300478f9946",
       "fecha_carga": "2026-07-28",
-      "fecha_modificacion": "2026-07-28T15:53:56",
+      "fecha_modificacion": "2026-07-28T15:54:44",
       "cargada_por": "Keis",
       "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T15:51:16"
+  "ultima_sincronizacion_git": "2026-07-28T15:54:00"
 }
