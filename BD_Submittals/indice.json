@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:26:56",
+  "ultima_actualizacion": "2026-07-28T16:27:45",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -960,8 +960,29 @@
       "fecha_modificacion": "2026-07-28T16:26:56",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "da20c156-77ad-4083-9f04-c952fa9557b5",
+      "nombre_ficha": "TABLERO TP MONOFASICO (EATON CHP32N ) 34.12 x 14.31 x 3.88 225 A - Eaton",
+      "nombre_ficha_manual": false,
+      "nombre_material": "TABLERO TP MONOFASICO (Eaton CHP32N225X6)",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "tipo_producto": "Centro de carga convertible",
+      "dimensiones": "34.12x14.31x3.88",
+      "sin_medidas": false,
+      "especificacion": "225A, 32 espacios",
+      "normativa": "UL 50, UL 67",
+      "descripcion_corta": "Centro de carga Eaton CH convertible, 225A, 32 espacios, 64 circuitos, monofásico, material de cobre.",
+      "search_keywords": "tablero tp monofasico eaton chp32n 34 12 x 14 31 3 88 225 a chp32n225x6 elec centro de carga convertible 12x14 31x3 225a 32 espacios ul 50 67 ch 64 circuitos material cobre",
+      "ruta_pdf": "ELEC/TABLERO-TP-MONOFASICO-EATON-CHP32N-34-12-x-14-31-x-3-88-225-A-Eaton.pdf",
+      "hash_archivo": "70a0fa5464c49401",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:27:45",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:25:57"
+  "ultima_sincronizacion_git": "2026-07-28T16:26:59"
 }
