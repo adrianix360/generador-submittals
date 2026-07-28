@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:11:09",
+  "ultima_actualizacion": "2026-07-28T16:12:21",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -540,8 +540,29 @@
       "fecha_modificacion": "2026-07-28T16:11:09",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "ff8cee08-8d32-4a23-9203-8c6db2cdc1e7",
+      "nombre_ficha": "PERFILERÍA LIVIANA EN ACERO GALVANIZADO (STUD) MULTIPLE - MACOPA",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Perfilería Liviana en Acero Galvanizado (STUD)",
+      "marca": "MACOPA",
+      "categoria": "ARQ",
+      "tipo_producto": "Perfil de acero galvanizado",
+      "dimensiones": "MULTIPLE",
+      "sin_medidas": false,
+      "especificacion": "Uso vertical para fijación de paneles",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Perfil de acero galvanizado para sistemas de paredes livianas y cielos, utilizado para fijación de paneles de cerramiento.",
+      "search_keywords": "perfileria liviana en acero galvanizado stud multiple macopa arq perfil de uso vertical para fijacion paneles sin especificar sistemas paredes livianas y cielos utilizado cerramiento",
+      "ruta_pdf": "ARQ/PERFILERIA-LIVIANA-EN-ACERO-GALVANIZADO-STUD-MULTIPLE-MACOPA.pdf",
+      "hash_archivo": "1d191bfed4ecb667",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:12:21",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:09:55"
+  "ultima_sincronizacion_git": "2026-07-28T16:11:15"
 }
