@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:13:28",
+  "ultima_actualizacion": "2026-07-28T16:14:21",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -603,8 +603,29 @@
       "fecha_modificacion": "2026-07-28T16:13:28",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "5fa77ef6-f26c-415d-ae09-8c4c657bc28a",
+      "nombre_ficha": "HILCO RED EXTRA MULTIPLE - HILCO",
+      "nombre_ficha_manual": false,
+      "nombre_material": "HILCO RED EXTRA",
+      "marca": "HILCO",
+      "categoria": "MEC",
+      "tipo_producto": "Electrodos para soldadura",
+      "dimensiones": "MULTIPLE",
+      "sin_medidas": false,
+      "especificacion": "Electrodos - aceros no aleados",
+      "normativa": "AWS A5.1: E 6013, EN ISO 2560-A: E 42 0 RC 11",
+      "descripcion_corta": "Electrodo universal para todas las posiciones de soldadura, ideal para trabajos de construcción y reparación de acero estructural.",
+      "search_keywords": "hilco red extra multiple mec electrodos para soldadura aceros no aleados aws a5 1 e 6013 en iso 2560 a 42 0 rc 11 electrodo universal todas las posiciones de ideal trabajos construccion y reparacion acero estructural",
+      "ruta_pdf": "MEC/HILCO-RED-EXTRA-MULTIPLE-HILCO.pdf",
+      "hash_archivo": "5dbc5fc248b67a16",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:14:21",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:13:14"
+  "ultima_sincronizacion_git": "2026-07-28T16:13:31"
 }
