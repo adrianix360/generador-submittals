@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:16:31",
+  "ultima_actualizacion": "2026-07-28T16:17:12",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -687,8 +687,29 @@
       "fecha_modificacion": "2026-07-28T16:16:31",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "948cfb01-b164-446b-9f71-aaad413469fe",
+      "nombre_ficha": "BONDEX PLUS CERÁMICA PORCELANATO - INTACO",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Bondex Plus Cerámica y Porcelanato",
+      "marca": "INTACO",
+      "categoria": "ARQ",
+      "tipo_producto": "Mortero adhesivo con polímeros",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Mortero adhesivo modificado con polímeros",
+      "normativa": "ANSI A118.4, INTE C104",
+      "descripcion_corta": "Mortero adhesivo modificado con polímeros para cerámica y porcelanato, adecuado para interiores y exteriores.",
+      "search_keywords": "bondex plus ceramica porcelanato intaco y arq mortero adhesivo con polimeros modificado ansi a118 4 inte c104 para adecuado interiores exteriores",
+      "ruta_pdf": "ARQ/BONDEX-PLUS-CERAMICA-PORCELANATO-INTACO.pdf",
+      "hash_archivo": "1e7c922e4e12a191",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:17:12",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:15:48"
+  "ultima_sincronizacion_git": "2026-07-28T16:16:34"
 }
