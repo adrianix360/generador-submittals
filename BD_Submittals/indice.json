@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T17:09:58",
+  "ultima_actualizacion": "2026-07-28T17:10:31",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1233,8 +1233,29 @@
       "fecha_modificacion": "2026-07-28T17:09:58",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "e1dc91cc-558a-475d-96d4-1bf9de33e89a",
+      "nombre_ficha": "TSJ MEDIA (NM CLAMP TYPE CONNECTORS) 0.814 x 0.44 x 0.92 - Topaz",
+      "nombre_ficha_manual": false,
+      "nombre_material": "TSJ MEDIA (NM Clamp Type Connectors)",
+      "marca": "Topaz",
+      "categoria": "ELEC",
+      "tipo_producto": "Conector de tipo abrazadera",
+      "dimensiones": "0.814x0.44x0.92",
+      "sin_medidas": false,
+      "especificacion": "3/8\" NM Cable",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Conector de abrazadera para cable no metálico, material de aleación de zinc, adecuado para cables NM de varios tamaños.",
+      "search_keywords": "tsj media nm clamp type connectors 0 814 x 44 92 topaz elec conector de tipo abrazadera 814x0 44x0 3 8 cable sin especificar para no metalico material aleacion zinc adecuado cables varios tamanos",
+      "ruta_pdf": "ELEC/TSJ-MEDIA-NM-CLAMP-TYPE-CONNECTORS-0-814-x-0-44-x-0-92-Topaz.pdf",
+      "hash_archivo": "4b0f3f4be68d2604",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T17:10:31",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T17:09:28"
+  "ultima_sincronizacion_git": "2026-07-28T17:10:01"
 }
