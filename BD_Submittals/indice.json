@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:25:54",
+  "ultima_actualizacion": "2026-07-28T16:26:56",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -939,8 +939,29 @@
       "fecha_modificacion": "2026-07-28T16:25:54",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "5eb24b09-c99d-4428-9f16-ca220051d825",
+      "nombre_ficha": "DISYUNTOR 2P20 (EATON CHF220) 1.5 x 0.75 x 2.6 20 A 240 V CH 20 - Eaton",
+      "nombre_ficha_manual": false,
+      "nombre_material": "DISYUNTOR 2P20 (Eaton CHF220)",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "tipo_producto": "Interruptor termomagnético",
+      "dimensiones": "1.5x0.75x2.6",
+      "sin_medidas": false,
+      "especificacion": "20 A, 120/240 V, 10 kAIC",
+      "normativa": "HACR Rated, UL 489",
+      "descripcion_corta": "Interruptor termomagnético tipo CHF de 3/4 pulgada, 20 A, 120/240 V, 10 kAIC, para centros de carga CH.",
+      "search_keywords": "disyuntor 2p20 eaton chf220 1 5 x 0 75 2 6 20 a 240 v ch elec interruptor termomagnetico 5x0 75x2 120 10 kaic hacr rated ul 489 tipo chf de 3 4 pulgada para centros carga",
+      "ruta_pdf": "ELEC/DISYUNTOR-2P20-EATON-CHF220-1-5-x-0-75-x-2-6-20-A-240-V-CH-20-Eaton.pdf",
+      "hash_archivo": "7585ca0620f3efe9",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:26:56",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:24:27"
+  "ultima_sincronizacion_git": "2026-07-28T16:25:57"
 }
