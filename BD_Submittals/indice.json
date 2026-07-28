@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T17:17:37",
+  "ultima_actualizacion": "2026-07-28T17:18:01",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1317,8 +1317,29 @@
       "fecha_modificacion": "2026-07-28T17:17:37",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "c27b43c0-9889-406e-b048-865fd845dc69",
+      "nombre_ficha": "ACCESORIOS SCH 40 PVC - Amanco",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Accesorios SCH 40 PVC",
+      "marca": "Amanco",
+      "categoria": "ARQ",
+      "tipo_producto": "Accesorios de PVC",
+      "dimensiones": "",
+      "sin_medidas": false,
+      "especificacion": "Unión 12mm (1/2\") SCH 40 PVC",
+      "normativa": "ANSI/ASME B1.20.1, ASTM D2466, NSF 14, NSF 61",
+      "descripcion_corta": "Accesorios de PVC para sistemas de tuberías, cumpliendo con normas ASTM y NSF.",
+      "search_keywords": "accesorios sch 40 pvc amanco arq de union 12mm 1 2 ansi asme b1 20 astm d2466 nsf 14 61 para sistemas tuberias cumpliendo con normas y",
+      "ruta_pdf": "ARQ/ACCESORIOS-SCH-40-PVC-Amanco.pdf",
+      "hash_archivo": "ff7ebbcfa096e98d",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T17:18:01",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T17:11:47"
+  "ultima_sincronizacion_git": "2026-07-28T17:17:40"
 }
