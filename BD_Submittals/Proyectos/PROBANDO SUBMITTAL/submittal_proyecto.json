@@ -1,0 +1,37 @@
+{
+  "nombre_proyecto": "PROBANDO SUBMITTAL",
+  "datos_procedimiento": {
+    "numero_procedimiento": "PRUEBA-0000",
+    "institucion": "Institución de prueba",
+    "detalle": "Submittal de prueba (modo desarrollador)",
+    "plazo": "N/A",
+    "monto": "0"
+  },
+  "tipo_caratula": "clasica",
+  "materiales_seleccionados": [
+    {
+      "consecutivo": "MEC01",
+      "id_ficha_bd": "66b454b4-9859-4f5e-8c69-09ee72d4e28e",
+      "nombre_material": "TUBERÍA PVC 300 mm",
+      "marca": "Amanco Wavin",
+      "categoria": "MEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "MEC02",
+      "id_ficha_bd": "71bb6284-c215-4723-acc8-4e0ed47ea18b",
+      "nombre_material": "TUBERÍA PVC",
+      "marca": "AMANCO",
+      "categoria": "MEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    }
+  ],
+  "ruta_entregables": "C:\\Users\\castr\\Downloads\\PROBANDO SUBMITTAL",
+  "id_proyecto": "800a55b4-67bc-4d81-a159-b07bf0831582",
+  "fecha_creacion": "2026-07-28",
+  "ultima_actualizacion": "2026-07-28T12:29:06",
+  "actualizado_por": "ProBook_de_Adri",
+  "entregables_generados": true
+}
