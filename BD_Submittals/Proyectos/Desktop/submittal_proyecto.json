@@ -1,0 +1,28 @@
+{
+  "nombre_proyecto": "Desktop",
+  "datos_procedimiento": {
+    "numero_procedimiento": "PRUEBA-0000",
+    "institucion": "Institución de prueba",
+    "detalle": "Submittal de prueba (modo desarrollador)",
+    "plazo": "N/A",
+    "monto": "0"
+  },
+  "tipo_caratula": "clasica",
+  "materiales_seleccionados": [
+    {
+      "consecutivo": "ELEC01",
+      "id_ficha_bd": "6e666da9-af56-4454-99bd-bb951eb62141",
+      "nombre_material": "CONDULETA LB",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    }
+  ],
+  "ruta_entregables": "C:\\Users\\info\\OneDrive\\Desktop",
+  "id_proyecto": "fea9f844-de04-4321-83f0-1eefb7152528",
+  "fecha_creacion": "2026-07-28",
+  "ultima_actualizacion": "2026-07-28T15:56:36",
+  "actualizado_por": "Keis",
+  "entregables_generados": true
+}
