@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:14:21",
+  "ultima_actualizacion": "2026-07-28T16:14:53",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -624,8 +624,29 @@
       "fecha_modificacion": "2026-07-28T16:14:21",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "9ce6f396-0e5c-43b8-b6b8-d274f48cd4cc",
+      "nombre_ficha": "PERFILERÍA LIVIANA EN ACERO GALVANIZADO MULTIPLE - MACOPA",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Perfilería Liviana en Acero Galvanizado",
+      "marca": "MACOPA",
+      "categoria": "ARQ",
+      "tipo_producto": "Perfil estructural",
+      "dimensiones": "MULTIPLE",
+      "sin_medidas": false,
+      "especificacion": "",
+      "normativa": "ASTM A653, ASTM C645",
+      "descripcion_corta": "Perfilería en acero galvanizado para sistemas de paredes livianas y cielos, incluye canal cielo, esquinero, angular, furring chanel y mini furring.",
+      "search_keywords": "perfileria liviana en acero galvanizado multiple macopa arq perfil estructural astm a653 c645 para sistemas de paredes livianas y cielos incluye canal cielo esquinero angular furring chanel mini",
+      "ruta_pdf": "ARQ/PERFILERIA-LIVIANA-EN-ACERO-GALVANIZADO-MULTIPLE-MACOPA.pdf",
+      "hash_archivo": "63ec550498a20daa",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:14:53",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:13:31"
+  "ultima_sincronizacion_git": "2026-07-28T16:14:23"
 }
