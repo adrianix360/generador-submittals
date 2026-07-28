@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T17:18:51",
+  "ultima_actualizacion": "2026-07-28T17:24:56",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1359,8 +1359,29 @@
       "fecha_modificacion": "2026-07-28T17:18:51",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "3e7a9504-0fbc-47ec-98be-a0c858251c29",
+      "nombre_ficha": "ALAMBRE DE PÚAS - SIN ESPECIFICAR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Alambre de púas",
+      "marca": "SIN ESPECIFICAR",
+      "categoria": "ARQ",
+      "tipo_producto": "Alambre galvanizado",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Diámetro 1.5 mm, 2 mm",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Alambre de púas galvanizado, económico y duradero, ideal para cercar y brindar seguridad.",
+      "search_keywords": "alambre de puas sin especificar arq galvanizado diametro 1 5 mm 2 economico y duradero ideal para cercar brindar seguridad",
+      "ruta_pdf": "ARQ/ALAMBRE-DE-PUAS-SIN-ESPECIFICAR.pdf",
+      "hash_archivo": "40734b791456da32",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T17:24:56",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T17:18:05"
+  "ultima_sincronizacion_git": "2026-07-28T17:18:55"
 }
