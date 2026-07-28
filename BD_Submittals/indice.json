@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T17:08:56",
+  "ultima_actualizacion": "2026-07-28T17:09:25",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1191,8 +1191,29 @@
       "fecha_modificacion": "2026-07-28T17:08:56",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "3b10a2e5-1681-4c0b-9b27-dfd6274856df",
+      "nombre_ficha": "CONDULETA MULTIPLE - PST",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Conduleta",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "tipo_producto": "Cuerpo de conducto roscado",
+      "dimensiones": "MULTIPLE",
+      "sin_medidas": false,
+      "especificacion": "Cuerpo de conducto con tapa y junta",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Cuerpo de conducto de aluminio tipo LB para unir conductos rígidos o IMC, permitiendo acceso para mantenimiento y empalme de cables.",
+      "search_keywords": "conduleta multiple pst elec cuerpo de conducto roscado con tapa y junta sin especificar aluminio tipo lb para unir conductos rigidos o imc permitiendo acceso mantenimiento empalme cables",
+      "ruta_pdf": "ELEC/CONDULETA-MULTIPLE-PST.pdf",
+      "hash_archivo": "198fe300478f9946",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T17:09:25",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T17:08:06"
+  "ultima_sincronizacion_git": "2026-07-28T17:08:58"
 }
