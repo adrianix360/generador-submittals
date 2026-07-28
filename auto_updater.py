@@ -38,6 +38,9 @@ from pathlib import Path
 REPO_SLUG = "adrianix360/generador-submittals"   # <-- PONER el repo real
 BRANCH = "main"
 TIMEOUT = 15        # JSON y archivos de codigo (pequenos, KB)
+
+# Evita que pip/el .bat de swap abran una ventana de consola visible.
+CREATIONFLAGS_SIN_VENTANA = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 TIMEOUT_EXE = 120    # lectura por chunk al descargar el .exe (binario grande, ~150MB)
 REINTENTOS = 3
 CHUNK_EXE = 256 * 1024
@@ -335,7 +338,7 @@ def _pip_install_requirements():
         cmd = [py, "-m", "pip", "install", "-r", "requirements.txt"]
     else:
         cmd = [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"]
-    subprocess.check_call(cmd, cwd=str(app_dir()))
+    subprocess.check_call(cmd, cwd=str(app_dir()), creationflags=CREATIONFLAGS_SIN_VENTANA)
 
 
 # ---------------------------------------------------------------------------
@@ -371,8 +374,12 @@ def lanzar_swap_y_salir():
     """Ejecuta el .bat de swap del .exe y cierra la app."""
     bat = app_dir() / "_actualizar_exe.bat"
     if bat.exists():
+        # DETACHED_PROCESS por si solo no evita que cmd.exe se asigne una
+        # consola nueva (visible) al no heredar la del padre; CREATE_NO_WINDOW
+        # es lo que realmente la oculta.
         subprocess.Popen(["cmd", "/c", str(bat)], cwd=str(app_dir()),
-                         creationflags=getattr(subprocess, "DETACHED_PROCESS", 0))
+                         creationflags=(CREATIONFLAGS_SIN_VENTANA |
+                                        getattr(subprocess, "DETACHED_PROCESS", 0)))
     os._exit(0)
 
 

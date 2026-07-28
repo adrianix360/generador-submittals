@@ -462,7 +462,9 @@ try:
             raise
         import subprocess
         print("Instalando dependencia 'customtkinter' (primera vez)...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "customtkinter"])
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", "customtkinter"],
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         import customtkinter as ctk
     _TK_OK = True
 except Exception:
@@ -1902,7 +1904,8 @@ if _TK_OK:
                 # v2.6 compilado aparte, en la misma carpeta.
                 exe_v26 = Path(sys.executable).resolve().parent / "GeneradorSubmittalsES.exe"
                 if exe_v26.exists():
-                    subprocess.Popen([str(exe_v26)], cwd=str(exe_v26.parent))
+                    subprocess.Popen([str(exe_v26)], cwd=str(exe_v26.parent),
+                                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
                 else:
                     messagebox.showinfo(
                         "v2.6", "No se encontró GeneradorSubmittalsES.exe (v2.6).\n\n"
@@ -1911,7 +1914,8 @@ if _TK_OK:
                 return
             ruta = BASE_DIR / "submitals_gui.py"
             if ruta.exists():
-                subprocess.Popen([sys.executable, str(ruta)], cwd=str(BASE_DIR))
+                subprocess.Popen([sys.executable, str(ruta)], cwd=str(BASE_DIR),
+                                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
             else:
                 messagebox.showinfo("v2.6", "No se encontró submitals_gui.py")
 
