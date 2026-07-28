@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:24:07",
+  "ultima_actualizacion": "2026-07-28T16:24:24",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -897,8 +897,29 @@
       "fecha_modificacion": "2026-07-28T16:24:07",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "ee019a1a-750b-45b6-92ab-c11ff8847ec1",
+      "nombre_ficha": "TUBO REDONDO PARA MALLA 31 x 1.5 - MACOPA",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tubo Redondo para Malla",
+      "marca": "MACOPA",
+      "categoria": "ESTR",
+      "tipo_producto": "Tubería redonda",
+      "dimensiones": "31x1.50, 31x1.80, 38x1.50, 38x1.80, 50x1.50, 50x1.80",
+      "sin_medidas": false,
+      "especificacion": "Acero galvanizado y hierro negro",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Tubería formada en frío y soldada para resistencia eléctrica, útil en industria automotriz, bicicletas, muebles y más.",
+      "search_keywords": "tubo redondo para malla 31 x 1 5 macopa estr tuberia redonda 31x1 50 80 38x1 50x1 acero galvanizado y hierro negro sin especificar formada en frio soldada resistencia electrica util industria automotriz bicicletas muebles mas",
+      "ruta_pdf": "ESTR/TUBO-REDONDO-PARA-MALLA-31-x-1-5-MACOPA.pdf",
+      "hash_archivo": "feee249c3e4ee44e",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:24:24",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:23:39"
+  "ultima_sincronizacion_git": "2026-07-28T16:24:10"
 }
