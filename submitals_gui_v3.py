@@ -48,11 +48,16 @@ VERSION = "3.2.1"
 BASE_DIR = Path(__file__).resolve().parent
 PIN_MODO_DEV = "9119"
 
-# Colores tema (coherentes con v2.6)
-ROJO_ES = "#E11D2D"
-AZUL_ES = "#1F3864"
-GRIS_BG = "#F4F5F7"
-VERDE_OK = "#34CA3C"
+# Colores tema (refresh visual v3.3.0: paleta azul/naranja, WCAG AA)
+AZUL_ES = "#2563EB"          # Primary
+AZUL_CLARO = "#3B82F6"       # Secondary (hover/acentos)
+NARANJA_CTA = "#F97316"      # Accent / CTA principal ("Generar", acciones clave)
+GRIS_BG = "#F8FAFC"          # Background
+GRIS_TEXTO = "#1E293B"       # Foreground (texto principal)
+GRIS_TEXTO_SUAVE = "#475569"  # texto secundario/ayuda
+BORDE_SUAVE = "#CBD5E1"      # bordes de tarjetas ("vidrio" en modo claro)
+ROJO_ES = "#DC2626"          # Danger (errores, acciones destructivas)
+VERDE_OK = "#16A34A"         # Success
 
 IMG_EXT = (".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff")
 
@@ -446,13 +451,96 @@ def generar_entregables(bd, proyecto, destino, tipo="clasica", log=print,
 # ==========================================================================
 try:
     import tkinter as tk
-    from tkinter import ttk, filedialog, messagebox, simpledialog
+    from tkinter import ttk, filedialog, messagebox
+    try:
+        import customtkinter as ctk
+    except ImportError:
+        # Dependencia nueva del refresh visual v3.3.0: si falta, se instala
+        # sola (solo tiene sentido corriendo el .py con un interprete real;
+        # el .exe empaquetado ya la trae incluida via el .spec de PyInstaller).
+        if getattr(sys, "frozen", False):
+            raise
+        import subprocess
+        print("Instalando dependencia 'customtkinter' (primera vez)...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "customtkinter"])
+        import customtkinter as ctk
     _TK_OK = True
 except Exception:
     _TK_OK = False
 
 
 if _TK_OK:
+
+    # -------------------------------------------------------------------
+    # Sistema de diseno v3.3.0: modo claro fijo (ver AVOID en el spec: nada
+    # de modo oscuro por defecto), tipografia Inter con reserva a Segoe UI
+    # si el sistema no la tiene instalada.
+    # -------------------------------------------------------------------
+    ctk.set_appearance_mode("light")
+    ctk.set_default_color_theme("blue")
+
+    FUENTE = "Segoe UI"
+    try:
+        import tkinter.font as _tkfont
+        _r = tk.Tk()
+        _r.withdraw()
+        if "Inter" in _tkfont.families():
+            FUENTE = "Inter"
+        _r.destroy()
+    except Exception:
+        pass
+
+    def _fuente(size=11, weight="normal"):
+        """Fuente del sistema de diseno (``CTkFont``: escala con el DPI)."""
+        return ctk.CTkFont(family=FUENTE, size=size, weight=weight)
+
+    def _configurar_estilo_ttk():
+        """Reskin del ``ttk.Treeview`` (unico widget ttk que sigue en uso;
+        CustomTkinter no trae reemplazo) a la paleta nueva."""
+        style = ttk.Style()
+        try:
+            style.theme_use("clam")
+        except Exception:
+            pass
+        style.configure("Treeview", background="white", fieldbackground="white",
+                        foreground=GRIS_TEXTO, rowheight=26, borderwidth=0,
+                        font=(FUENTE, 10))
+        style.configure("Treeview.Heading", background=AZUL_ES, foreground="white",
+                        font=(FUENTE, 10, "bold"), relief="flat")
+        style.map("Treeview.Heading", background=[("active", AZUL_CLARO)])
+        style.map("Treeview", background=[("selected", AZUL_CLARO)],
+                  foreground=[("selected", "white")])
+
+    # Color de "hover" de cada color solido del tema (mismo tono, mas oscuro).
+    _HOVER = {AZUL_ES: "#1D4ED8", AZUL_CLARO: "#2563EB", NARANJA_CTA: "#EA580C",
+             ROJO_ES: "#B91C1C", VERDE_OK: "#15803D", "white": "#F1F5F9"}
+
+    def _tarjeta(parent, **kw):
+        """Frame estilo 'tarjeta': fondo blanco, esquinas redondeadas y borde
+        sutil. Es la aproximacion de Glassmorphism que CustomTkinter puede dar
+        sin blur real (Tkinter no soporta backdrop-filter)."""
+        kw.setdefault("fg_color", "white")
+        kw.setdefault("corner_radius", 14)
+        kw.setdefault("border_width", 1)
+        kw.setdefault("border_color", BORDE_SUAVE)
+        return ctk.CTkFrame(parent, **kw)
+
+    def _boton(parent, text, command, color=AZUL_ES, texto_color="white",
+              ancho=140, alto=36, **kw):
+        """Boton estandar del sistema de diseno (esquinas redondeadas, hover
+        suave, tipografia consistente)."""
+        return ctk.CTkButton(parent, text=text, command=command, fg_color=color,
+                             hover_color=_HOVER.get(color, color),
+                             text_color=texto_color, width=ancho, height=alto,
+                             corner_radius=10, font=_fuente(11, "bold"), **kw)
+
+    def _boton_secundario(parent, text, command, ancho=140, alto=32, **kw):
+        """Boton de accion secundaria: contorno azul sobre fondo blanco."""
+        return ctk.CTkButton(parent, text=text, command=command,
+                             fg_color="white", hover_color="#EFF6FF",
+                             text_color=AZUL_ES, border_width=1,
+                             border_color=AZUL_ES, width=ancho, height=alto,
+                             corner_radius=10, font=_fuente(11), **kw)
 
     def _traer_al_frente(win):
         """Fuerza que una ventana nueva quede al frente y con el foco.
@@ -467,14 +555,14 @@ if _TK_OK:
         win.after_idle(lambda: win.attributes("-topmost", False))
         win.focus_force()
 
-    class DatosProyectoDialog(tk.Toplevel):
+    class DatosProyectoDialog(ctk.CTkToplevel):
         """Dialogo para capturar los datos del procedimiento (obligatorios)."""
 
         def __init__(self, master, datos=None):
             super().__init__(master)
             self.title("Datos del Proyecto")
             self.resultado = None
-            self.configure(padx=16, pady=16)
+            self.configure(fg_color=GRIS_BG, padx=16, pady=16)
             self.grab_set()
             datos = datos or {}
             campos = [
@@ -484,17 +572,24 @@ if _TK_OK:
                 ("plazo", "Plazo"),
                 ("monto", "Monto"),
             ]
+            tarjeta = _tarjeta(self)
+            tarjeta.pack(fill="both", expand=True, padx=4, pady=4)
+            ctk.CTkLabel(tarjeta, text="Datos del Proyecto", font=_fuente(14, "bold"),
+                        text_color=GRIS_TEXTO).grid(
+                row=0, column=0, columnspan=2, sticky="w", padx=16, pady=(16, 10))
             self.vars = {}
-            for i, (clave, etiqueta) in enumerate(campos):
-                tk.Label(self, text=etiqueta + ":").grid(row=i, column=0, sticky="e", pady=4, padx=6)
+            for i, (clave, etiqueta) in enumerate(campos, start=1):
+                ctk.CTkLabel(tarjeta, text=etiqueta + ":", text_color=GRIS_TEXTO).grid(
+                    row=i, column=0, sticky="e", pady=4, padx=(16, 6))
                 v = tk.StringVar(value=datos.get(clave, ""))
-                tk.Entry(self, textvariable=v, width=44).grid(row=i, column=1, pady=4)
+                ctk.CTkEntry(tarjeta, textvariable=v, width=280, height=32,
+                            corner_radius=8, border_color=BORDE_SUAVE).grid(
+                    row=i, column=1, pady=4, padx=(0, 16))
                 self.vars[clave] = v
-            barra = tk.Frame(self)
-            barra.grid(row=len(campos), column=0, columnspan=2, pady=(12, 0))
-            tk.Button(barra, text="Guardar", command=self._guardar,
-                      bg=AZUL_ES, fg="white", width=12).pack(side="left", padx=6)
-            tk.Button(barra, text="Cancelar", command=self.destroy, width=12).pack(side="left", padx=6)
+            barra = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            barra.grid(row=len(campos) + 1, column=0, columnspan=2, pady=(14, 16))
+            _boton(barra, "Guardar", self._guardar, color=AZUL_ES).pack(side="left", padx=6)
+            _boton_secundario(barra, "Cancelar", self.destroy).pack(side="left", padx=6)
             _traer_al_frente(self)
 
         def _guardar(self):
@@ -508,12 +603,47 @@ if _TK_OK:
             self.destroy()
 
 
-    class TablaMateriales(tk.Frame):
+    class _PinDialog(ctk.CTkToplevel):
+        """Pide un PIN enmascarado (reemplaza ``simpledialog.askstring`` con
+        ``show='*'``, que CustomTkinter no ofrece de forma nativa)."""
+
+        def __init__(self, master, titulo, mensaje):
+            super().__init__(master)
+            self.title(titulo)
+            self.resultado = None
+            self.configure(fg_color=GRIS_BG, padx=16, pady=16)
+            self.resizable(False, False)
+            self.grab_set()
+            tarjeta = _tarjeta(self)
+            tarjeta.pack(fill="both", expand=True)
+            ctk.CTkLabel(tarjeta, text=mensaje, text_color=GRIS_TEXTO,
+                        font=_fuente(11)).pack(padx=18, pady=(18, 8))
+            self.v_pin = tk.StringVar()
+            e = ctk.CTkEntry(tarjeta, textvariable=self.v_pin, show="*", width=200,
+                             height=32, corner_radius=8, border_color=BORDE_SUAVE,
+                             justify="center")
+            e.pack(padx=18, pady=4)
+            e.bind("<Return>", lambda _ev: self._ok())
+            barra = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            barra.pack(pady=(12, 18))
+            _boton(barra, "Aceptar", self._ok, color=AZUL_ES, ancho=110).pack(
+                side="left", padx=6)
+            _boton_secundario(barra, "Cancelar", self.destroy, ancho=110).pack(
+                side="left", padx=6)
+            _traer_al_frente(self)
+            e.focus_set()
+
+        def _ok(self):
+            self.resultado = self.v_pin.get()
+            self.destroy()
+
+
+    class TablaMateriales(ctk.CTkFrame):
         """Tabla reutilizable de materiales seleccionados con agregar/editar/
         eliminar y renumeracion automatica de consecutivos."""
 
         def __init__(self, master, bd, materiales=None):
-            super().__init__(master)
+            super().__init__(master, fg_color="transparent")
             self.bd = bd
             self.materiales = list(materiales or [])
             self._build()
@@ -521,16 +651,24 @@ if _TK_OK:
 
         def _build(self):
             # Barra de busqueda
-            top = tk.Frame(self); top.pack(fill="x", pady=(0, 6))
-            tk.Label(top, text="Buscar material:").pack(side="left")
+            top = ctk.CTkFrame(self, fg_color="transparent")
+            top.pack(fill="x", pady=(0, 8))
+            ctk.CTkLabel(top, text="Buscar material:", text_color=GRIS_TEXTO,
+                        font=_fuente(11)).pack(side="left")
             self.var_busq = tk.StringVar()
-            e = tk.Entry(top, textvariable=self.var_busq, width=36)
+            e = ctk.CTkEntry(top, textvariable=self.var_busq, width=280, height=32,
+                             corner_radius=8, border_color=BORDE_SUAVE)
             e.pack(side="left", padx=6)
             e.bind("<KeyRelease>", lambda _ev: self._sugerir())
-            tk.Button(top, text="＋ Cargar ficha nueva a BD",
-                      command=self._cargar_ficha).pack(side="right")
+            _boton(top, "＋ Cargar ficha nueva a BD", self._cargar_ficha,
+                  color=AZUL_CLARO, ancho=200).pack(side="right")
 
-            self.lst = tk.Listbox(self, height=5)
+            self.lst = tk.Listbox(self, height=5, font=(FUENTE, 10),
+                                  bg="white", fg=GRIS_TEXTO,
+                                  selectbackground=AZUL_CLARO, selectforeground="white",
+                                  relief="solid", borderwidth=1,
+                                  highlightthickness=1, highlightbackground=BORDE_SUAVE,
+                                  highlightcolor=AZUL_ES)
             self.lst.pack(fill="x")
             self.lst.bind("<Double-Button-1>", lambda _ev: self._agregar_seleccion())
 
@@ -539,11 +677,14 @@ if _TK_OK:
             for c, t, w in (("cons", "Consecutivo", 90), ("nombre", "Nombre", 320),
                             ("marca", "Marca", 180)):
                 self.tree.heading(c, text=t); self.tree.column(c, width=w)
-            self.tree.pack(fill="both", expand=True, pady=6)
+            self.tree.pack(fill="both", expand=True, pady=8)
 
-            bar = tk.Frame(self); bar.pack(fill="x")
-            tk.Button(bar, text="Editar marca(s)", command=self._editar).pack(side="left", padx=4)
-            tk.Button(bar, text="Eliminar", command=self._eliminar).pack(side="left", padx=4)
+            bar = ctk.CTkFrame(self, fg_color="transparent")
+            bar.pack(fill="x")
+            _boton_secundario(bar, "Editar marca(s)", self._editar, ancho=140).pack(
+                side="left", padx=4)
+            _boton(bar, "Eliminar", self._eliminar, color=ROJO_ES, ancho=110).pack(
+                side="left", padx=4)
             self._sug = []
 
         def _sugerir(self):
@@ -612,23 +753,39 @@ if _TK_OK:
             if not m:
                 return
             alt = ", ".join(m.get("marcas_alternativas", []))
-            top = tk.Toplevel(self); top.title("Editar marcas"); top.grab_set(); top.configure(padx=14, pady=14)
-            tk.Label(top, text=f"{m['consecutivo']} — {m['nombre_material']}").grid(row=0, column=0, columnspan=2)
-            tk.Label(top, text="Marca principal:").grid(row=1, column=0, sticky="e", pady=4)
-            v_p = tk.StringVar(value=m["marca"]); tk.Entry(top, textvariable=v_p, width=32).grid(row=1, column=1)
-            tk.Label(top, text="Marcas alternativas (coma):").grid(row=2, column=0, sticky="e", pady=4)
-            v_a = tk.StringVar(value=alt); tk.Entry(top, textvariable=v_a, width=32).grid(row=2, column=1)
+            top = ctk.CTkToplevel(self)
+            top.title("Editar marcas"); top.grab_set()
+            top.configure(fg_color=GRIS_BG, padx=14, pady=14)
+            tarjeta = _tarjeta(top); tarjeta.pack(fill="both", expand=True)
+            ctk.CTkLabel(tarjeta, text=f"{m['consecutivo']} — {m['nombre_material']}",
+                        font=_fuente(11, "bold"), text_color=GRIS_TEXTO).grid(
+                row=0, column=0, columnspan=2, padx=16, pady=(16, 10))
+            ctk.CTkLabel(tarjeta, text="Marca principal:", text_color=GRIS_TEXTO).grid(
+                row=1, column=0, sticky="e", pady=4, padx=(16, 6))
+            v_p = tk.StringVar(value=m["marca"])
+            ctk.CTkEntry(tarjeta, textvariable=v_p, width=220, height=32,
+                        corner_radius=8, border_color=BORDE_SUAVE).grid(
+                row=1, column=1, padx=(0, 16))
+            ctk.CTkLabel(tarjeta, text="Marcas alternativas (coma):",
+                        text_color=GRIS_TEXTO).grid(row=2, column=0, sticky="e",
+                                                    pady=4, padx=(16, 6))
+            v_a = tk.StringVar(value=alt)
+            ctk.CTkEntry(tarjeta, textvariable=v_a, width=220, height=32,
+                        corner_radius=8, border_color=BORDE_SUAVE).grid(
+                row=2, column=1, padx=(0, 16))
             v_s = tk.BooleanVar(value=m.get("justificacion_stock", False))
-            tk.Checkbutton(top, text="Justificar por stock (marcas alternativas aprobadas)",
-                           variable=v_s).grid(row=3, column=0, columnspan=2, sticky="w", pady=4)
+            ctk.CTkCheckBox(tarjeta, text="Justificar por stock (marcas alternativas aprobadas)",
+                           variable=v_s, text_color=GRIS_TEXTO,
+                           fg_color=AZUL_ES, hover_color=_HOVER[AZUL_ES]).grid(
+                row=3, column=0, columnspan=2, sticky="w", padx=16, pady=4)
 
             def _ok():
                 m["marca"] = v_p.get().strip()
                 m["marcas_alternativas"] = [a.strip() for a in v_a.get().split(",") if a.strip()]
                 m["justificacion_stock"] = v_s.get()
                 top.destroy(); self._refrescar()
-            tk.Button(top, text="Confirmar", command=_ok, bg=AZUL_ES, fg="white").grid(
-                row=4, column=0, columnspan=2, pady=(10, 0))
+            _boton(tarjeta, "Confirmar", _ok, color=AZUL_ES).grid(
+                row=4, column=0, columnspan=2, pady=(12, 16))
             _traer_al_frente(top)
 
         def _eliminar(self):
@@ -641,7 +798,7 @@ if _TK_OK:
                                al_terminar=lambda: (self._sugerir()))
 
 
-    class VentanaCargarFicha(tk.Toplevel):
+    class VentanaCargarFicha(ctk.CTkToplevel):
         """Flujo 3: cargar una o varias fichas a la BD (con extraccion OCR/IA)."""
 
         def __init__(self, master, bd, al_terminar=None):
@@ -650,26 +807,36 @@ if _TK_OK:
             self._cancelado = False
             self._cerrada = False
             self._procesando = False
-            self.title("Cargar ficha(s) a la BD"); self.configure(padx=16, pady=16); self.grab_set()
-            tk.Label(self, text="Cargar fichas técnicas a la Base de Datos",
-                     font=("Segoe UI", 12, "bold")).pack(anchor="w")
-            botones = tk.Frame(self); botones.pack(anchor="w", pady=8)
-            self.btn_archivos = tk.Button(botones, text="Seleccionar archivo(s)…",
-                                           command=self._seleccionar, bg=AZUL_ES, fg="white")
+            self._prog_max = 1
+            self.title("Cargar ficha(s) a la BD")
+            self.configure(fg_color=GRIS_BG, padx=16, pady=16)
+            self.grab_set()
+            tarjeta = _tarjeta(self); tarjeta.pack(fill="both", expand=True, padx=4, pady=4)
+            ctk.CTkLabel(tarjeta, text="Cargar fichas técnicas a la Base de Datos",
+                        font=_fuente(13, "bold"), text_color=GRIS_TEXTO).pack(
+                anchor="w", padx=18, pady=(18, 0))
+            botones = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            botones.pack(anchor="w", padx=18, pady=8)
+            self.btn_archivos = _boton(botones, "Seleccionar archivo(s)…",
+                                       self._seleccionar, color=AZUL_ES, ancho=190)
             self.btn_archivos.pack(side="left")
-            self.btn_carpetas = tk.Button(botones, text="Seleccionar carpeta(s)…",
-                                           command=self._seleccionar_carpetas,
-                                           bg=AZUL_ES, fg="white")
+            self.btn_carpetas = _boton(botones, "Seleccionar carpeta(s)…",
+                                       self._seleccionar_carpetas, color=AZUL_ES, ancho=190)
             self.btn_carpetas.pack(side="left", padx=(8, 0))
-            self.btn_cancelar = tk.Button(botones, text="⛔ Cancelar extracción",
-                                           command=self._cancelar, bg=ROJO_ES, fg="white",
-                                           state="disabled")
+            self.btn_cancelar = _boton(botones, "⛔ Cancelar extracción",
+                                       self._cancelar, color=ROJO_ES, ancho=170)
+            self.btn_cancelar.configure(state="disabled")
             self.btn_cancelar.pack(side="left", padx=(8, 0))
-            self.prog = ttk.Progressbar(self, length=460, mode="determinate")
-            self.prog.pack(fill="x", pady=4)
-            self.txt = tk.Text(self, height=12, width=70); self.txt.pack(fill="both", expand=True)
-            self.btn_cerrar = tk.Button(self, text="Cerrar", command=self._on_close)
-            self.btn_cerrar.pack(pady=(8, 0))
+            self.prog = ctk.CTkProgressBar(tarjeta, height=10, corner_radius=5,
+                                           progress_color=AZUL_ES)
+            self.prog.set(0)
+            self.prog.pack(fill="x", padx=18, pady=4)
+            self.txt = ctk.CTkTextbox(tarjeta, height=280, corner_radius=10,
+                                      fg_color="#0F172A", text_color="#4ADE80",
+                                      font=("Consolas", 10))
+            self.txt.pack(fill="both", expand=True, padx=18, pady=(4, 8))
+            self.btn_cerrar = _boton_secundario(tarjeta, "Cerrar", self._on_close, ancho=120)
+            self.btn_cerrar.pack(pady=(0, 18))
             self.protocol("WM_DELETE_WINDOW", self._on_close)
             _traer_al_frente(self)
 
@@ -739,8 +906,8 @@ if _TK_OK:
             self._ok = self._adv = self._fallo = 0
             self._cancelado = False
             self._procesando = True
-            self.prog["maximum"] = len(self._rutas)
-            self.prog["value"] = 0
+            self._prog_max = len(self._rutas) or 1
+            self.prog.set(0)
             self.btn_archivos.config(state="disabled")
             self.btn_carpetas.config(state="disabled")
             self.btn_cancelar.config(state="normal")
@@ -812,7 +979,7 @@ if _TK_OK:
                     except Exception as e:
                         self._fallo += 1; self._log(f"   ❌ {e}")
 
-            self.prog["value"] = i
+            self.prog.set(i / self._prog_max)
             self._procesar_siguiente()
 
         def _finalizar_lote(self):
@@ -859,7 +1026,7 @@ if _TK_OK:
             return d.resultado
 
 
-    class DialogoRevisarFicha(tk.Toplevel):
+    class DialogoRevisarFicha(ctk.CTkToplevel):
         """Revisión de una ficha antes de guardarla (Mejora 1, paso 4).
 
         Muestra el NOMBRE AUTO-GENERADO arriba, editable, y lo recalcula solo
@@ -893,7 +1060,7 @@ if _TK_OK:
             self._nombre_auto = ""
             self._nombre_editado = bool(self.datos_origen.get("nombre_ficha_manual"))
             self.title(titulo or f"Revisar: {Path(ruta).name if ruta else 'ficha'}")
-            self.configure(padx=16, pady=14)
+            self.configure(fg_color=GRIS_BG, padx=16, pady=14)
             self.grab_set()
             self._construir()
             self._recalcular()
@@ -901,64 +1068,75 @@ if _TK_OK:
 
         # ------------------------------------------------------------ armado
         def _construir(self):
+            tarjeta = _tarjeta(self)
+            tarjeta.pack(fill="both", expand=True, padx=4, pady=4)
+            tarjeta.grid_columnconfigure(1, weight=1)
+            pad = dict(padx=16)
             fila = 0
             if not self.es_edicion:
                 metodo = self.datos_origen.get("_metodo", "?")
                 manual = self.datos_origen.get("_requiere_manual")
-                tk.Label(self, text=f"Método de extracción: {metodo}"
-                         + ("  ·  revise los datos" if manual else ""),
-                         fg=(ROJO_ES if manual else VERDE_OK)).grid(
-                    row=fila, column=0, columnspan=3, sticky="w")
+                ctk.CTkLabel(tarjeta, text=f"Método de extracción: {metodo}"
+                            + ("  ·  revise los datos" if manual else ""),
+                            justify="left",
+                            text_color=(ROJO_ES if manual else VERDE_OK)).grid(
+                    row=fila, column=0, columnspan=3, sticky="w", **pad, pady=(16, 0))
                 fila += 1
 
-            tk.Label(self, text="Nombre de la ficha (se genera solo):",
-                     font=("Segoe UI", 10, "bold")).grid(
-                row=fila, column=0, columnspan=3, sticky="w", pady=(8, 2))
+            ctk.CTkLabel(tarjeta, text="Nombre de la ficha (se genera solo):",
+                        font=_fuente(11, "bold"), text_color=GRIS_TEXTO).grid(
+                row=fila, column=0, columnspan=3, sticky="w", **pad, pady=(16, 2))
             fila += 1
             # Si la ficha ya trae un nombre escrito a mano, se muestra tal cual
             # (no se regenera solo: para eso está el botón Regenerar).
             self.v_nombre = tk.StringVar(
                 value=str(self.datos_origen.get("nombre_ficha", "") or ""))
-            e = tk.Entry(self, textvariable=self.v_nombre, width=68,
-                         font=("Segoe UI", 10, "bold"), fg=AZUL_ES)
-            e.grid(row=fila, column=0, columnspan=2, sticky="we")
+            e = ctk.CTkEntry(tarjeta, textvariable=self.v_nombre, height=34,
+                             corner_radius=8, border_color=BORDE_SUAVE,
+                             font=_fuente(11, "bold"), text_color=AZUL_ES)
+            e.grid(row=fila, column=0, columnspan=2, sticky="we", padx=(16, 6))
             e.bind("<KeyRelease>", self._nombre_a_mano)
-            tk.Button(self, text="↻ Regenerar", command=self._regenerar).grid(
-                row=fila, column=2, padx=(6, 0))
+            _boton_secundario(tarjeta, "↻ Regenerar", self._regenerar, ancho=120).grid(
+                row=fila, column=2, padx=(0, 16))
             fila += 1
 
-            self.lbl_aviso = tk.Label(self, text="", justify="left", wraplength=560)
-            self.lbl_aviso.grid(row=fila, column=0, columnspan=3, sticky="w", pady=(4, 8))
+            self.lbl_aviso = ctk.CTkLabel(tarjeta, text="", justify="left",
+                                          wraplength=560, text_color=GRIS_TEXTO)
+            self.lbl_aviso.grid(row=fila, column=0, columnspan=3, sticky="w",
+                                padx=16, pady=(4, 8))
             fila += 1
 
             self.vars = {}
             for clave, etiqueta in self.CAMPOS:
-                tk.Label(self, text=etiqueta + ":").grid(row=fila, column=0,
-                                                         sticky="e", pady=3, padx=(0, 6))
+                ctk.CTkLabel(tarjeta, text=etiqueta + ":", text_color=GRIS_TEXTO).grid(
+                    row=fila, column=0, sticky="e", pady=3, padx=(16, 6))
                 v = tk.StringVar(value=str(self.datos_origen.get(clave, "") or ""))
-                ent = tk.Entry(self, textvariable=v, width=56)
-                ent.grid(row=fila, column=1, columnspan=2, sticky="we", pady=3)
+                ent = ctk.CTkEntry(tarjeta, textvariable=v, height=32,
+                                   corner_radius=8, border_color=BORDE_SUAVE)
+                ent.grid(row=fila, column=1, columnspan=2, sticky="we", pady=3,
+                        padx=(0, 16))
                 ent.bind("<KeyRelease>", lambda _ev: self._recalcular())
                 self.vars[clave] = v
                 fila += 1
                 if clave == "dimensiones":
                     self.v_sin_medidas = tk.BooleanVar(
                         value=bool(self.datos_origen.get("sin_medidas")))
-                    tk.Checkbutton(
-                        self, variable=self.v_sin_medidas, command=self._recalcular,
+                    ctk.CTkCheckBox(
+                        tarjeta, variable=self.v_sin_medidas, command=self._recalcular,
                         text="Este material no tiene medidas/dimensiones "
-                             "(ej: sacos, cubetas, unidades)."
-                    ).grid(row=fila, column=1, columnspan=2, sticky="w")
+                             "(ej: sacos, cubetas, unidades).",
+                        text_color=GRIS_TEXTO, fg_color=AZUL_ES,
+                        hover_color=_HOVER[AZUL_ES]
+                    ).grid(row=fila, column=1, columnspan=2, sticky="w", padx=(0, 16))
                     fila += 1
 
-            barra = tk.Frame(self)
-            barra.grid(row=fila, column=0, columnspan=3, pady=(12, 0))
-            self.btn_ok = tk.Button(barra, text="✅ Confirmar y guardar",
-                                    command=self._confirmar, bg=VERDE_OK, fg="white",
-                                    width=22)
+            barra = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            barra.grid(row=fila, column=0, columnspan=3, pady=(12, 16))
+            self.btn_ok = _boton(barra, "✅ Confirmar y guardar", self._confirmar,
+                                 color=VERDE_OK, ancho=220)
             self.btn_ok.pack(side="left", padx=6)
-            tk.Button(barra, text="Cancelar" if self.es_edicion else "Omitir",
-                      command=self.destroy, width=14).pack(side="left", padx=6)
+            _boton_secundario(barra, "Cancelar" if self.es_edicion else "Omitir",
+                             self.destroy, ancho=120).pack(side="left", padx=6)
 
         # -------------------------------------------------------- nomenclatura
         def _datos_actuales(self):
@@ -998,15 +1176,15 @@ if _TK_OK:
                              "se guardará así.")
                 else:
                     texto = "✔ El nombre distingue esta ficha de otras similares."
-                self.lbl_aviso.config(text=texto, fg=VERDE_OK)
-                self.btn_ok.config(state="normal")
+                self.lbl_aviso.configure(text=texto, text_color=VERDE_OK)
+                self.btn_ok.configure(state="normal")
                 return
-            self.lbl_aviso.config(
+            self.lbl_aviso.configure(
                 text="⚠ " + " ".join(self.analisis["faltantes"])
                      + "\nComplete el dato que falta (o escriba el nombre a mano) "
                        "para poder guardar.",
-                fg=ROJO_ES)
-            self.btn_ok.config(state="disabled")
+                text_color=ROJO_ES)
+            self.btn_ok.configure(state="disabled")
 
         def _suficiente(self):
             """¿El nombre permite distinguir la ficha?
@@ -1066,19 +1244,23 @@ if _TK_OK:
 
         def _preguntar_duplicado(self, existente, nombre):
             """Tres salidas ante un nombre repetido; ``None`` si cancela."""
-            top = tk.Toplevel(self)
+            top = ctk.CTkToplevel(self)
             top.title("Ficha repetida")
-            top.configure(padx=16, pady=14)
+            top.configure(fg_color=GRIS_BG, padx=16, pady=14)
             top.grab_set()
             estado = existente.get("estado", "activo")
-            tk.Label(top, text="Ya existe una ficha con este nombre:",
-                     font=("Segoe UI", 10, "bold")).pack(anchor="w")
-            tk.Label(top, text=self.bd.nombre_de(existente), fg=AZUL_ES,
-                     wraplength=520, justify="left").pack(anchor="w", pady=(2, 6))
-            tk.Label(top, text=f"Cargada el {existente.get('fecha_carga', '?')}"
-                               f"  ·  estado: {estado}", fg="#555").pack(anchor="w")
-            tk.Label(top, text="¿Qué desea hacer?", justify="left").pack(anchor="w",
-                                                                        pady=(10, 6))
+            tarjeta = _tarjeta(top); tarjeta.pack(fill="both", expand=True)
+            ctk.CTkLabel(tarjeta, text="Ya existe una ficha con este nombre:",
+                        font=_fuente(11, "bold"), text_color=GRIS_TEXTO).pack(
+                anchor="w", padx=16, pady=(16, 0))
+            ctk.CTkLabel(tarjeta, text=self.bd.nombre_de(existente), text_color=AZUL_ES,
+                        wraplength=520, justify="left").pack(anchor="w", padx=16,
+                                                             pady=(2, 6))
+            ctk.CTkLabel(tarjeta, text=f"Cargada el {existente.get('fecha_carga', '?')}"
+                               f"  ·  estado: {estado}", text_color=GRIS_TEXTO_SUAVE).pack(
+                anchor="w", padx=16)
+            ctk.CTkLabel(tarjeta, text="¿Qué desea hacer?", justify="left",
+                        text_color=GRIS_TEXTO).pack(anchor="w", padx=16, pady=(10, 6))
             eleccion = {"v": None}
 
             def _elegir(valor):
@@ -1103,38 +1285,53 @@ if _TK_OK:
                      "Se agrega otra ficha con el mismo nombre."),
                 ]
             for texto, valor, ayuda in opciones:
-                f = tk.Frame(top)
-                f.pack(fill="x", pady=3)
-                tk.Button(f, text=texto, width=30,
-                          command=lambda v=valor: _elegir(v)).pack(side="left")
-                tk.Label(f, text=ayuda, fg="#555").pack(side="left", padx=8)
-            tk.Button(top, text="Cancelar", command=top.destroy).pack(pady=(10, 0))
+                f = ctk.CTkFrame(tarjeta, fg_color="transparent")
+                f.pack(fill="x", pady=3, padx=16)
+                _boton_secundario(f, texto, lambda v=valor: _elegir(v), ancho=220).pack(
+                    side="left")
+                ctk.CTkLabel(f, text=ayuda, text_color=GRIS_TEXTO_SUAVE).pack(
+                    side="left", padx=8)
+            _boton_secundario(tarjeta, "Cancelar", top.destroy, ancho=120).pack(
+                pady=(10, 16))
             _traer_al_frente(top)
             self.wait_window(top)
             return eleccion["v"]
 
 
-    class _VentanaSubmittal(tk.Toplevel):
+    class _VentanaSubmittal(ctk.CTkToplevel):
         """Base comun para 'Generar desde BD' y 'Abrir existente'."""
 
         def __init__(self, master, bd, proyecto, destino, titulo):
             super().__init__(master)
             self.bd = bd; self.proyecto = proyecto; self.destino = destino
-            self.title(titulo); self.configure(padx=14, pady=14); self.geometry("780x600")
-            tk.Label(self, text=titulo, font=("Segoe UI", 13, "bold")).pack(anchor="w")
-            top = tk.Frame(self); top.pack(fill="x", pady=6)
-            tk.Button(top, text="⚙️ Datos del Proyecto", command=self._datos).pack(side="left")
-            tk.Label(top, text="  Carpeta destino:").pack(side="left")
+            self.title(titulo)
+            self.configure(fg_color=GRIS_BG, padx=14, pady=14)
+            self.geometry("820x640")
+            tarjeta = _tarjeta(self)
+            tarjeta.pack(fill="both", expand=True, padx=4, pady=4)
+            ctk.CTkLabel(tarjeta, text=titulo, font=_fuente(14, "bold"),
+                        text_color=GRIS_TEXTO).pack(anchor="w", padx=18, pady=(16, 0))
+            top = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            top.pack(fill="x", padx=18, pady=10)
+            _boton_secundario(top, "⚙️ Datos del Proyecto", self._datos,
+                             ancho=180).pack(side="left")
+            ctk.CTkLabel(top, text="  Carpeta destino:", text_color=GRIS_TEXTO).pack(
+                side="left")
             self.var_dest = tk.StringVar(value=destino or "")
-            tk.Entry(top, textvariable=self.var_dest, width=48).pack(side="left", padx=4)
-            tk.Button(top, text="…", command=self._elegir_destino).pack(side="left")
+            ctk.CTkEntry(top, textvariable=self.var_dest, width=340, height=32,
+                        corner_radius=8, border_color=BORDE_SUAVE).pack(
+                side="left", padx=4)
+            _boton_secundario(top, "…", self._elegir_destino, ancho=40).pack(side="left")
 
-            self.tabla = TablaMateriales(self, bd, proyecto.get("materiales_seleccionados", []))
-            self.tabla.pack(fill="both", expand=True, pady=8)
+            self.tabla = TablaMateriales(tarjeta, bd, proyecto.get("materiales_seleccionados", []))
+            self.tabla.pack(fill="both", expand=True, padx=18, pady=8)
 
-            self.txt = tk.Text(self, height=7, bg="#111", fg="#7CFC7C"); self.txt.pack(fill="x")
-            tk.Button(self, text="🚀 Generar / Confirmar cambios", command=self._generar,
-                      bg=ROJO_ES, fg="white", font=("Segoe UI", 11, "bold")).pack(pady=8)
+            self.txt = ctk.CTkTextbox(tarjeta, height=140, corner_radius=10,
+                                      fg_color="#0F172A", text_color="#4ADE80",
+                                      font=("Consolas", 10))
+            self.txt.pack(fill="x", padx=18, pady=(4, 4))
+            _boton(tarjeta, "🚀 Generar / Confirmar cambios", self._generar,
+                  color=NARANJA_CTA, ancho=280, alto=42).pack(pady=(4, 18))
             _traer_al_frente(self)
 
         def _log(self, m):
@@ -1224,7 +1421,7 @@ if _TK_OK:
                 pass
             return (False, f"No se pudo conectar: {str(e)[:150]}")
 
-    class DialogoConfiguracion(tk.Toplevel):
+    class DialogoConfiguracion(ctk.CTkToplevel):
         """Configuracion unificada del usuario en DOS pestañas:
 
           * OpenAI: la API key que usa la lectura de fichas (PDF/imagen) con IA.
@@ -1242,36 +1439,42 @@ if _TK_OK:
             self.cambio_github = False      # solo si cambio algo de GitHub -> resync
             self._probando = False
             self.title("Configuración")
-            self.configure(padx=16, pady=16)
+            self.configure(fg_color=GRIS_BG, padx=16, pady=16)
+            self.geometry("560x520")
             self.grab_set()
 
-            nb = ttk.Notebook(self)
+            nb = ctk.CTkTabview(self, fg_color="white", corner_radius=14,
+                               border_width=1, border_color=BORDE_SUAVE,
+                               segmented_button_selected_color=ROJO_ES,
+                               segmented_button_selected_hover_color=_HOVER[ROJO_ES],
+                               segmented_button_unselected_color="#E2E8F0",
+                               text_color=GRIS_TEXTO, text_color_disabled=GRIS_TEXTO_SUAVE)
             nb.pack(fill="both", expand=True)
-            self.tab_openai = tk.Frame(nb, padx=12, pady=12)
-            self.tab_github = tk.Frame(nb, padx=12, pady=12)
-            nb.add(self.tab_openai, text="🔑 OpenAI (lectura de fichas)")
-            nb.add(self.tab_github, text="☁️ GitHub (sincronización)")
+            self.tab_openai = nb.add("🔑 OpenAI (lectura de fichas)")
+            self.tab_github = nb.add("☁️ GitHub (sincronización)")
             self._build_openai(self.tab_openai)
             self._build_github(self.tab_github)
 
-            barra = tk.Frame(self)
+            barra = ctk.CTkFrame(self, fg_color="transparent")
             barra.pack(fill="x", pady=(12, 0))
-            tk.Button(barra, text="💾 Guardar", command=self._guardar, bg=AZUL_ES,
-                      fg="white", width=14).pack(side="left", padx=6)
-            tk.Button(barra, text="Cerrar", command=self.destroy,
-                      width=12).pack(side="left", padx=6)
+            _boton(barra, "💾 Guardar", self._guardar, color=AZUL_ES, ancho=140).pack(
+                side="left", padx=6)
+            _boton_secundario(barra, "Cerrar", self.destroy, ancho=110).pack(
+                side="left", padx=6)
 
-            nb.select(self.tab_openai if tab_inicial == "openai" else self.tab_github)
+            nb.set("🔑 OpenAI (lectura de fichas)" if tab_inicial == "openai"
+                  else "☁️ GitHub (sincronización)")
             _traer_al_frente(self)
 
         # -------------------------------------------------- pestaña OpenAI
         def _build_openai(self, f):
-            tk.Label(f, text="API Key de OpenAI", font=("Segoe UI", 12, "bold")).grid(
-                row=0, column=0, columnspan=3, sticky="w")
-            tk.Label(f, text="Se usa para leer las fichas técnicas (PDF/imagen) con IA.\n"
+            ctk.CTkLabel(f, text="API Key de OpenAI", font=_fuente(12, "bold"),
+                        text_color=GRIS_TEXTO).grid(row=0, column=0, columnspan=3,
+                                                    sticky="w")
+            ctk.CTkLabel(f, text="Se usa para leer las fichas técnicas (PDF/imagen) con IA.\n"
                              "Sin ella, la extracción cae a OCR local y revisión manual.",
-                     fg="#555", justify="left").grid(row=1, column=0, columnspan=3,
-                                                     sticky="w", pady=(0, 8))
+                        text_color=GRIS_TEXTO_SUAVE, justify="left").grid(
+                row=1, column=0, columnspan=3, sticky="w", pady=(0, 8))
 
             # El entorno TIENE PRIORIDAD sobre la config (ver obtener_api_key):
             # se distingue la fuente para no mostrar "✅ configurada" por una key
@@ -1286,31 +1489,36 @@ if _TK_OK:
                 estado = "✅ ya configurada"
             else:
                 estado = "❌ sin configurar"
-            tk.Label(f, text=f"Estado actual: {estado}   ·   deje el campo vacío para "
-                             "conservarla", fg="#555").grid(
+            ctk.CTkLabel(f, text=f"Estado actual: {estado}   ·   deje el campo vacío para "
+                             "conservarla", text_color=GRIS_TEXTO_SUAVE).grid(
                 row=2, column=0, columnspan=3, sticky="w", pady=(0, 6))
 
-            tk.Label(f, text="API Key:").grid(row=3, column=0, sticky="e", pady=4)
+            ctk.CTkLabel(f, text="API Key:", text_color=GRIS_TEXTO).grid(
+                row=3, column=0, sticky="e", pady=4)
             self.v_openai = tk.StringVar(value="")
-            self.e_openai = tk.Entry(f, textvariable=self.v_openai, width=46, show="•")
+            self.e_openai = ctk.CTkEntry(f, textvariable=self.v_openai, width=280,
+                                        height=32, corner_radius=8,
+                                        border_color=BORDE_SUAVE, show="•")
             self.e_openai.grid(row=3, column=1, pady=4)
             self.v_mostrar = tk.BooleanVar(value=False)
-            tk.Checkbutton(f, text="Mostrar", variable=self.v_mostrar,
-                           command=self._toggle_mostrar).grid(row=3, column=2, padx=(6, 0))
+            ctk.CTkCheckBox(f, text="Mostrar", variable=self.v_mostrar,
+                           command=self._toggle_mostrar, text_color=GRIS_TEXTO,
+                           fg_color=AZUL_ES, hover_color=_HOVER[AZUL_ES]).grid(
+                row=3, column=2, padx=(6, 0))
 
-            self.btn_probar = tk.Button(f, text="Probar conexión",
-                                        command=self._probar_openai)
+            self.btn_probar = _boton_secundario(f, "Probar conexión",
+                                                self._probar_openai, ancho=150)
             self.btn_probar.grid(row=4, column=1, sticky="w", pady=(8, 0))
-            self.lbl_openai_estado = tk.Label(f, text="", fg="#555", justify="left",
-                                              wraplength=420)
+            self.lbl_openai_estado = ctk.CTkLabel(f, text="", text_color=GRIS_TEXTO_SUAVE,
+                                                  justify="left", wraplength=420)
             self.lbl_openai_estado.grid(row=5, column=0, columnspan=3, sticky="w",
                                         pady=(6, 0))
-            tk.Label(f, text="Cree su API key en platform.openai.com/api-keys",
-                     fg="#555").grid(row=6, column=0, columnspan=3, sticky="w",
-                                     pady=(10, 0))
+            ctk.CTkLabel(f, text="Cree su API key en platform.openai.com/api-keys",
+                        text_color=GRIS_TEXTO_SUAVE).grid(
+                row=6, column=0, columnspan=3, sticky="w", pady=(10, 0))
 
         def _toggle_mostrar(self):
-            self.e_openai.config(show="" if self.v_mostrar.get() else "•")
+            self.e_openai.configure(show="" if self.v_mostrar.get() else "•")
 
         def _probar_openai(self):
             if self._probando:
@@ -1319,12 +1527,12 @@ if _TK_OK:
                    or bd_manager.obtener_api_key(cfg=self.bd.cfg,
                                                  config_dir=self.bd.config_dir))
             if not key:
-                self.lbl_openai_estado.config(
-                    text="Ingrese una API Key para probar.", fg=ROJO_ES)
+                self.lbl_openai_estado.configure(
+                    text="Ingrese una API Key para probar.", text_color=ROJO_ES)
                 return
             self._probando = True
-            self.btn_probar.config(state="disabled")
-            self.lbl_openai_estado.config(text="Probando conexión…", fg=AZUL_ES)
+            self.btn_probar.configure(state="disabled")
+            self.lbl_openai_estado.configure(text="Probando conexión…", text_color=AZUL_ES)
 
             def trabajo():
                 ok, msg = _probar_openai_key(key)
@@ -1342,20 +1550,20 @@ if _TK_OK:
             if not self.winfo_exists():
                 return
             self._probando = False
-            self.btn_probar.config(state="normal")
-            self.lbl_openai_estado.config(text=("✅ " if ok else "❌ ") + msg,
-                                          fg=(VERDE_OK if ok else ROJO_ES))
+            self.btn_probar.configure(state="normal")
+            self.lbl_openai_estado.configure(text=("✅ " if ok else "❌ ") + msg,
+                                             text_color=(VERDE_OK if ok else ROJO_ES))
 
         # -------------------------------------------------- pestaña GitHub
         def _build_github(self, f):
             gh = self.bd.cfg.get("github", {}) or {}
             est = self.bd.git_status()
-            tk.Label(f, text="Sincronización de la Base de Datos",
-                     font=("Segoe UI", 12, "bold")).grid(row=0, column=0, columnspan=2,
-                                                         sticky="w")
+            ctk.CTkLabel(f, text="Sincronización de la Base de Datos",
+                        font=_fuente(12, "bold"), text_color=GRIS_TEXTO).grid(
+                row=0, column=0, columnspan=2, sticky="w")
             modo = {"git": "git instalado", "rest": "API REST (sin git)"}.get(
                 est.get("backend"), est.get("backend", "?"))
-            tk.Label(f, text=f"Método: {modo}", fg="#555").grid(
+            ctk.CTkLabel(f, text=f"Método: {modo}", text_color=GRIS_TEXTO_SUAVE).grid(
                 row=1, column=0, columnspan=2, sticky="w", pady=(0, 8))
 
             self.v_repo = tk.StringVar(value=gh.get("repo", ""))
@@ -1365,18 +1573,20 @@ if _TK_OK:
                      ("Rama:", self.v_rama, False),
                      ("Token (PAT):", self.v_token, True)]
             for i, (etiqueta, var, secreto) in enumerate(filas, 2):
-                tk.Label(f, text=etiqueta).grid(row=i, column=0, sticky="e", pady=4)
-                tk.Entry(f, textvariable=var, width=40,
-                         show="•" if secreto else "").grid(row=i, column=1, pady=4)
+                ctk.CTkLabel(f, text=etiqueta, text_color=GRIS_TEXTO).grid(
+                    row=i, column=0, sticky="e", pady=4)
+                ctk.CTkEntry(f, textvariable=var, width=240, height=32, corner_radius=8,
+                            border_color=BORDE_SUAVE,
+                            show="•" if secreto else "").grid(row=i, column=1, pady=4)
 
             tiene = "✅ ya configurado" if est.get("autenticado") else "❌ sin configurar"
-            tk.Label(f, text=f"Token actual: {tiene}   ·   deje el campo vacío "
-                             "para conservarlo", fg="#555").grid(
+            ctk.CTkLabel(f, text=f"Token actual: {tiene}   ·   deje el campo vacío "
+                             "para conservarlo", text_color=GRIS_TEXTO_SUAVE).grid(
                 row=5, column=0, columnspan=2, sticky="w")
-            tk.Label(f, text="Cree el token en github.com/settings/tokens con\n"
+            ctk.CTkLabel(f, text="Cree el token en github.com/settings/tokens con\n"
                              "permiso Contents: write SOLO sobre este repositorio.",
-                     fg="#555", justify="left").grid(row=6, column=0, columnspan=2,
-                                                     sticky="w", pady=(4, 0))
+                        text_color=GRIS_TEXTO_SUAVE, justify="left").grid(
+                row=6, column=0, columnspan=2, sticky="w", pady=(4, 0))
 
         # -------------------------------------------------- guardado
         def _guardar(self):
@@ -1431,14 +1641,15 @@ if _TK_OK:
             self.destroy()
 
 
-    class App(tk.Tk):
+    class App(ctk.CTk):
         """Ventana principal con el menu 2x2 y la sincronizacion con GitHub."""
 
         def __init__(self):
             super().__init__()
+            _configurar_estilo_ttk()
             self.title(f"Generador de Submittals ES v{VERSION}")
-            self.configure(bg=GRIS_BG, padx=20, pady=20)
-            self.geometry("620x520")
+            self.configure(fg_color=GRIS_BG, padx=20, pady=20)
+            self.geometry("680x600")
             self._sincronizando = False
             self.modo_dev = False
             self._construir()
@@ -1446,7 +1657,7 @@ if _TK_OK:
             # transporte (git vs API REST) se decide una sola vez, al construir
             # el GitSync de adentro. Solo tarda si esta PC no tiene git (primera
             # vez); despues git_disponible() es instantaneo.
-            self.lbl_sync.config(text="🔧 Verificando Git…", fg=AZUL_ES)
+            self.lbl_sync.configure(text="🔧 Verificando Git…", text_color=AZUL_ES)
             self.update()
             git_bd.instalar_git_si_falta(logger.info)
             self.bd = bd_manager.BDManager(logger=logger)
@@ -1454,45 +1665,53 @@ if _TK_OK:
             self.after(100, lambda: self._sincronizar(inicial=True))
 
         def _construir(self):
-            tk.Label(self, text="Generador de Submittals ES", bg=GRIS_BG, fg=AZUL_ES,
-                     font=("Segoe UI", 18, "bold")).pack(pady=(0, 4))
-            self.lbl_estado = tk.Label(self, text="", bg=GRIS_BG, fg="#555")
+            titulo = ctk.CTkFrame(self, fg_color="transparent")
+            titulo.pack(pady=(0, 4))
+            ctk.CTkLabel(titulo, text="Generador de Submittals ", text_color=AZUL_ES,
+                        font=_fuente(20, "bold")).pack(side="left")
+            ctk.CTkLabel(titulo, text="ES", text_color=ROJO_ES,
+                        font=_fuente(20, "bold")).pack(side="left")
+            self.lbl_estado = ctk.CTkLabel(self, text="", text_color=GRIS_TEXTO_SUAVE)
             self.lbl_estado.pack()
-            self.lbl_sync = tk.Label(self, text="⏳ Iniciando…", bg=GRIS_BG, fg="#555")
+            self.lbl_sync = ctk.CTkLabel(self, text="⏳ Iniciando…", text_color=GRIS_TEXTO_SUAVE)
             self.lbl_sync.pack()
-            self.prog = ttk.Progressbar(self, length=360, mode="indeterminate")
+            self.prog = ctk.CTkProgressBar(self, width=360, height=8, corner_radius=4,
+                                           mode="indeterminate", progress_color=AZUL_ES)
 
-            grid = tk.Frame(self, bg=GRIS_BG); grid.pack(pady=16)
+            grid = ctk.CTkFrame(self, fg_color="transparent"); grid.pack(pady=18)
             botones = [
-                ("📤 Generar desde BD", self._generar_desde_bd),
-                ("📂 Abrir submittal existente", self._abrir_existente),
-                ("➕ Cargar ficha a BD", self._cargar_ficha),
-                ("🗂️ Gestionar BD", self._gestionar_bd),
+                ("📤  Generar desde BD", self._generar_desde_bd),
+                ("📂  Abrir submittal existente", self._abrir_existente),
+                ("➕  Cargar ficha a BD", self._cargar_ficha),
+                ("🗂️  Gestionar BD", self._gestionar_bd),
             ]
             for i, (txt, cmd) in enumerate(botones):
-                b = tk.Button(grid, text=txt, command=cmd, width=24, height=3,
-                              bg="white", fg=AZUL_ES, font=("Segoe UI", 11, "bold"),
-                              relief="groove")
+                b = ctk.CTkButton(grid, text=txt, command=cmd, width=260, height=84,
+                                  fg_color="white", hover_color="#EFF6FF",
+                                  text_color=AZUL_ES, border_width=1,
+                                  border_color=BORDE_SUAVE, corner_radius=16,
+                                  font=_fuente(13, "bold"))
                 b.grid(row=i // 2, column=i % 2, padx=10, pady=10)
 
-            sync = tk.Frame(self, bg=GRIS_BG); sync.pack(pady=(0, 8))
-            tk.Button(sync, text="🔄 Sincronizar ahora",
-                      command=self._sincronizar).pack(side="left", padx=4)
-            tk.Button(sync, text="☁️ Subir cambios pendientes",
-                      command=self._subir_pendientes).pack(side="left", padx=4)
-            tk.Button(sync, text="⚙️ Configuración",
-                      command=self._configuracion).pack(side="left", padx=4)
+            sync = ctk.CTkFrame(self, fg_color="transparent"); sync.pack(pady=(0, 10))
+            _boton_secundario(sync, "🔄 Sincronizar ahora", self._sincronizar,
+                             ancho=170).pack(side="left", padx=4)
+            _boton_secundario(sync, "☁️ Subir cambios pendientes", self._subir_pendientes,
+                             ancho=210).pack(side="left", padx=4)
+            _boton_secundario(sync, "⚙️ Configuración", self._configuracion,
+                             ancho=150).pack(side="left", padx=4)
 
-            barra = tk.Frame(self, bg=GRIS_BG); barra.pack(side="bottom", fill="x")
-            tk.Button(barra, text="🏗️ Generar desde carpetas (v2.6)",
-                      command=self._lanzar_v26).pack(side="left")
-            tk.Button(barra, text="🔄 Buscar actualización",
-                      command=self._buscar_update).pack(side="left", padx=6)
-            self.btn_modo_dev = tk.Button(barra, text="🛠️ Modo desarrollador",
-                                           command=self._toggle_modo_dev)
+            barra = ctk.CTkFrame(self, fg_color="transparent")
+            barra.pack(side="bottom", fill="x")
+            _boton_secundario(barra, "🏗️ Generar desde carpetas (v2.6)", self._lanzar_v26,
+                             ancho=230).pack(side="left")
+            _boton_secundario(barra, "🔄 Buscar actualización", self._buscar_update,
+                             ancho=190).pack(side="left", padx=6)
+            self.btn_modo_dev = _boton_secundario(barra, "🛠️ Modo desarrollador",
+                                                  self._toggle_modo_dev, ancho=190)
             self.btn_modo_dev.pack(side="left", padx=6)
-            tk.Button(barra, text="❌ Cerrar", command=self._cerrar_seguro,
-                      bg=ROJO_ES, fg="white").pack(side="right")
+            _boton(barra, "❌ Cerrar", self._cerrar_seguro, color=ROJO_ES,
+                  ancho=110).pack(side="right")
 
         # ------------------------------------------------ sincronizacion
         def _sincronizar(self, inicial=False):
@@ -1500,9 +1719,9 @@ if _TK_OK:
             if self._sincronizando:
                 return
             self._sincronizando = True
-            self.lbl_sync.config(text="🔄 Sincronizando con GitHub…", fg=AZUL_ES)
+            self.lbl_sync.configure(text="🔄 Sincronizando con GitHub…", text_color=AZUL_ES)
             self.prog.pack(pady=(0, 6))
-            self.prog.start(12)
+            self.prog.start()
 
             def trabajo():
                 try:
@@ -1520,9 +1739,9 @@ if _TK_OK:
             self._actualizar_estado()
 
             if resumen.get("conflictos"):
-                self.lbl_sync.config(
+                self.lbl_sync.configure(
                     text=f"✅ Conflicto resuelto y sincronizado "
-                         f"({resumen['conflictos']} archivo(s))", fg=VERDE_OK)
+                         f"({resumen['conflictos']} archivo(s))", text_color=VERDE_OK)
                 messagebox.showinfo(
                     "Conflicto resuelto",
                     "Otra computadora había subido cambios a la vez.\n\n"
@@ -1530,8 +1749,8 @@ if _TK_OK:
                     "conservaron las fichas de ambos lados.")
                 return
             if resumen.get("indice_invalido"):
-                self.lbl_sync.config(text="⚠️ Índice con problemas: usando caché local",
-                                     fg=ROJO_ES)
+                self.lbl_sync.configure(text="⚠️ Índice con problemas: usando caché local",
+                                        text_color=ROJO_ES)
                 messagebox.showwarning(
                     "Índice inconsistente",
                     "El índice descargado no pasó la validación; se está usando la "
@@ -1539,23 +1758,23 @@ if _TK_OK:
                     "\n- ".join(resumen["indice_invalido"][:6]))
                 return
             if resumen.get("auth") and inicial:
-                self.lbl_sync.config(text="🔑 Sin token de GitHub (solo lectura)",
-                                     fg=ROJO_ES)
+                self.lbl_sync.configure(text="🔑 Sin token de GitHub (solo lectura)",
+                                        text_color=ROJO_ES)
                 return
             if resumen.get("offline"):
-                self.lbl_sync.config(text="📡 Sin conexión — trabajando con la copia local",
-                                     fg=ROJO_ES)
+                self.lbl_sync.configure(text="📡 Sin conexión — trabajando con la copia local",
+                                        text_color=ROJO_ES)
                 return
             if resumen.get("error"):
-                self.lbl_sync.config(text=f"⚠️ {resumen['error'][:70]}", fg=ROJO_ES)
+                self.lbl_sync.configure(text=f"⚠️ {resumen['error'][:70]}", text_color=ROJO_ES)
                 return
-            self.lbl_sync.config(text=self.bd.texto_estado_sync(), fg=VERDE_OK)
+            self.lbl_sync.configure(text=self.bd.texto_estado_sync(), text_color=VERDE_OK)
 
         def _subir_pendientes(self):
             if not self.bd.hay_cambios_sin_subir():
                 messagebox.showinfo("Sincronización", "No hay cambios pendientes de subir.")
                 return
-            self.lbl_sync.config(text="🔄 Subiendo cambios…", fg=AZUL_ES)
+            self.lbl_sync.configure(text="🔄 Subiendo cambios…", text_color=AZUL_ES)
             self.update_idletasks()
             r = self.bd.git_push("subir cambios pendientes")
             self._reportar_push(r)
@@ -1564,20 +1783,22 @@ if _TK_OK:
             if r.get("subido"):
                 extra = (f" ({r['conflictos']} conflicto(s) resuelto(s))"
                          if r.get("conflictos") else "")
-                self.lbl_sync.config(text=f"☁️ Cambios subidos a GitHub{extra}", fg=VERDE_OK)
+                self.lbl_sync.configure(text=f"☁️ Cambios subidos a GitHub{extra}",
+                                        text_color=VERDE_OK)
             elif r.get("offline"):
-                self.lbl_sync.config(text="📡 Sin conexión — se subirán al reconectar",
-                                     fg=ROJO_ES)
+                self.lbl_sync.configure(text="📡 Sin conexión — se subirán al reconectar",
+                                        text_color=ROJO_ES)
             elif r.get("auth"):
-                self.lbl_sync.config(text="🔑 Falta el token de GitHub", fg=ROJO_ES)
+                self.lbl_sync.configure(text="🔑 Falta el token de GitHub", text_color=ROJO_ES)
                 if messagebox.askyesno("Token requerido",
                                        "Para subir cambios hace falta un token de "
                                        "GitHub.\n\n¿Configurarlo ahora?"):
                     self._config_github()
             elif r.get("nada_que_subir"):
-                self.lbl_sync.config(text="Sin cambios por subir", fg="#555")
+                self.lbl_sync.configure(text="Sin cambios por subir", text_color=GRIS_TEXTO_SUAVE)
             else:
-                self.lbl_sync.config(text=f"⚠️ {str(r.get('error', ''))[:70]}", fg=ROJO_ES)
+                self.lbl_sync.configure(text=f"⚠️ {str(r.get('error', ''))[:70]}",
+                                        text_color=ROJO_ES)
 
         def _configuracion(self, tab_inicial="openai"):
             """Abre la configuración unificada (OpenAI + GitHub)."""
@@ -1596,21 +1817,23 @@ if _TK_OK:
             cache = "  ·  ⚠️ usando caché anterior" if self.bd.usando_cache else ""
             pend = self.bd.pendientes
             sin_subir = f"  ·  ☁️ {len(pend)} cambio(s) sin subir" if pend else ""
-            self.lbl_estado.config(
+            self.lbl_estado.configure(
                 text=f"BD: {res['TOTAL']} fichas  (ARQ {res['ARQ']} · ESTR {res['ESTR']} · "
-                     f"MEC {res['MEC']} · ELEC {res['ELEC']}){cache}{sin_subir}", fg="#555")
+                     f"MEC {res['MEC']} · ELEC {res['ELEC']}){cache}{sin_subir}",
+                text_color=GRIS_TEXTO_SUAVE)
 
         # -------- modo desarrollador
         def _toggle_modo_dev(self):
             if self.modo_dev:
                 self.modo_dev = False
-                self.btn_modo_dev.config(text="🛠️ Modo desarrollador", bg="SystemButtonFace",
-                                          fg="black")
+                self.btn_modo_dev.configure(text="🛠️ Modo desarrollador", fg_color="white",
+                                            text_color=AZUL_ES)
                 self.title(f"Generador de Submittals ES v{VERSION}")
                 return
 
-            pin = simpledialog.askstring("Modo desarrollador", "Ingrese el PIN:",
-                                          show="*", parent=self)
+            d = _PinDialog(self, "Modo desarrollador", "Ingrese el PIN:")
+            self.wait_window(d)
+            pin = d.resultado
             if pin is None:
                 return
             if pin != PIN_MODO_DEV:
@@ -1618,7 +1841,8 @@ if _TK_OK:
                 return
 
             self.modo_dev = True
-            self.btn_modo_dev.config(text="🛠️ Modo desarrollador: ACTIVO", bg=ROJO_ES, fg="white")
+            self.btn_modo_dev.configure(text="🛠️ Modo desarrollador: ACTIVO",
+                                        fg_color=ROJO_ES, text_color="white")
             self.title(f"Generador de Submittals ES v{VERSION} — MODO DESARROLLADOR")
             messagebox.showinfo(
                 "Modo desarrollador activado",
@@ -1727,7 +1951,7 @@ if _TK_OK:
                 if r is None:
                     return
                 if r:
-                    self.lbl_sync.config(text="🔄 Subiendo cambios…", fg=AZUL_ES)
+                    self.lbl_sync.configure(text="🔄 Subiendo cambios…", text_color=AZUL_ES)
                     self.update_idletasks()
                     res = self.bd.git_push("subir cambios antes de cerrar")
                     if not res.get("subido") and not res.get("nada_que_subir"):
@@ -1740,7 +1964,7 @@ if _TK_OK:
             self.destroy()
 
 
-    class VentanaGestionarBD(tk.Toplevel):
+    class VentanaGestionarBD(ctk.CTkToplevel):
         """Flujo 4: gestionar la BD (buscar, filtrar, editar, desactivar).
 
         v3.2.0: la columna principal es el NOMBRE DESCRIPTIVO completo, y se
@@ -1751,37 +1975,52 @@ if _TK_OK:
         def __init__(self, master, bd, al_cambiar=None):
             super().__init__(master)
             self.bd = bd; self.al_cambiar = al_cambiar
-            self.title("Gestionar Base de Datos"); self.geometry("980x600")
-            self.configure(padx=12, pady=12)
-            top = tk.Frame(self); top.pack(fill="x")
-            tk.Label(top, text="Buscar:").pack(side="left")
-            self.var_q = tk.StringVar(); e = tk.Entry(top, textvariable=self.var_q, width=30)
-            e.pack(side="left", padx=4); e.bind("<KeyRelease>", lambda _e: self._refrescar())
-            tk.Label(top, text="Categoría:").pack(side="left", padx=(10, 2))
+            self.title("Gestionar Base de Datos"); self.geometry("1020x640")
+            self.configure(fg_color=GRIS_BG, padx=12, pady=12)
+            tarjeta = _tarjeta(self)
+            tarjeta.pack(fill="both", expand=True, padx=4, pady=4)
+            top = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            top.pack(fill="x", padx=16, pady=(16, 8))
+            ctk.CTkLabel(top, text="Buscar:", text_color=GRIS_TEXTO).pack(side="left")
+            self.var_q = tk.StringVar()
+            e = ctk.CTkEntry(top, textvariable=self.var_q, width=220, height=32,
+                             corner_radius=8, border_color=BORDE_SUAVE)
+            e.pack(side="left", padx=4)
+            e.bind("<KeyRelease>", lambda _e: self._refrescar())
+            ctk.CTkLabel(top, text="Categoría:", text_color=GRIS_TEXTO).pack(
+                side="left", padx=(10, 2))
             self.var_cat = tk.StringVar(value="TODAS")
-            ttk.Combobox(top, textvariable=self.var_cat, width=8, state="readonly",
-                         values=["TODAS"] + list(bd_manager.CATEGORIAS)).pack(side="left")
+            ctk.CTkComboBox(top, variable=self.var_cat, width=110, height=32,
+                            corner_radius=8, border_color=BORDE_SUAVE,
+                            button_color=ROJO_ES, button_hover_color=_HOVER[ROJO_ES],
+                            state="readonly", dropdown_fg_color="white",
+                            values=["TODAS"] + list(bd_manager.CATEGORIAS)).pack(side="left")
             self.var_cat.trace_add("write", lambda *_: self._refrescar())
             self.var_inact = tk.BooleanVar(value=False)
-            tk.Checkbutton(top, text="Mostrar desactivadas", variable=self.var_inact,
-                           command=self._refrescar).pack(side="left", padx=(12, 0))
+            ctk.CTkCheckBox(top, text="Mostrar desactivadas", variable=self.var_inact,
+                           command=self._refrescar, text_color=GRIS_TEXTO,
+                           fg_color=AZUL_ES, hover_color=_HOVER[AZUL_ES]).pack(
+                side="left", padx=(12, 0))
 
-            self.tree = ttk.Treeview(self, columns=("n", "c", "e", "f"), show="headings")
+            self.tree = ttk.Treeview(tarjeta, columns=("n", "c", "e", "f"), show="headings")
             for c, t, w in (("n", "Nombre de la ficha", 600), ("c", "Categoría", 80),
                             ("e", "Estado", 90), ("f", "Cargada", 100)):
                 self.tree.heading(c, text=t); self.tree.column(c, width=w)
-            self.tree.pack(fill="both", expand=True, pady=8)
+            self.tree.pack(fill="both", expand=True, padx=16, pady=8)
             self.tree.bind("<Double-Button-1>", lambda _ev: self._editar())
 
-            bar = tk.Frame(self); bar.pack(fill="x")
-            tk.Button(bar, text="✏️ Editar ficha", command=self._editar,
-                      bg=AZUL_ES, fg="white").pack(side="left")
-            tk.Button(bar, text="📄 Reemplazar PDF",
-                      command=self._reemplazar_pdf).pack(side="left", padx=6)
-            tk.Button(bar, text="🗑️ Desactivar", command=self._eliminar,
-                      bg=ROJO_ES, fg="white").pack(side="left", padx=6)
-            tk.Button(bar, text="♻️ Reactivar", command=self._reactivar).pack(side="left")
-            self.lbl = tk.Label(bar, text=""); self.lbl.pack(side="right")
+            bar = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            bar.pack(fill="x", padx=16, pady=(0, 16))
+            _boton(bar, "✏️ Editar ficha", self._editar, color=AZUL_ES, ancho=150).pack(
+                side="left")
+            _boton_secundario(bar, "📄 Reemplazar PDF", self._reemplazar_pdf,
+                             ancho=170).pack(side="left", padx=6)
+            _boton(bar, "🗑️ Desactivar", self._eliminar, color=ROJO_ES, ancho=150).pack(
+                side="left", padx=6)
+            _boton_secundario(bar, "♻️ Reactivar", self._reactivar, ancho=140).pack(
+                side="left")
+            self.lbl = ctk.CTkLabel(bar, text="", text_color=GRIS_TEXTO_SUAVE)
+            self.lbl.pack(side="right")
             self._map = {}
             self._refrescar()
             self._ofrecer_migracion()
@@ -1814,8 +2053,8 @@ if _TK_OK:
                                          "desactivada" if estado != "activo" else "activa",
                                          f.get("fecha_carga", "")))
             r = self.bd.resumen_por_categoria()
-            self.lbl.config(text=f"{r['TOTAL']} activas · ARQ {r['ARQ']} · ESTR {r['ESTR']} · "
-                                 f"MEC {r['MEC']} · ELEC {r['ELEC']}")
+            self.lbl.configure(text=f"{r['TOTAL']} activas · ARQ {r['ARQ']} · ESTR {r['ESTR']} · "
+                                    f"MEC {r['MEC']} · ELEC {r['ELEC']}")
 
         def _sel(self):
             sel = self.tree.selection()

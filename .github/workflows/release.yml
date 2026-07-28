@@ -28,18 +28,15 @@ jobs:
           pip install pyinstaller
           python -m playwright install chromium
 
-      - name: Compilar .exe
-        run: >
-          pyinstaller --onefile --windowed --name "GeneradorSubmittalsES"
-          --collect-all playwright --collect-all jinja2 --collect-all pypdf
-          --collect-all fitz --collect-all bs4
-          --add-data "template_caratula.html;."
-          --add-data "template_ministerio_salud.html;."
-          --add-data "Tabla visual refresh/assets/logo_es_crop.png;Tabla visual refresh/assets"
-          --add-data "Tabla visual refresh/assets/ministerio_salud_banner.png;Tabla visual refresh/assets"
-          submitals_gui.py
+      - name: Compilar .exe v3 (principal)
+        run: pyinstaller --noconfirm GeneradorSubmittalsES_v3.spec
 
-      - name: Crear Release con el .exe
+      - name: Compilar .exe v2.6 (hermano legado)
+        run: pyinstaller --noconfirm GeneradorSubmittalsES.spec
+
+      - name: Crear Release con los .exe
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/GeneradorSubmittalsES.exe
+          files: |
+            dist/GeneradorSubmittalsES_v3.exe
+            dist/GeneradorSubmittalsES.exe

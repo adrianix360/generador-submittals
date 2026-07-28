@@ -126,6 +126,18 @@ def aplicar_y_sincronizar(info, bd=None, progreso=None, logf=None):
     return (ok, mensaje, reinicio, resumen)
 
 
+def lanzar_swap():
+    """(Modo empaquetado) instala el .exe descargado y cierra la app.
+
+    Debe llamarse solo despues de ``preparar_exe`` haber devuelto ok=True.
+    Ejecuta el .bat que reemplaza el .exe y termina el proceso actual para
+    soltar el archivo (no retorna).
+    """
+    au = _au()
+    if au:
+        au.lanzar_swap_y_salir()
+
+
 def reiniciar():
     """Reinicia la app (modo Python) tras aplicar una actualizacion."""
     au = _au()

@@ -6,7 +6,7 @@ binaries = []
 hiddenimports = []
 for paquete in ('playwright', 'jinja2', 'pypdf', 'pytesseract', 'PIL', 'docx',
                 'fitz', 'openpyxl', 'pdfplumber', 'openai', 'pydantic',
-                'requests', 'bs4', 'packaging'):
+                'requests', 'bs4', 'packaging', 'customtkinter', 'darkdetect'):
     tmp_ret = collect_all(paquete)
     datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
