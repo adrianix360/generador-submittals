@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T12:31:51",
+  "ultima_actualizacion": "2026-07-28T15:53:56",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -288,8 +288,29 @@
       "fecha_modificacion": "2026-07-28T11:46:43",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "6e666da9-af56-4454-99bd-bb951eb62141",
+      "nombre_ficha": "CONDULETA LB - PST",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Conduleta LB",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "tipo_producto": "Cuerpo de conduit roscado con tapa y junta",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Material: Aluminio, Tipo: LB",
+      "normativa": "National Electrical Code",
+      "descripcion_corta": "Cuerpo de conduit roscado de aluminio tipo LB con tapa y junta para unir conductos rígidos o IMC.",
+      "search_keywords": "conduleta lb pst elec cuerpo de conduit roscado con tapa y junta material aluminio tipo national electrical code para unir conductos rigidos o imc",
+      "ruta_pdf": "ELEC/CONDULETA-LB-PST.pdf",
+      "hash_archivo": "198fe300478f9946",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T15:53:56",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T12:30:57"
+  "ultima_sincronizacion_git": "2026-07-28T15:51:16"
 }
