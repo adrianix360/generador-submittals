@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:17:38",
+  "ultima_actualizacion": "2026-07-28T16:18:43",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -729,8 +729,29 @@
       "fecha_modificacion": "2026-07-28T16:17:38",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "d5ddfc7f-04de-4025-9b72-dff6fbf5c373",
+      "nombre_ficha": "PROFORM JOINT TAPES - ProForm",
+      "nombre_ficha_manual": false,
+      "nombre_material": "ProForm Joint Tapes",
+      "marca": "ProForm",
+      "categoria": "ARQ",
+      "tipo_producto": "Cinta para juntas",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Cintas para juntas de papel, fibra de vidrio y multi-flex para reforzar uniones en paredes interiores y techos.",
+      "search_keywords": "proform joint tapes arq cinta para juntas sin especificar cintas de papel fibra vidrio y multi flex reforzar uniones en paredes interiores techos",
+      "ruta_pdf": "ARQ/PROFORM-JOINT-TAPES-ProForm.pdf",
+      "hash_archivo": "d829bb256f4ff70b",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:18:43",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:17:16"
+  "ultima_sincronizacion_git": "2026-07-28T16:17:41"
 }
