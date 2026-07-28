@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:22:58",
+  "ultima_actualizacion": "2026-07-28T16:23:37",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -858,9 +858,9 @@
     },
     {
       "id": "2bfce2b9-5e77-4d4a-a9f2-dd021343940b",
-      "nombre_ficha": "ACL10-1 50 2440 x 1220 x 1.5 - METALES PERF-EX S.A.",
+      "nombre_ficha": "MALLA JORFOMEX ACL10-1 50 2440 x 1220 x 1.5 - METALES PERF-EX S.A.",
       "nombre_ficha_manual": false,
-      "nombre_material": "ACL10-1,50",
+      "nombre_material": "MALLA JORFOMEX ACL10-1,50",
       "marca": "METALES PERF-EX S.A.",
       "categoria": "ARQ",
       "tipo_producto": "Lámina de metal expandido",
@@ -869,15 +869,15 @@
       "especificacion": "Acero al carbono ASTM A-36 ANSI 1006",
       "normativa": "ASTM F-1267",
       "descripcion_corta": "Lámina de acero al carbono expandido, espesor 1.5 mm, acabado liso, con dimensiones de 2.44 m x 1.22 m.",
-      "search_keywords": "acl10 1 50 2440 x 1220 5 metales perf ex s a arq lamina de metal expandido 2440x1220x1 acero al carbono astm 36 ansi 1006 f 1267 espesor mm acabado liso con dimensiones 2 44 m 22",
+      "search_keywords": "malla jorfomex acl10 1 50 2440 x 1220 5 metales perf ex s a arq lamina de metal expandido 2440x1220x1 acero al carbono astm 36 ansi 1006 f 1267 espesor mm acabado liso con dimensiones 2 44 m 22",
       "ruta_pdf": "ARQ/ACL10-1-50-2440-x-1220-x-1-5-METALES-PERF-EX-S-A.pdf",
       "hash_archivo": "c69380727b383a6a",
       "fecha_carga": "2026-07-28",
-      "fecha_modificacion": "2026-07-28T16:22:58",
+      "fecha_modificacion": "2026-07-28T16:23:37",
       "cargada_por": "Keis",
       "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:22:41"
+  "ultima_sincronizacion_git": "2026-07-28T16:23:00"
 }
