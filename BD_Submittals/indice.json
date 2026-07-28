@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:29:58",
+  "ultima_actualizacion": "2026-07-28T16:30:57",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1044,8 +1044,29 @@
       "fecha_modificacion": "2026-07-28T16:29:58",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "3bcc0774-13fd-431d-b53d-77930971127b",
+      "nombre_ficha": "UNION EMT COMPRESSION COUPLING-STEEL MULTIPLE - PST",
+      "nombre_ficha_manual": false,
+      "nombre_material": "UNION EMT Compression Coupling-Steel",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "tipo_producto": "Acoplamiento de compresión",
+      "dimensiones": "MULTIPLE",
+      "sin_medidas": false,
+      "especificacion": "Acero con recubrimiento de zinc",
+      "normativa": "UL",
+      "descripcion_corta": "Acoplamiento de compresión para tubería EMT, hermético al concreto, adecuado para unir conduits en ubicaciones secas.",
+      "search_keywords": "union emt compression coupling steel multiple pst elec acoplamiento de compresion acero con recubrimiento zinc ul para tuberia hermetico al concreto adecuado unir conduits en ubicaciones secas",
+      "ruta_pdf": "ELEC/UNION-EMT-COMPRESSION-COUPLING-STEEL-MULTIPLE-PST.pdf",
+      "hash_archivo": "b59d624610807a3c",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:30:57",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:29:37"
+  "ultima_sincronizacion_git": "2026-07-28T16:30:01"
 }
