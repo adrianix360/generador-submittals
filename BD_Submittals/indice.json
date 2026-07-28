@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T12:30:55",
+  "ultima_actualizacion": "2026-07-28T12:31:51",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -220,10 +220,11 @@
       "ruta_pdf": "ARQ/TUBERIA-PVC-0-x-0-SIN-ESPECIFICAR.pdf",
       "hash_archivo": "428b0a3da075da4e",
       "fecha_carga": "2026-07-27",
-      "fecha_modificacion": "2026-07-28T12:22:10",
+      "fecha_modificacion": "2026-07-28T12:31:51",
       "cargada_por": "ProBook_de_Adri",
-      "estado": "activo",
-      "sin_medidas": true
+      "estado": "inactivo",
+      "sin_medidas": true,
+      "desactivada_por": "ProBook_de_Adri"
     },
     {
       "id": "0b0aa3c5-71ac-4cde-a52f-38a21b44ee9b",
@@ -290,5 +291,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T12:29:08"
+  "ultima_sincronizacion_git": "2026-07-28T12:30:57"
 }
