@@ -557,6 +557,22 @@ if _TK_OK:
         win.after_idle(lambda: win.attributes("-topmost", False))
         win.focus_force()
 
+    def _vista_previa_ficha(master, bd, ficha):
+        """Abre el PDF de una ficha tecnica con el visor predeterminado."""
+        if not ficha:
+            return
+        try:
+            ruta = bd.ruta_local_ficha(ficha)
+        except Exception as e:
+            messagebox.showerror("Vista previa", f"No se pudo obtener el PDF:\n{e}",
+                                 parent=master.winfo_toplevel())
+            return
+        try:
+            os.startfile(ruta)
+        except Exception as e:
+            messagebox.showerror("Vista previa", f"No se pudo abrir el archivo:\n{e}",
+                                 parent=master.winfo_toplevel())
+
     class DatosProyectoDialog(ctk.CTkToplevel):
         """Dialogo para capturar los datos del procedimiento (obligatorios)."""
 
@@ -599,7 +615,7 @@ if _TK_OK:
             faltan = [k for k in bd_manager.CAMPOS_PROCEDIMIENTO if not datos.get(k)]
             if faltan:
                 messagebox.showwarning("Datos incompletos",
-                                       "Complete todos los campos:\n" + ", ".join(faltan))
+                                       "Complete todos los campos:\n" + ", ".join(faltan), parent=self.winfo_toplevel())
                 return
             self.resultado = datos
             self.destroy()
@@ -662,6 +678,17 @@ if _TK_OK:
                              corner_radius=8, border_color=BORDE_SUAVE)
             e.pack(side="left", padx=6)
             e.bind("<KeyRelease>", lambda _ev: self._sugerir())
+            ctk.CTkLabel(top, text="Categoría:", text_color=GRIS_TEXTO,
+                        font=_fuente(11)).pack(side="left", padx=(10, 2))
+            self.var_cat = tk.StringVar(value="TODAS")
+            cat_combo = ctk.CTkComboBox(top, variable=self.var_cat, width=110, height=32,
+                                        corner_radius=8, border_color=BORDE_SUAVE,
+                                        button_color=ROJO_ES,
+                                        button_hover_color=_HOVER[ROJO_ES],
+                                        state="readonly", dropdown_fg_color="white",
+                                        values=["TODAS"] + list(bd_manager.CATEGORIAS))
+            cat_combo.pack(side="left")
+            self.var_cat.trace_add("write", lambda *_: self._sugerir())
             _boton(top, "＋ Cargar ficha nueva a BD", self._cargar_ficha,
                   color=AZUL_CLARO, ancho=200).pack(side="right")
 
@@ -685,20 +712,33 @@ if _TK_OK:
             bar.pack(fill="x")
             _boton_secundario(bar, "Editar marca(s)", self._editar, ancho=140).pack(
                 side="left", padx=4)
+            _boton_secundario(bar, "👁 Vista previa", self._vista_previa, ancho=150).pack(
+                side="left", padx=4)
             _boton(bar, "Eliminar", self._eliminar, color=ROJO_ES, ancho=110).pack(
                 side="left", padx=4)
             self._sug = []
 
         def _sugerir(self):
             q = self.var_busq.get().strip()
+            cat = self.var_cat.get()
+            cat = None if cat == "TODAS" else cat
             self.lst.delete(0, "end")
-            self._sug = self.bd.buscar(q) if q else []
+            if q:
+                self._sug = self.bd.buscar(q, categoria=cat)
+            elif cat:
+                # Sin texto de busqueda: navega todos los productos disponibles
+                # de la categoria elegida (permite explorar el catalogo).
+                self._sug = [f for f in self.bd.listar_fichas()
+                            if f.get("categoria") == cat]
+            else:
+                self._sug = []
             for r in self._sug:
                 # Se muestra el nombre descriptivo completo: es lo que permite
                 # distinguir dos fichas del mismo material.
+                extra = f"({int(r['_similitud']*100)}%)" if "_similitud" in r else ""
                 self.lst.insert("end", f"{bd_manager.BDManager.nombre_de(r)}  ·  "
-                                       f"{r['categoria']}  ({int(r['_similitud']*100)}%)")
-            if q and not self._sug:
+                                       f"{r['categoria']}  {extra}")
+            if not self._sug and (q or cat):
                 self.lst.insert("end", "❌ No encontrado — use 'Cargar ficha nueva a BD'")
 
         def _agregar_seleccion(self):
@@ -792,8 +832,23 @@ if _TK_OK:
 
         def _eliminar(self):
             m = self._sel_material()
-            if m and messagebox.askyesno("Eliminar", f"¿Quitar {m['consecutivo']} — {m['nombre_material']}?"):
+            if m and messagebox.askyesno("Eliminar", f"¿Quitar {m['consecutivo']} — {m['nombre_material']}?", parent=self.winfo_toplevel()):
                 self.materiales.remove(m); self._refrescar()
+
+        def _vista_previa(self):
+            m = self._sel_material()
+            if not m:
+                messagebox.showinfo("Seleccione un material",
+                                    "Elija un material de la lista.",
+                                    parent=self.winfo_toplevel())
+                return
+            ficha = self.bd.obtener_ficha(m.get("id_ficha_bd"))
+            if not ficha:
+                messagebox.showerror("Ficha no encontrada",
+                                     "La ficha original ya no está en la Base de Datos.",
+                                     parent=self.winfo_toplevel())
+                return
+            _vista_previa_ficha(self, self.bd, ficha)
 
         def _cargar_ficha(self):
             VentanaCargarFicha(self.winfo_toplevel(), self.bd,
@@ -846,7 +901,7 @@ if _TK_OK:
             if self._procesando:
                 if not messagebox.askyesno(
                         "Cancelar extracción",
-                        "Hay una extracción en curso. ¿Cancelarla y cerrar la ventana?"):
+                        "Hay una extracción en curso. ¿Cancelarla y cerrar la ventana?", parent=self.winfo_toplevel()):
                     return
                 self._cancelado = True
             self._cerrada = True
@@ -895,7 +950,7 @@ if _TK_OK:
                 messagebox.showinfo(
                     "Sin fichas",
                     f"No se encontraron archivos de ficha (PDF/imagen) en "
-                    f"{len(carpetas)} carpeta(s) seleccionada(s).")
+                    f"{len(carpetas)} carpeta(s) seleccionada(s).", parent=self.winfo_toplevel())
                 return
 
             self._log(f"📁 {len(carpetas)} carpeta(s) escaneada(s) — "
@@ -1210,14 +1265,14 @@ if _TK_OK:
             faltan = [c for c in bd_manager.CAMPOS_OBLIGATORIOS_FICHA if not d.get(c)]
             if faltan:
                 messagebox.showwarning("Faltan datos",
-                                       "Campos obligatorios: " + ", ".join(faltan))
+                                       "Campos obligatorios: " + ", ".join(faltan), parent=self.winfo_toplevel())
                 return
             if d["categoria"] not in bd_manager.CATEGORIAS:
-                messagebox.showwarning("Categoría", "Use ARQ, ESTR, MEC o ELEC")
+                messagebox.showwarning("Categoría", "Use ARQ, ESTR, MEC o ELEC", parent=self.winfo_toplevel())
                 return
             if not self._suficiente():
                 messagebox.showwarning("Ficha indistinguible",
-                                       "\n".join(self.analisis["faltantes"]))
+                                       "\n".join(self.analisis["faltantes"]), parent=self.winfo_toplevel())
                 return
 
             escrito = self.v_nombre.get().strip()
@@ -1303,6 +1358,9 @@ if _TK_OK:
     class _VentanaSubmittal(ctk.CTkToplevel):
         """Base comun para 'Generar desde BD' y 'Abrir existente'."""
 
+        _ETIQ_ES = "ES (clásica)"
+        _ETIQ_MINSAL = "Ministerio de Salud"
+
         def __init__(self, master, bd, proyecto, destino, titulo):
             super().__init__(master)
             self.bd = bd; self.proyecto = proyecto; self.destino = destino
@@ -1324,6 +1382,21 @@ if _TK_OK:
                         corner_radius=8, border_color=BORDE_SUAVE).pack(
                 side="left", padx=4)
             _boton_secundario(top, "…", self._elegir_destino, ancho=40).pack(side="left")
+
+            tipo_frame = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            tipo_frame.pack(fill="x", padx=18, pady=(0, 10))
+            ctk.CTkLabel(tipo_frame, text="Carátula a usar:", text_color=GRIS_TEXTO).pack(
+                side="left")
+            self.var_tipo_caratula = tk.StringVar(value=self._ETIQ_MINSAL
+                if proyecto.get("tipo_caratula", "clasica") == "ministerio_salud"
+                else self._ETIQ_ES)
+            ctk.CTkSegmentedButton(tipo_frame, values=[self._ETIQ_ES, self._ETIQ_MINSAL],
+                                   variable=self.var_tipo_caratula,
+                                   selected_color=AZUL_ES,
+                                   selected_hover_color=_HOVER[AZUL_ES],
+                                   command=self._cambiar_tipo_caratula).pack(
+                side="left", padx=8)
+            self._cambiar_tipo_caratula(self.var_tipo_caratula.get())
 
             self.tabla = TablaMateriales(tarjeta, bd, proyecto.get("materiales_seleccionados", []))
             self.tabla.pack(fill="both", expand=True, padx=18, pady=8)
@@ -1350,16 +1423,20 @@ if _TK_OK:
             if c:
                 self.var_dest.set(c)
 
+        def _cambiar_tipo_caratula(self, valor):
+            self.proyecto["tipo_caratula"] = (
+                "ministerio_salud" if valor == self._ETIQ_MINSAL else "clasica")
+
         def _generar(self):
             self.proyecto["materiales_seleccionados"] = self.tabla.materiales
             destino = self.var_dest.get().strip()
             if not destino:
-                messagebox.showwarning("Destino", "Elija una carpeta destino"); return
+                messagebox.showwarning("Destino", "Elija una carpeta destino", parent=self.winfo_toplevel()); return
             ok, errores = self.bd.validar_proyecto(self.proyecto)
             if not ok:
-                messagebox.showerror("No se puede generar", "\n".join(errores)); return
+                messagebox.showerror("No se puede generar", "\n".join(errores), parent=self.winfo_toplevel()); return
             if not messagebox.askyesno("Confirmar",
-                                       "Se regenerarán carátulas, compilados y Excel. ¿Continuar?"):
+                                       "Se regenerarán carátulas, compilados y Excel. ¿Continuar?", parent=self.winfo_toplevel()):
                 return
             tipo = self.proyecto.get("tipo_caratula", "clasica")
             try:
@@ -1372,7 +1449,7 @@ if _TK_OK:
                     pass
             except Exception as e:
                 self._log(f"\n❌ {e}")
-                messagebox.showerror("Error al generar", str(e))
+                messagebox.showerror("Error al generar", str(e), parent=self.winfo_toplevel())
 
         def _subir_metadatos(self):
             """Sube a GitHub el ``submittal_proyecto.json`` del proyecto.
@@ -1637,9 +1714,9 @@ if _TK_OK:
                     "Guardé la API key, pero esta computadora tiene una variable de "
                     "entorno OPENAI_API_KEY que TIENE PRIORIDAD sobre ella.\n\n"
                     "La lectura de fichas seguirá usando la variable de entorno hasta "
-                    "que la elimine.")
+                    "que la elimine.", parent=self.winfo_toplevel())
             else:
-                messagebox.showinfo("Configuración", "Configuración guardada.")
+                messagebox.showinfo("Configuración", "Configuración guardada.", parent=self.winfo_toplevel())
             self.destroy()
 
 
@@ -1748,7 +1825,7 @@ if _TK_OK:
                     "Conflicto resuelto",
                     "Otra computadora había subido cambios a la vez.\n\n"
                     "Se fusionaron automáticamente sin perder datos: se "
-                    "conservaron las fichas de ambos lados.")
+                    "conservaron las fichas de ambos lados.", parent=self.winfo_toplevel())
                 return
             if resumen.get("indice_invalido"):
                 self.lbl_sync.configure(text="⚠️ Índice con problemas: usando caché local",
@@ -1757,7 +1834,7 @@ if _TK_OK:
                     "Índice inconsistente",
                     "El índice descargado no pasó la validación; se está usando la "
                     "copia local.\n\nDetalle:\n- " +
-                    "\n- ".join(resumen["indice_invalido"][:6]))
+                    "\n- ".join(resumen["indice_invalido"][:6]), parent=self.winfo_toplevel())
                 return
             if resumen.get("auth") and inicial:
                 self.lbl_sync.configure(text="🔑 Sin token de GitHub (solo lectura)",
@@ -1774,7 +1851,7 @@ if _TK_OK:
 
         def _subir_pendientes(self):
             if not self.bd.hay_cambios_sin_subir():
-                messagebox.showinfo("Sincronización", "No hay cambios pendientes de subir.")
+                messagebox.showinfo("Sincronización", "No hay cambios pendientes de subir.", parent=self.winfo_toplevel())
                 return
             self.lbl_sync.configure(text="🔄 Subiendo cambios…", text_color=AZUL_ES)
             self.update_idletasks()
@@ -1794,7 +1871,7 @@ if _TK_OK:
                 self.lbl_sync.configure(text="🔑 Falta el token de GitHub", text_color=ROJO_ES)
                 if messagebox.askyesno("Token requerido",
                                        "Para subir cambios hace falta un token de "
-                                       "GitHub.\n\n¿Configurarlo ahora?"):
+                                       "GitHub.\n\n¿Configurarlo ahora?", parent=self.winfo_toplevel()):
                     self._config_github()
             elif r.get("nada_que_subir"):
                 self.lbl_sync.configure(text="Sin cambios por subir", text_color=GRIS_TEXTO_SUAVE)
@@ -1839,7 +1916,7 @@ if _TK_OK:
             if pin is None:
                 return
             if pin != PIN_MODO_DEV:
-                messagebox.showerror("PIN incorrecto", "El PIN ingresado no es correcto.")
+                messagebox.showerror("PIN incorrecto", "El PIN ingresado no es correcto.", parent=self.winfo_toplevel())
                 return
 
             self.modo_dev = True
@@ -1851,7 +1928,7 @@ if _TK_OK:
                 "Modo desarrollador activado.\n\n"
                 "Al generar un submittal desde BD ya no se pedirán los datos del "
                 "proyecto: se completan automáticamente con datos de prueba.\n\n"
-                "Use este modo solo para pruebas, nunca para submittals reales.")
+                "Use este modo solo para pruebas, nunca para submittals reales.", parent=self.winfo_toplevel())
 
         # -------- flujos
         def _pedir_datos_proyecto(self):
@@ -1886,7 +1963,7 @@ if _TK_OK:
             try:
                 proyecto = bd_manager.BDManager.cargar_submittal(carpeta)
             except Exception as e:
-                messagebox.showerror("No se pudo abrir", str(e)); return
+                messagebox.showerror("No se pudo abrir", str(e), parent=self.winfo_toplevel()); return
             _VentanaSubmittal(self, self.bd, proyecto, carpeta,
                               f"Editando: {proyecto.get('nombre_proyecto', '')}")
 
@@ -1910,26 +1987,26 @@ if _TK_OK:
                     messagebox.showinfo(
                         "v2.6", "No se encontró GeneradorSubmittalsES.exe (v2.6).\n\n"
                         "Coloque ese archivo en la misma carpeta que este programa "
-                        "para poder abrirlo.")
+                        "para poder abrirlo.", parent=self.winfo_toplevel())
                 return
             ruta = BASE_DIR / "submitals_gui.py"
             if ruta.exists():
                 subprocess.Popen([sys.executable, str(ruta)], cwd=str(BASE_DIR),
                                  creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
             else:
-                messagebox.showinfo("v2.6", "No se encontró submitals_gui.py")
+                messagebox.showinfo("v2.6", "No se encontró submitals_gui.py", parent=self.winfo_toplevel())
 
         def _buscar_update(self):
             info = updater_gh.hay_actualizacion(logf=logger.info)
             if info.get("error"):
-                messagebox.showinfo("Actualización", info["error"]); return
+                messagebox.showinfo("Actualización", info["error"], parent=self.winfo_toplevel()); return
             if not info.get("disponible"):
-                messagebox.showinfo("Actualización", "No hay actualizaciones."); return
+                messagebox.showinfo("Actualización", "No hay actualizaciones.", parent=self.winfo_toplevel()); return
             if not messagebox.askyesno("Actualización disponible",
                                        f"Nueva versión {info.get('version_remota')}.\n"
                                        f"{info.get('changelog', '')}\n\n"
                                        "Se actualizará el programa y la Base de Datos.\n"
-                                       "¿Aplicar ahora?"):
+                                       "¿Aplicar ahora?", parent=self.winfo_toplevel()):
                 return
             # Modo empaquetado con .exe nuevo: aplicar_y_sincronizar() ignora el
             # .exe a proposito (solo reemplaza .py/.html en vivo), asi que sin
@@ -1940,7 +2017,7 @@ if _TK_OK:
                 return
             ok, msg, reinicio, _bd = updater_gh.aplicar_y_sincronizar(
                 info, bd=self.bd, logf=logger.info)
-            messagebox.showinfo("Actualización", msg)
+            messagebox.showinfo("Actualización", msg, parent=self.winfo_toplevel())
             self._actualizar_estado()
             if ok and reinicio:
                 updater_gh.reiniciar()
@@ -1965,7 +2042,7 @@ if _TK_OK:
             self.prog.stop()
             self.prog.pack_forget()
             if not ok:
-                messagebox.showerror("Actualización", msg)
+                messagebox.showerror("Actualización", msg, parent=self.winfo_toplevel())
                 self._actualizar_estado()
                 return
             try:
@@ -1974,7 +2051,7 @@ if _TK_OK:
                 pass
             messagebox.showinfo(
                 "Actualización descargada",
-                msg + "\n\nEl programa se cerrará y reabrirá con la nueva versión.")
+                msg + "\n\nEl programa se cerrará y reabrirá con la nueva versión.", parent=self.winfo_toplevel())
             updater_gh.lanzar_swap()
 
         def _cerrar_seguro(self):
@@ -1991,7 +2068,7 @@ if _TK_OK:
                 r = messagebox.askyesnocancel(
                     "Cambios sin subir",
                     "Hay cambios en la BD que todavía no están en GitHub.\n\n"
-                    "¿Subirlos antes de cerrar?")
+                    "¿Subirlos antes de cerrar?", parent=self.winfo_toplevel())
                 if r is None:
                     return
                 if r:
@@ -2003,7 +2080,7 @@ if _TK_OK:
                                 "No se pudo subir",
                                 f"{res.get('error', 'Error desconocido')}\n\n"
                                 "Los cambios están guardados localmente y se "
-                                "subirán la próxima vez.\n\n¿Cerrar de todos modos?"):
+                                "subirán la próxima vez.\n\n¿Cerrar de todos modos?", parent=self.winfo_toplevel()):
                             return
             self.destroy()
 
@@ -2057,6 +2134,8 @@ if _TK_OK:
             bar.pack(fill="x", padx=16, pady=(0, 16))
             _boton(bar, "✏️ Editar ficha", self._editar, color=AZUL_ES, ancho=150).pack(
                 side="left")
+            _boton_secundario(bar, "👁 Vista previa", self._vista_previa,
+                             ancho=150).pack(side="left", padx=6)
             _boton_secundario(bar, "📄 Reemplazar PDF", self._reemplazar_pdf,
                              ancho=170).pack(side="left", padx=6)
             _boton(bar, "🗑️ Desactivar", self._eliminar, color=ROJO_ES, ancho=150).pack(
@@ -2104,7 +2183,7 @@ if _TK_OK:
             sel = self.tree.selection()
             if not sel:
                 messagebox.showinfo("Seleccione una ficha",
-                                    "Elija una ficha de la lista.")
+                                    "Elija una ficha de la lista.", parent=self.winfo_toplevel())
                 return None
             return self._map.get(sel[0])
 
@@ -2117,7 +2196,7 @@ if _TK_OK:
                     "Generar nombres",
                     f"Hay {len(pendientes)} ficha(s) sin nombre descriptivo "
                     "(cargadas con una versión anterior).\n\n"
-                    "¿Generar sus nombres ahora?"):
+                    "¿Generar sus nombres ahora?", parent=self.winfo_toplevel()):
                 return
             # Sincronizar primero: si otra PC editó esas fichas, se trabaja sobre
             # la versión al día en vez de pisarla.
@@ -2155,12 +2234,18 @@ if _TK_OK:
                 ficha = self.bd.editar_ficha(f["id"], cambios,
                                              regenerar_nombre=not bool(manual))
             except Exception as e:
-                messagebox.showerror("No se pudo editar", str(e)); return
+                messagebox.showerror("No se pudo editar", str(e), parent=self.winfo_toplevel()); return
             r = self.bd.git_push(f"editar ficha {ficha['nombre_ficha']}")
             self._refrescar()
             self._avisar_push(r, f"Ficha actualizada:\n{ficha['nombre_ficha']}")
             if self.al_cambiar:
                 self.al_cambiar()
+
+        def _vista_previa(self):
+            f = self._sel()
+            if not f:
+                return
+            _vista_previa_ficha(self, self.bd, f)
 
         def _reemplazar_pdf(self):
             f = self._sel()
@@ -2175,7 +2260,7 @@ if _TK_OK:
             try:
                 self.bd.reemplazar_pdf_ficha(f["id"], ruta)
             except Exception as e:
-                messagebox.showerror("No se pudo reemplazar", str(e)); return
+                messagebox.showerror("No se pudo reemplazar", str(e), parent=self.winfo_toplevel()); return
             r = self.bd.git_push(f"reemplazar archivo de {self.bd.nombre_de(f)}")
             self._avisar_push(r, "Archivo reemplazado. El nombre y las referencias "
                                  "de los submittals se conservan.")
@@ -2201,13 +2286,13 @@ if _TK_OK:
                     "Desactivar ficha",
                     f"¿Desactivar '{nombre}'?\n\n"
                     "Dejará de aparecer en las búsquedas. El PDF NO se borra y la "
-                    "ficha se puede reactivar después." + aviso):
+                    "ficha se puede reactivar después." + aviso, parent=self.winfo_toplevel()):
                 return
             if not self.bd.soft_delete_ficha(f["id"]):
                 messagebox.showerror(
                     "No se pudo desactivar",
                     "La ficha ya no está en el índice. Sincronice y vuelva a "
-                    "intentar.")
+                    "intentar.", parent=self.winfo_toplevel())
                 self._refrescar()
                 return
             r = self.bd.git_push(f"desactivar ficha {nombre}")
@@ -2221,13 +2306,13 @@ if _TK_OK:
             if not f:
                 return
             if f.get("estado", "activo") == "activo":
-                messagebox.showinfo("Reactivar", "La ficha ya está activa.")
+                messagebox.showinfo("Reactivar", "La ficha ya está activa.", parent=self.winfo_toplevel())
                 return
             if not self.bd.reactivar_ficha(f["id"]):
                 messagebox.showerror(
                     "No se pudo reactivar",
                     "La ficha ya no está en el índice. Sincronice y vuelva a "
-                    "intentar.")
+                    "intentar.", parent=self.winfo_toplevel())
                 self._refrescar()
                 return
             r = self.bd.git_push(f"reactivar ficha {self.bd.nombre_de(f)}")
@@ -2240,16 +2325,16 @@ if _TK_OK:
             if r.get("offline"):
                 messagebox.showinfo("Sin conexión",
                                     mensaje_ok + "\n\nEl cambio se guardó localmente "
-                                    "y se subirá al reconectar.")
+                                    "y se subirá al reconectar.", parent=self.winfo_toplevel())
             elif r.get("auth"):
                 messagebox.showwarning("Falta el token",
                                        mensaje_ok + "\n\nNo se pudo subir a GitHub: "
-                                       "configure el token.")
+                                       "configure el token.", parent=self.winfo_toplevel())
             elif r.get("subido") or r.get("nada_que_subir") or r.get("desactivado"):
-                messagebox.showinfo("Listo", mensaje_ok)
+                messagebox.showinfo("Listo", mensaje_ok, parent=self.winfo_toplevel())
             else:
                 messagebox.showwarning("No se pudo subir",
-                                       mensaje_ok + f"\n\n{r.get('error', '')}")
+                                       mensaje_ok + f"\n\n{r.get('error', '')}", parent=self.winfo_toplevel())
 
 
 def main():

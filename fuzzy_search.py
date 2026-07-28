@@ -7,10 +7,10 @@ r"""
 Busqueda "fuzzy" (tolerante a errores de tipeo, orden de palabras y acentos)
 sobre el campo ``search_keywords`` de las fichas de la Base de Datos.
 
-Reglas de negocio (v3.0.0):
-  - Similitud minima aceptada: 50 % (``UMBRAL_MINIMO = 0.5``).
-  - Devuelve como maximo los 5 mejores resultados (``TOP_N = 5``), ordenados de
-    mayor a menor similitud.
+Reglas de negocio (v3.3.3):
+  - Similitud minima aceptada: 40 % (``UMBRAL_MINIMO = 0.4``).
+  - Devuelve como maximo los 12 mejores resultados (``TOP_N = 12``), ordenados
+    de mayor a menor similitud.
   - Filtros opcionales por ``categoria`` (ARQ/ESTR/MEC/ELEC) y por ``marca``.
   - Solo considera fichas con ``estado == "activo"`` (las de soft-delete se
     ignoran).
@@ -27,15 +27,17 @@ from difflib import SequenceMatcher
 # --------------------------------------------------------------------------
 # CONSTANTES DE NEGOCIO
 # --------------------------------------------------------------------------
-UMBRAL_MINIMO = 0.5   # 50 % de similitud minima para aparecer en resultados
-TOP_N = 5             # maximo de sugerencias devueltas
+UMBRAL_MINIMO = 0.4   # 40 % de similitud minima para aparecer en resultados
+TOP_N = 12            # maximo de sugerencias devueltas
 ESTADO_ACTIVO = "activo"
 
 # Umbral por token: un token de la consulta cuenta como "coincidencia real" solo
 # si es igual/subcadena de una palabra clave, o si su parecido supera este valor.
 # Evita falsos positivos entre palabras cortas parecidas (p.ej. "cemento" vs
 # "metalco", que SequenceMatcher puntua ~0.57 pero NO son el mismo material).
-PER_TOKEN_GATE = 0.8
+# Bajado de 0.8 a 0.72 (v3.3.3) para tolerar mas errores de tipeo reales
+# ("estrucutral" ~0.94, "cocreto" ~0.86) sin cruzar el falso positivo de arriba.
+PER_TOKEN_GATE = 0.72
 
 
 # --------------------------------------------------------------------------

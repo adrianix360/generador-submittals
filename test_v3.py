@@ -107,10 +107,11 @@ class TestFuzzySearch(unittest.TestCase):
         for r in fuzzy_search.buscar("tubo", self.fichas):
             self.assertGreaterEqual(r["_similitud"], fuzzy_search.UMBRAL_MINIMO)
 
-    def test_top_5(self):
+    def test_top_n(self):
         muchos = [{"id": str(i), "search_keywords": "tubo estructural acero galvanizado",
                    "estado": "activo", "categoria": "ESTR", "marca": "X"} for i in range(20)]
-        self.assertLessEqual(len(fuzzy_search.buscar("tubo estructural", muchos)), 5)
+        self.assertLessEqual(len(fuzzy_search.buscar("tubo estructural", muchos)),
+                             fuzzy_search.TOP_N)
 
     def test_filtro_categoria(self):
         res = fuzzy_search.buscar("pintura", self.fichas, categoria="ESTR")
