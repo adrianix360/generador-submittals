@@ -37,6 +37,13 @@ import argparse
 import subprocess
 from pathlib import Path
 
+# La consola de Windows por defecto usa cp1252, que no puede imprimir los
+# emojis (✅❌) de los mensajes de progreso; sin esto el script crashea con
+# UnicodeEncodeError justo al final, despues de ya haber hecho todo el trabajo.
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 # ------------------------------------------------------------------ CONFIG --
 REPO_SLUG = "adrianix360/generador-submittals"   # <-- igual que en auto_updater.py
 BRANCH = "main"
