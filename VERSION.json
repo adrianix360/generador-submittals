@@ -1,11 +1,11 @@
 {
-  "version": "3.3.3",
+  "version": "3.3.4",
   "tipo_actualizacion": "ejecutable",
   "fecha": "2026-07-28",
-  "changelog": "Ventanas emergentes ya no tapan la ventana activa (dialogos ahora se adjuntan a la ventana en uso); selector de caratula ES / Ministerio de Salud al generar; boton de vista previa de la ficha tecnica; mas coincidencias en el buscador (tolera mas errores de tipeo); filtro de categoria al buscar materiales",
+  "changelog": "Fix: el hash de VERSION.json para archivos de texto (.py/.html) se calculaba sobre el archivo local en CRLF (Windows), pero raw.githubusercontent.com sirve el blob de git en LF (autocrlf); el auto-actualizador rechazaba toda descarga de codigo como 'corrupta'. Ahora se normaliza CRLF->LF antes de hashear en ambos lados (deployment.py y auto_updater.py)",
   "archivos": {
     "submitals_gui_v3.py": {
-      "hash": "f548bd85eb94e03ef409d62bae0380e26940d09fb10b3e80e7527dc63d808dac",
+      "hash": "260cb4064534a69340bd4dd973c2b653f1dbeea89ad85538f9917b38808a8906",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui_v3.py",
       "tipo": "python"
     },
@@ -15,12 +15,12 @@
       "tipo": "python"
     },
     "git_bd.py": {
-      "hash": "7899ce11e3e2ebbbb9b33eb59f5f9a5bf41a121cfaff447acd99187a7e2f30b5",
+      "hash": "0433006b6b7952fc6d0dfe2068b2bb9e6d5bb9bb9af725a6b7c6aa9986cf5ccd",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/git_bd.py",
       "tipo": "python"
     },
     "fuzzy_search.py": {
-      "hash": "b763eb17c00a2ce64d7c3175fd3e8021d89cbbf4d11b6c9cd6ba77071924e8de",
+      "hash": "0b3196170e2998ba6e465cfb0f6b9d14b4341074ca626e321167a0f9a7c87b1f",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/fuzzy_search.py",
       "tipo": "python"
     },
@@ -45,7 +45,7 @@
       "tipo": "python"
     },
     "auto_updater.py": {
-      "hash": "b90e9560a09eb8be4bbba5b1bfb15a0fe539575114c62e0d46264cb3317bdf34",
+      "hash": "6ab0181ef7174b34e6b8b026e6cd5adfa1690a12348a2a8f3bdd172eb4d1a953",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/auto_updater.py",
       "tipo": "python"
     },
@@ -65,8 +65,8 @@
       "tipo": "html"
     },
     "GeneradorSubmittalsES_v3.exe": {
-      "hash": "a56f8cb7a0acb000914b306b351e99620cb3e49999a5a325e57f74e93cee0e9f",
-      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.3/GeneradorSubmittalsES_v3.exe",
+      "hash": "965a2120ae877b98ee3323958a17122bcae18d7c4b22687a4d17380ad0a48be6",
+      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.4/GeneradorSubmittalsES_v3.exe",
       "tipo": "ejecutable",
       "requerido": false
     }

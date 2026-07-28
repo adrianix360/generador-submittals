@@ -83,12 +83,19 @@ def configurado():
 # ---------------------------------------------------------------------------
 # HELPERS
 # ---------------------------------------------------------------------------
-def sha256_file(path):
-    h = hashlib.sha256()
+def sha256_file(path, texto=False):
+    """Hash SHA-256 de un archivo local.
+
+    ``texto=True`` normaliza CRLF->LF antes de hashear: git normaliza los
+    saltos de linea a LF en el blob remoto (autocrlf), asi que un archivo de
+    texto en un checkout Windows (CRLF) no compartiria el hash con lo que
+    ``raw.githubusercontent.com`` sirve si no se normaliza igual aqui.
+    """
     with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            h.update(chunk)
-    return h.hexdigest()
+        data = f.read()
+    if texto:
+        data = data.replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def sha256_bytes(data):
@@ -174,9 +181,10 @@ def verificar_actualizacion(logf=None):
         # se ignoran salvo que tambien exista un .exe nuevo (manejado arriba).
         if frozen:
             continue
-        # Modo Python: comparar hash local
+        # Modo Python: comparar hash local (normalizando CRLF->LF: son archivos
+        # de texto y el hash remoto se calcula sobre el blob de git, ya en LF)
         ruta = base / nombre
-        h = sha256_file(ruta) if ruta.exists() else ""
+        h = sha256_file(ruta, texto=True) if ruta.exists() else ""
         if hash_remoto and h != hash_remoto:
             res["archivos"].append({"nombre": nombre, **info})
             if nombre == "requirements.txt":

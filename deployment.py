@@ -112,12 +112,21 @@ def release_url(version, nombre):
     return f"https://github.com/{REPO_SLUG}/releases/download/v{version}/{nombre}"
 
 
-def sha256_file(path):
-    h = hashlib.sha256()
+def sha256_file(path, texto=False):
+    """Hash SHA-256 de un archivo local.
+
+    ``texto=True`` normaliza CRLF->LF antes de hashear: git normaliza los
+    saltos de linea a LF en el blob remoto (autocrlf), asi que en un checkout
+    Windows (CRLF) el archivo en disco no comparte hash con lo que
+    ``raw.githubusercontent.com`` sirve si no se normaliza igual aqui. El
+    auto-actualizador (``auto_updater.py``) hace la misma normalizacion al
+    leer sus archivos locales, para que ambos lados comparen lo mismo.
+    """
     with open(path, "rb") as f:
-        for c in iter(lambda: f.read(65536), b""):
-            h.update(c)
-    return h.hexdigest()
+        data = f.read()
+    if texto:
+        data = data.replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def _run(cmd, **kw):
@@ -176,7 +185,7 @@ def generar_version_json(version, changelog, incluir_exe):
         if not p.exists():
             print(f"  aviso: falta {rel}, se omite")
             continue
-        archivos[rel] = {"hash": sha256_file(p), "url": raw_url(rel), "tipo": tipo}
+        archivos[rel] = {"hash": sha256_file(p, texto=True), "url": raw_url(rel), "tipo": tipo}
     if incluir_exe:
         exe = BASE / "dist" / EXE_NOMBRE
         if exe.exists():

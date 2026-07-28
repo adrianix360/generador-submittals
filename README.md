@@ -8,7 +8,7 @@
 [![Status](https://img.shields.io/badge/Status-Active%20Development-brightgreen?style=for-the-badge)]()
 
 **Generador automático de submittales para proyectos de construcción**  
-*Municipalidad de Desamparados, Costa Rica*
+
 
 [Características](#-características) • [Instalación](#-instalación) • [Uso](#-uso) • [Versiones](#-versiones)
 
