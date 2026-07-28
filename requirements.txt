@@ -42,3 +42,6 @@ packaging        # v2.6.7: comparar versiones (auto-updater)
 # REQUISITO DEL SISTEMA (no de pip): para el modo preferido hay que tener
 # instalado Git for Windows -> https://git-scm.com/download/win
 # Si no esta, el app detecta la ausencia y sincroniza por la API REST.
+
+# v3.3.0: refresh visual de la GUI v3 (paleta azul/naranja, tarjetas redondeadas).
+customtkinter

@@ -37,8 +37,13 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 REPO_SLUG = "adrianix360/generador-submittals"   # <-- PONER el repo real
 BRANCH = "main"
-TIMEOUT = 15
+TIMEOUT = 15        # JSON y archivos de codigo (pequenos, KB)
+
+# Evita que pip/el .bat de swap abran una ventana de consola visible.
+CREATIONFLAGS_SIN_VENTANA = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+TIMEOUT_EXE = 120    # lectura por chunk al descargar el .exe (binario grande, ~150MB)
 REINTENTOS = 3
+CHUNK_EXE = 256 * 1024
 
 # Archivos de CODIGO que se pueden actualizar/reemplazar de forma segura.
 ARCHIVOS_CODIGO = {
@@ -54,7 +59,7 @@ ARCHIVOS_CODIGO_REL = {
 NO_TOCAR = {"datos_materiales.json", "submitals_config.json",
             "generate_caratulas.log", "generate_caratulas_report.txt"}
 
-EXE_NOMBRE = "GeneradorSubmittalsES.exe"
+EXE_NOMBRE = "GeneradorSubmittalsES_v3.exe"
 
 
 def app_dir():
@@ -200,6 +205,50 @@ def _descargar_con_retry(url, hash_esperado, logf=None):
     raise RuntimeError(f"no se pudo descargar {url} ({ultimo})")
 
 
+def _descargar_archivo_grande(url, hash_esperado, destino, progreso=None, logf=None):
+    """Descarga un archivo grande (el .exe) en streaming directo a disco.
+
+    A diferencia de ``_descargar_con_retry`` (que carga todo en memoria con el
+    TIMEOUT corto pensado para JSON/.py de unos KB), aqui se usa un timeout de
+    lectura mas holgado (TIMEOUT_EXE) por chunk y se escribe a disco a medida
+    que llega, para no requerir ~150MB libres de RAM ni fallar por inactividad
+    en conexiones lentas. Si un intento falla, el reintento vuelve a descargar
+    desde cero (no hay soporte de resume por rangos).
+    """
+    import requests
+    ultimo = None
+    tmp = destino.with_suffix(destino.suffix + ".part")
+    for intento in range(1, REINTENTOS + 1):
+        try:
+            h = hashlib.sha256()
+            escrito = 0
+            with requests.get(url, timeout=(10, TIMEOUT_EXE), stream=True) as r:
+                r.raise_for_status()
+                total = int(r.headers.get("content-length", 0))
+                with open(tmp, "wb") as f:
+                    for chunk in r.iter_content(chunk_size=CHUNK_EXE):
+                        if not chunk:
+                            continue
+                        f.write(chunk)
+                        h.update(chunk)
+                        escrito += len(chunk)
+                        if progreso and total:
+                            pct = int(escrito * 100 / total)
+                            progreso(pct, f"Descargando ejecutable… "
+                                          f"({escrito // (1024 * 1024)}MB/{total // (1024 * 1024)}MB)")
+            if hash_esperado and h.hexdigest() != hash_esperado:
+                raise ValueError("hash no coincide (descarga corrupta)")
+            os.replace(tmp, destino)
+            return
+        except Exception as e:
+            ultimo = e
+            tmp.unlink(missing_ok=True)
+            if logf:
+                logf(f"  intento {intento}/{REINTENTOS} fallo: {str(e)[:80]}")
+            time.sleep(2 * intento)
+    raise RuntimeError(f"no se pudo descargar {url} ({ultimo})")
+
+
 def aplicar_actualizacion(info, progreso=None, logf=None):
     """
     Descarga y reemplaza atomicamente los archivos de codigo cambiados.
@@ -289,7 +338,7 @@ def _pip_install_requirements():
         cmd = [py, "-m", "pip", "install", "-r", "requirements.txt"]
     else:
         cmd = [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"]
-    subprocess.check_call(cmd, cwd=str(app_dir()))
+    subprocess.check_call(cmd, cwd=str(app_dir()), creationflags=CREATIONFLAGS_SIN_VENTANA)
 
 
 # ---------------------------------------------------------------------------
@@ -306,8 +355,8 @@ def descargar_exe_y_preparar_swap(info, progreso=None, logf=None):
     destino = base / exe_info["nombre"]
     nuevo = base / (exe_info["nombre"] + ".nuevo")
     try:
-        data = _descargar_con_retry(exe_info["url"], exe_info.get("hash", ""), logf)
-        nuevo.write_bytes(data)
+        _descargar_archivo_grande(exe_info["url"], exe_info.get("hash", ""), nuevo,
+                                   progreso=progreso, logf=logf)
     except Exception as e:
         return False, f"No se pudo descargar el ejecutable: {e}"
     bat = base / "_actualizar_exe.bat"
@@ -325,8 +374,12 @@ def lanzar_swap_y_salir():
     """Ejecuta el .bat de swap del .exe y cierra la app."""
     bat = app_dir() / "_actualizar_exe.bat"
     if bat.exists():
+        # DETACHED_PROCESS por si solo no evita que cmd.exe se asigne una
+        # consola nueva (visible) al no heredar la del padre; CREATE_NO_WINDOW
+        # es lo que realmente la oculta.
         subprocess.Popen(["cmd", "/c", str(bat)], cwd=str(app_dir()),
-                         creationflags=getattr(subprocess, "DETACHED_PROCESS", 0))
+                         creationflags=(CREATIONFLAGS_SIN_VENTANA |
+                                        getattr(subprocess, "DETACHED_PROCESS", 0)))
     os._exit(0)
 
 

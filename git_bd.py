@@ -74,6 +74,11 @@ MODO_GIT = "git"
 MODO_REST = "rest"
 MODO_AUTO = "auto"
 
+# En Windows cada subprocess.run/Popen de git abre una consola propia; sin este
+# flag, el pull/push al abrir la app (que encadena fetch/status/rev-list/log/
+# diff/merge, uno por uno) se ve como varias terminales parpadeando.
+CREATIONFLAGS_SIN_VENTANA = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+
 REPO_DEFECTO = "adrianix360/generador-submittals"
 RAMA_DEFECTO = "main"
 SUBDIR_DEFECTO = "BD_Submittals"
@@ -127,7 +132,8 @@ def git_disponible():
     if not shutil.which("git"):
         return False
     try:
-        r = subprocess.run(["git", "--version"], capture_output=True, timeout=15)
+        r = subprocess.run(["git", "--version"], capture_output=True, timeout=15,
+                           creationflags=CREATIONFLAGS_SIN_VENTANA)
         return r.returncode == 0
     except Exception:
         return False
@@ -167,7 +173,8 @@ def instalar_git_si_falta(logf=None):
         subprocess.run(
             [winget, "install", "--id", "Git.Git", "-e", "--silent",
              "--accept-package-agreements", "--accept-source-agreements"],
-            timeout=300, check=True, capture_output=True)
+            timeout=300, check=True, capture_output=True,
+            creationflags=CREATIONFLAGS_SIN_VENTANA)
     except Exception as e:
         logf(f"No se pudo instalar Git automaticamente: {str(e)[:200]}\n"
              "Instalelo manualmente desde https://git-scm.com/download/win")
@@ -397,7 +404,8 @@ class GitTransporte:
         env["LC_ALL"] = "C"
         try:
             r = subprocess.run(cmd, cwd=str(cwd or self.repo_dir), env=env,
-                               capture_output=True, timeout=timeout)
+                               capture_output=True, timeout=timeout,
+                               creationflags=CREATIONFLAGS_SIN_VENTANA)
         except subprocess.TimeoutExpired:
             raise SinConexionError("git no respondio (timeout). Revise la conexion.")
         except FileNotFoundError:

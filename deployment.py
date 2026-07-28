@@ -10,12 +10,13 @@ r"""
      python deployment.py
 
  Hace, en orden (cada paso es tolerante a fallos y se puede saltar con flags):
-   1. Actualiza el numero de version en submitals_gui.py y generate_caratulas.py
-      (constante VERSION = "x.y.z") y en submitals_config.json.
+   1. Actualiza el numero de version en submitals_gui_v3.py, submitals_gui.py y
+      generate_caratulas.py (constante VERSION = "x.y.z") y en submitals_config.json.
    2. (Opcional) Ejecuta tests rapidos: TESTS_RAPIDOS.py si existe.
    3. Calcula SHA-256 de los archivos versionados.
    4. Genera/actualiza VERSION.json (con hashes + URLs del repo).
-   5. (Opcional) Compila el .exe con PyInstaller (submitals.spec o flags).
+   5. (Opcional) Compila GeneradorSubmittalsES_v3.exe con PyInstaller
+      (GeneradorSubmittalsES_v3.spec).
    6. git add / commit / push.
    7. (Opcional) Crea Release en GitHub con el .exe (gh CLI o PyGithub).
 
@@ -36,6 +37,13 @@ import argparse
 import subprocess
 from pathlib import Path
 
+# La consola de Windows por defecto usa cp1252, que no puede imprimir los
+# emojis (✅❌) de los mensajes de progreso; sin esto el script crashea con
+# UnicodeEncodeError justo al final, despues de ya haber hecho todo el trabajo.
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 # ------------------------------------------------------------------ CONFIG --
 REPO_SLUG = "adrianix360/generador-submittals"   # <-- igual que en auto_updater.py
 BRANCH = "main"
@@ -43,14 +51,24 @@ BASE = Path(__file__).resolve().parent
 
 # Archivos que se versionan (entran en VERSION.json). Rutas relativas.
 ARCHIVOS_VERSIONADOS = [
-    ("submitals_gui.py", "python"),
+    ("submitals_gui_v3.py", "python"),
+    ("bd_manager.py", "python"),
+    ("git_bd.py", "python"),
+    ("fuzzy_search.py", "python"),
+    ("nomenclatura.py", "python"),
+    ("ocr_extractor.py", "python"),
+    ("updater_gh.py", "python"),
     ("generate_caratulas.py", "python"),
     ("auto_updater.py", "python"),
     ("requirements.txt", "requirements"),
     ("template_caratula.html", "html"),
     ("template_ministerio_salud.html", "html"),
 ]
-EXE_NOMBRE = "GeneradorSubmittalsES.exe"
+# Ejecutable principal distribuido (v3). El .exe v2.6 (GeneradorSubmittalsES.exe)
+# se compila/publica aparte: es el hermano legado que lanza "Generar desde
+# carpetas (v2.6)" y no participa del auto-updater.
+EXE_NOMBRE = "GeneradorSubmittalsES_v3.exe"
+EXE_SPEC = "GeneradorSubmittalsES_v3.spec"
 
 
 def raw_url(rel):
@@ -77,7 +95,7 @@ def _run(cmd, **kw):
 # --------------------------------------------------- 1. bump de version ----
 def bump_version(version):
     cambios = []
-    for archivo in ("submitals_gui.py", "generate_caratulas.py"):
+    for archivo in ("submitals_gui_v3.py", "submitals_gui.py", "generate_caratulas.py"):
         p = BASE / archivo
         if not p.exists():
             continue
@@ -144,20 +162,11 @@ def generar_version_json(version, changelog, incluir_exe):
 
 # --------------------------------------------------- 5. build exe ----------
 def compilar_exe():
-    spec = BASE / "submitals.spec"
-    if spec.exists():
-        r = _run([sys.executable, "-m", "PyInstaller", "--noconfirm", str(spec)])
-    else:
-        r = _run([sys.executable, "-m", "PyInstaller", "--onefile", "--windowed",
-                  "--name", "GeneradorSubmittalsES",
-                  "--collect-all", "playwright", "--collect-all", "jinja2",
-                  "--collect-all", "pypdf", "--collect-all", "fitz",
-                  "--collect-all", "bs4",
-                  "--add-data", "template_caratula.html;.",
-                  "--add-data", "template_ministerio_salud.html;.",
-                  "--add-data", "Tabla visual refresh/assets/logo_es_crop.png;Tabla visual refresh/assets",
-                  "--add-data", "Tabla visual refresh/assets/ministerio_salud_banner.png;Tabla visual refresh/assets",
-                  "submitals_gui.py"])
+    spec = BASE / EXE_SPEC
+    if not spec.exists():
+        print(f"   ERROR: no se encontro {EXE_SPEC}")
+        return False
+    r = _run([sys.executable, "-m", "PyInstaller", "--noconfirm", str(spec)])
     return r.returncode == 0
 
 

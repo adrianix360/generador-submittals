@@ -166,7 +166,7 @@ from tkinter import ttk, filedialog, messagebox
 # ============================================================================
 # CONSTANTES / TEMA
 # ============================================================================
-VERSION   = "2.6.18"
+VERSION   = "3.3.1"
 AUTOR     = "Adrián Castro"
 ROJO_ES   = "#E11D2D"
 AZUL_ES   = "#1F3864"
@@ -4086,9 +4086,14 @@ class SubmitalsGUI(tk.Tk):
                 info, progreso=lambda p, t: self.cola.put(("LOG", f"[{p}%] {t}")))
             self.cola.put(("LOG", msg))
             if info.get("requiere_exe"):
-                _, mx = auto_updater.descargar_exe_y_preparar_swap(
-                    info, logf=lambda m: self.cola.put(("LOG", m)))
+                ok_exe, mx = auto_updater.descargar_exe_y_preparar_swap(
+                    info, progreso=lambda p, t: self.cola.put(("LOG", f"[{p}%] {t}")),
+                    logf=lambda m: self.cola.put(("LOG", m)))
                 self.cola.put(("LOG", mx))
+                if ok_exe:
+                    self.cola.put(("LOG", "Reiniciando para instalar el nuevo ejecutable…"))
+                    self.after(1500, auto_updater.lanzar_swap_y_salir)
+                return
             if ok and reiniciar:
                 self.cola.put(("LOG", "Reiniciando la aplicacion…"))
                 self.after(1500, auto_updater.reiniciar_app)
