@@ -1,11 +1,11 @@
 {
-  "version": "3.3.2",
+  "version": "3.3.3",
   "tipo_actualizacion": "ejecutable",
   "fecha": "2026-07-28",
-  "changelog": "Fix: Cargar ficha a BD no funcionaba (boton .config() invalido en CustomTkinter, crasheaba al seleccionar un archivo)",
+  "changelog": "Ventanas emergentes ya no tapan la ventana activa (dialogos ahora se adjuntan a la ventana en uso); selector de caratula ES / Ministerio de Salud al generar; boton de vista previa de la ficha tecnica; mas coincidencias en el buscador (tolera mas errores de tipeo); filtro de categoria al buscar materiales",
   "archivos": {
     "submitals_gui_v3.py": {
-      "hash": "7742955de2e438c397002767a6075f5e0875c5228874d9b68754c4a59400e858",
+      "hash": "f548bd85eb94e03ef409d62bae0380e26940d09fb10b3e80e7527dc63d808dac",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui_v3.py",
       "tipo": "python"
     },
@@ -20,7 +20,7 @@
       "tipo": "python"
     },
     "fuzzy_search.py": {
-      "hash": "64fdeae58e04c77878ffe6afec4928f5a51336219462a22c38965f3d8c6e4a40",
+      "hash": "b763eb17c00a2ce64d7c3175fd3e8021d89cbbf4d11b6c9cd6ba77071924e8de",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/fuzzy_search.py",
       "tipo": "python"
     },
@@ -65,8 +65,8 @@
       "tipo": "html"
     },
     "GeneradorSubmittalsES_v3.exe": {
-      "hash": "8c11029c8beed429c6bb3b67ceeb1f38405d948bd1f5a3495678813012686f68",
-      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.2/GeneradorSubmittalsES_v3.exe",
+      "hash": "a56f8cb7a0acb000914b306b351e99620cb3e49999a5a325e57f74e93cee0e9f",
+      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.3/GeneradorSubmittalsES_v3.exe",
       "tipo": "ejecutable",
       "requerido": false
     }
