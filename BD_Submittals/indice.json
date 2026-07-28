@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:21:20",
+  "ultima_actualizacion": "2026-07-28T16:21:41",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -792,8 +792,29 @@
       "fecha_modificacion": "2026-07-28T16:21:20",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "dfda591f-ba1c-41dc-b253-80173888e235",
+      "nombre_ficha": "CLIP CON CLAVO 2 x 3.5 x 2 - TG",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Clip con clavo",
+      "marca": "TG",
+      "categoria": "ARQ",
+      "tipo_producto": "Clavo",
+      "dimensiones": "2x3.5x2",
+      "sin_medidas": false,
+      "especificacion": "",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Clip con clavo de acero de 1 1/2\" fijado a un ángulo de acero galvanizado, para uso en drywall.",
+      "search_keywords": "clip con clavo 2 x 3 5 tg arq 2x3 5x2 sin especificar de acero 1 fijado a un angulo galvanizado para uso en drywall",
+      "ruta_pdf": "ARQ/CLIP-CON-CLAVO-2-x-3-5-x-2-TG.pdf",
+      "hash_archivo": "b2dc0d0af7600b74",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:21:41",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:20:11"
+  "ultima_sincronizacion_git": "2026-07-28T16:21:23"
 }
