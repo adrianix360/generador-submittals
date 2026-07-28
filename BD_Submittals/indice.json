@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T17:06:14",
+  "ultima_actualizacion": "2026-07-28T17:07:05",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1107,8 +1107,29 @@
       "fecha_modificacion": "2026-07-28T17:06:14",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "aa2f266e-f381-4df7-9956-981f4574c1bb",
+      "nombre_ficha": "DISYUNTOR 1P20 A TORNILLO (EATON CHB120) 8.3\" x 4.5\" x 4.4\" 20 A 240 V CH 20 - Eaton",
+      "nombre_ficha_manual": false,
+      "nombre_material": "DISYUNTOR 1P20 A TORNILLO (Eaton CHB120)",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "tipo_producto": "Interruptor termomagnético",
+      "dimensiones": "8.3x4.5x4.4 in",
+      "sin_medidas": false,
+      "especificacion": "20 A, 120/240 V, 10 kAIC",
+      "normativa": "UL 489",
+      "descripcion_corta": "Interruptor termomagnético de 20 A, 120/240 V, 10 kAIC, para centros de carga CH.",
+      "search_keywords": "disyuntor 1p20 a tornillo eaton chb120 8 3 x 4 5 20 240 v ch elec interruptor termomagnetico 3x4 5x4 in 120 10 kaic ul 489 de para centros carga",
+      "ruta_pdf": "ELEC/DISYUNTOR-1P20-A-TORNILLO-EATON-CHB120-8-3-x-4-5-x-4-4-20-A-240-V-CH-20-Eaton.pdf",
+      "hash_archivo": "313d6f224aeb5627",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T17:07:05",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T17:05:28"
+  "ultima_sincronizacion_git": "2026-07-28T17:06:16"
 }
