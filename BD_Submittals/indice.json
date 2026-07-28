@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T17:18:01",
+  "ultima_actualizacion": "2026-07-28T17:18:51",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1338,8 +1338,29 @@
       "fecha_modificacion": "2026-07-28T17:18:01",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "cabfd96b-0722-436f-8dfb-41efb676775c",
+      "nombre_ficha": "CAJA PARA BAJANTE ECOTANK - Ecotank",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Caja para Bajante Ecotank",
+      "marca": "Ecotank",
+      "categoria": "ARQ",
+      "tipo_producto": "Caja para bajante",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Cuerpo cilíndrico de polietileno de media densidad (MDPE)",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Caja para bajante de agua residual o pluvial, fabricada en MDPE, con acoples para tuberías de desagüe subterráneas.",
+      "search_keywords": "caja para bajante ecotank arq cuerpo cilindrico de polietileno media densidad mdpe sin especificar agua residual o pluvial fabricada en con acoples tuberias desague subterraneas",
+      "ruta_pdf": "ARQ/CAJA-PARA-BAJANTE-ECOTANK-Ecotank.pdf",
+      "hash_archivo": "e26569a9ae51f4c0",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T17:18:51",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T17:17:40"
+  "ultima_sincronizacion_git": "2026-07-28T17:18:05"
 }
