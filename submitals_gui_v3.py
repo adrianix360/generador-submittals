@@ -44,7 +44,7 @@ import nomenclatura
 import ocr_extractor
 import updater_gh
 
-VERSION = "3.3.1"
+VERSION = "3.3.2"
 BASE_DIR = Path(__file__).resolve().parent
 PIN_MODO_DEV = "9119"
 
@@ -854,7 +854,7 @@ if _TK_OK:
 
         def _cancelar(self):
             self._cancelado = True
-            self.btn_cancelar.config(state="disabled")
+            self.btn_cancelar.configure(state="disabled")
             self._log("\n⛔ Cancelando… se detendrá después del archivo en curso.")
 
         def _log(self, msg):
@@ -910,9 +910,9 @@ if _TK_OK:
             self._procesando = True
             self._prog_max = len(self._rutas) or 1
             self.prog.set(0)
-            self.btn_archivos.config(state="disabled")
-            self.btn_carpetas.config(state="disabled")
-            self.btn_cancelar.config(state="normal")
+            self.btn_archivos.configure(state="disabled")
+            self.btn_carpetas.configure(state="disabled")
+            self.btn_cancelar.configure(state="normal")
             self._procesar_siguiente()
 
         def _procesar_siguiente(self):
@@ -986,9 +986,9 @@ if _TK_OK:
 
         def _finalizar_lote(self):
             self._procesando = False
-            self.btn_archivos.config(state="normal")
-            self.btn_carpetas.config(state="normal")
-            self.btn_cancelar.config(state="disabled")
+            self.btn_archivos.configure(state="normal")
+            self.btn_carpetas.configure(state="normal")
+            self.btn_cancelar.configure(state="disabled")
             if self._cancelado:
                 self._log(f"\n⛔ Extracción cancelada por el usuario "
                           f"({self._indice}/{len(self._rutas)} archivo(s) revisados).")
