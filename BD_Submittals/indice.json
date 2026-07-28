@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:15:45",
+  "ultima_actualizacion": "2026-07-28T16:16:31",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -666,8 +666,29 @@
       "fecha_modificacion": "2026-07-28T16:15:45",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "8c968c6c-88b0-4511-95b2-6f502a7412b2",
+      "nombre_ficha": "MORTERO IMPERMEABILIZANTE MI 560 - SUR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "MORTERO IMPERMEABILIZANTE MI 560",
+      "marca": "SUR",
+      "categoria": "ARQ",
+      "tipo_producto": "Mortero cementicio",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Mortero para impermeabilizar superficies",
+      "normativa": "ASTM C-109, EN 1015/12",
+      "descripcion_corta": "Mortero premezclado en polvo para evitar filtraciones de agua en concreto, efectivo contra presión de agua positiva y negativa.",
+      "search_keywords": "mortero impermeabilizante mi 560 sur arq cementicio para impermeabilizar superficies astm c 109 en 1015 12 premezclado polvo evitar filtraciones de agua concreto efectivo contra presion positiva y negativa",
+      "ruta_pdf": "ARQ/MORTERO-IMPERMEABILIZANTE-MI-560-SUR.pdf",
+      "hash_archivo": "c23ada573ff32af1",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:16:31",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:15:18"
+  "ultima_sincronizacion_git": "2026-07-28T16:15:48"
 }
