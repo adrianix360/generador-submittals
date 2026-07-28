@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T16:05:17",
+  "ultima_actualizacion": "2026-07-28T16:05:56",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -351,8 +351,29 @@
       "fecha_modificacion": "2026-07-28T16:05:17",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "4d7855cd-6623-4f0b-bbcd-313a410d98ef",
+      "nombre_ficha": "CORROSTOP PRIMARIO DE POLIURETANO LOXORITE GRIS GALON - SUR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "CORROSTOP PRIMARIO DE POLIURETANO LOXORITE GRIS",
+      "marca": "SUR",
+      "categoria": "ARQ",
+      "tipo_producto": "Primario anticorrosivo",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Rendimiento: 58 m²/galón a 1,5 mil",
+      "normativa": "ISO 9001, ISO 14001, OHSAS 18001",
+      "descripcion_corta": "Primario de poliuretano con excelente resistencia química y a la abrasión, secado rápido, alta adherencia y contenido de sólidos.",
+      "search_keywords": "corrostop primario de poliuretano loxorite gris galon sur arq anticorrosivo rendimiento 58 m a 1 5 mil iso 9001 14001 ohsas 18001 con excelente resistencia quimica y la abrasion secado rapido alta adherencia contenido solidos",
+      "ruta_pdf": "ARQ/CORROSTOP-PRIMARIO-DE-POLIURETANO-LOXORITE-GRIS-GALON-SUR.pdf",
+      "hash_archivo": "528ee19b7e543853",
+      "fecha_carga": "2026-07-28",
+      "fecha_modificacion": "2026-07-28T16:05:56",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T16:01:32"
+  "ultima_sincronizacion_git": "2026-07-28T16:05:20"
 }
