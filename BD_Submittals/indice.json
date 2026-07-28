@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T12:22:51",
+  "ultima_actualizacion": "2026-07-28T12:23:13",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -261,9 +261,10 @@
       "ruta_pdf": "ARQ/TUBERIA-PVC-12-mm-Amanco-Wavin.pdf",
       "hash_archivo": "6e2ad1266a70ed94",
       "fecha_carga": "2026-07-27",
-      "fecha_modificacion": "2026-07-27T15:11:13",
+      "fecha_modificacion": "2026-07-28T12:23:13",
       "cargada_por": "ProBook_de_Adri",
-      "estado": "activo"
+      "estado": "inactivo",
+      "desactivada_por": "ProBook_de_Adri"
     },
     {
       "id": "21ba7ca8-3d92-412b-9066-c8cd0e194669",
@@ -288,5 +289,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T12:22:12"
+  "ultima_sincronizacion_git": "2026-07-28T12:22:54"
 }
