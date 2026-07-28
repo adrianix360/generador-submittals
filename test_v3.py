@@ -184,6 +184,37 @@ class TestBDManager(unittest.TestCase):
         self.assertTrue(ruta_pdf.exists())                            # PDF intacto
         self.assertEqual(self.m.obtener_ficha(f["id"])["estado"], "inactivo")
 
+    def test_aspectos_adicionales_se_guarda_y_edita(self):
+        """Nota manual para la caratula (ej: 'ficha de un sistema completo').
+
+        Cubre el caso de marcas que usan una sola ficha tecnica para todo un
+        lineal (Amanco, Bloquera PC): la nota se guarda al cargar la ficha y
+        se puede corregir despues desde 'Editar ficha'."""
+        f = self.m.agregar_ficha(str(self.pdf), {
+            "nombre_material": "Sistema de rociadores", "marca": "Amanco",
+            "categoria": "MEC", "dimensiones": "MULTIPLE",
+            "aspectos_adicionales": "Ficha de sistema completo."})
+        self.assertEqual(f["aspectos_adicionales"], "Ficha de sistema completo.")
+
+        editada = self.m.editar_ficha(f["id"], {"aspectos_adicionales": "Nota corregida."})
+        self.assertEqual(editada["aspectos_adicionales"], "Nota corregida.")
+
+    def test_aspectos_adicionales_llega_a_datos_materiales(self):
+        """La nota de la ficha alimenta 'aspectos_adicionales' de la caratula
+        cuando no hay justificacion de stock (que tiene prioridad, ver
+        ``_texto_aspectos``)."""
+        f = self.m.agregar_ficha(str(self.pdf), {
+            "nombre_material": "Bloque de concreto", "marca": "Bloquera PC",
+            "categoria": "ARQ", "dimensiones": "MULTIPLE",
+            "aspectos_adicionales": "Cubre todo el lineal de bloques."})
+        proyecto = {"materiales_seleccionados": [
+            {"consecutivo": "ARQ01", "id_ficha_bd": f["id"],
+             "nombre_material": f["nombre_material"], "marca": f["marca"],
+             "categoria": "ARQ"}]}
+        datos = self.m.construir_datos_materiales(proyecto, self.tmp / "destino")
+        self.assertEqual(datos["materiales"][0]["aspectos_adicionales"],
+                         "Cubre todo el lineal de bloques.")
+
     def test_actualizar_recalcula_keywords(self):
         f = self._agregar()
         act = self.m.actualizar_ficha(f["id"], {"marca": "Metalco"})

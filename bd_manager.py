@@ -726,6 +726,7 @@ class BDManager:
             "especificacion": str(datos.get("especificacion", "")).strip(),
             "normativa": str(datos.get("normativa", "SIN ESPECIFICAR")).strip() or "SIN ESPECIFICAR",
             "descripcion_corta": str(datos.get("descripcion_corta", "")).strip(),
+            "aspectos_adicionales": str(datos.get("aspectos_adicionales", "")).strip(),
             "search_keywords": "",
             "ruta_pdf": destino_rel,
             "hash_archivo": sha256_file(destino_abs),
@@ -1140,7 +1141,8 @@ class BDManager:
                 "marca": marcas or "POR DEFINIR",
                 "descripcion": ficha.get("descripcion_corta", ""),
                 "normativa": ficha.get("normativa", "SIN ESPECIFICAR"),
-                "aspectos_adicionales": _texto_aspectos(m, ficha),
+                "aspectos_adicionales": (_texto_aspectos(m, ficha)
+                                        or ficha.get("aspectos_adicionales", "")),
                 "documentos_encontrados": [Path(ficha.get("ruta_pdf", "")).name] if ficha else [],
                 "compilado_generado": None,
                 "estado": "FICHA_DISPONIBLE",

@@ -1,16 +1,16 @@
 {
-  "version": "3.3.5",
+  "version": "3.3.6",
   "tipo_actualizacion": "ejecutable",
   "fecha": "2026-07-28",
-  "changelog": "La palabra MULTIPLE/MULTIPLES ahora se acepta como medida valida en el campo de dimensiones: algunas marcas (Amanco, Bloquera PC) usan una sola ficha tecnica para todo un lineal de productos, sin una medida unica que las distinga",
+  "changelog": "Nuevo campo 'Notas adicionales para la caratula' al cargar o editar una ficha tecnica: permite aclarar cuando la ficha corresponde a un sistema completo o a un lineal de productos, y ese texto se usa como aspectos_adicionales de la caratula",
   "archivos": {
     "submitals_gui_v3.py": {
-      "hash": "af2a73b44f2da516515ea84b6b36fd565915bf85783f0930c06f17df4ab23ce4",
+      "hash": "867a52dd91ec5fc722ae14e19ce8ed7baee72856437d2721150af9e44a83abe3",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui_v3.py",
       "tipo": "python"
     },
     "bd_manager.py": {
-      "hash": "d443f16355815be441abde7221d3f9200f2b20d67fa352afe5a4abc4460cdc31",
+      "hash": "b320e1a35eaaaefb991584fdd527ae4d070bfff840db3845901a6dc9b40a454d",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/bd_manager.py",
       "tipo": "python"
     },
@@ -65,8 +65,8 @@
       "tipo": "html"
     },
     "GeneradorSubmittalsES_v3.exe": {
-      "hash": "8fe1c960c484d3082b222979bd714567dafa6529a48d211769c1a3b66dc39a68",
-      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.5/GeneradorSubmittalsES_v3.exe",
+      "hash": "087e8d274d015a3ecadbe9a60b046f4f7200b5a711ec20653fd76b5a4ee0b7b9",
+      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.6/GeneradorSubmittalsES_v3.exe",
       "tipo": "ejecutable",
       "requerido": false
     }
