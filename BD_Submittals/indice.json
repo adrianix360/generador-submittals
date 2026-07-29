@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:51:21",
+  "ultima_actualizacion": "2026-07-29T11:52:21",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2098,8 +2098,31 @@
       "fecha_modificacion": "2026-07-29T11:51:21",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "a96a4c4d-f80a-4276-8c7b-3165b634c6c9",
+      "nombre_ficha": "TUBO BIEX CON FORRO MULTIPLE - ELEKSTEEL",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tubo Biex con Forro",
+      "marca": "ELEKSTEEL",
+      "categoria": "ELEC",
+      "tipo_producto": "Tubo EMT Flexible",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "",
+      "normativa": "UL # E482630",
+      "descripcion_corta": "Tubo EMT flexible Biex con forro, ideal para instalaciones eléctricas, certificado UL.",
+      "aspectos_adicionales": "Fabricado según normativa UL # E482630",
+      "sinonimos": "",
+      "search_keywords": "tubo biex con forro multiple eleksteel elec emt flexible multiples ul e482630 ideal para instalaciones electricas certificado",
+      "ruta_pdf": "ELEC/TUBO-BIEX-CON-FORRO-MULTIPLE-ELEKSTEEL.pdf",
+      "hash_archivo": "ebd7dd32b59fe089",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:52:21",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:50:36"
+  "ultima_sincronizacion_git": "2026-07-29T11:51:27"
 }
