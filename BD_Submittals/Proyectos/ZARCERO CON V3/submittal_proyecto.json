@@ -44,10 +44,28 @@
       "categoria": "ELEC",
       "marcas_alternativas": [],
       "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC05",
+      "id_ficha_bd": "c1b215b6-24aa-4598-9676-29987e6be9d2",
+      "nombre_material": "PLACA INTERPERIE",
+      "marca": "Intermatic",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC06",
+      "id_ficha_bd": "5bbd87c9-8a25-41d2-a132-80e4f8ddc4ef",
+      "nombre_material": "BARRA DE TIERRA 254 x 50.8 x 6.4",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
     }
   ],
   "id_proyecto": "dcc4f96b-cb78-4cbb-abbf-517cc0c6a465",
   "fecha_creacion": "2026-07-29",
-  "ultima_actualizacion": "2026-07-29T12:32:20",
+  "ultima_actualizacion": "2026-07-29T12:40:18",
   "actualizado_por": "ProBook_de_Adri"
 }
