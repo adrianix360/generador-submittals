@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:14:04",
+  "ultima_actualizacion": "2026-07-29T12:14:59",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2627,8 +2627,31 @@
       "fecha_modificacion": "2026-07-29T12:14:04",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "58e4ceb0-1e71-40b9-94de-ed2eec8c2dae",
+      "nombre_ficha": "DISYUNTOR 2P70 70 A 240 V CH270 - Eaton",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Disyuntor 2P70",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "tipo_producto": "Interruptor termomagnético",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "CH270. 70A, 120/240V, 10 kAIC",
+      "normativa": "UL 489",
+      "descripcion_corta": "Interruptor termomagnético tipo CH, 70A, 120/240V, 10 kAIC, para centros de carga tipo CH.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "disyuntor 2p70 70 a 240 v ch270 eaton elec interruptor termomagnetico 70a 120 240v 10 kaic ul 489 tipo ch para centros de carga",
+      "ruta_pdf": "ELEC/DISYUNTOR-2P70-70-A-240-V-CH270-Eaton.pdf",
+      "hash_archivo": "b8f372787eec7abc",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:14:59",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:13:07"
+  "ultima_sincronizacion_git": "2026-07-29T12:14:15"
 }
