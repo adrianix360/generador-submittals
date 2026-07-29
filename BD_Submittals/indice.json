@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T10:34:51",
+  "ultima_actualizacion": "2026-07-29T10:36:22",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1523,8 +1523,31 @@
       "fecha_modificacion": "2026-07-29T10:34:51",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "621d5330-b3cb-4f74-95bf-0871378f166e",
+      "nombre_ficha": "CAJA CUADRADA CUADRADO 4 x 4 x 1.5 - PST",
+      "nombre_ficha_manual": false,
+      "nombre_material": "CAJA CUADRADA",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "tipo_producto": "Caja de conexiones cuadrada",
+      "dimensiones": "4x4x1.5",
+      "sin_medidas": false,
+      "especificacion": "Acero galvanizado",
+      "normativa": "UL E42630",
+      "descripcion_corta": "Caja de conexiones cuadrada de 4\" para instalación en paredes o techos, adecuada para luminarias, interruptores y tomacorrientes.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "caja cuadrada cuadrado 4 x 1 5 pst elec de conexiones 4x4x1 acero galvanizado ul e42630 para instalacion en paredes o techos adecuada luminarias interruptores y tomacorrientes",
+      "ruta_pdf": "ELEC/CAJA-CUADRADA-CUADRADO-4-x-4-x-1-5-PST.pdf",
+      "hash_archivo": "b7f1f3dc5ec20d10",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T10:36:22",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T10:34:00"
+  "ultima_sincronizacion_git": "2026-07-29T10:34:53"
 }
