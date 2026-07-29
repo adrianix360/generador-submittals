@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:12:27",
+  "ultima_actualizacion": "2026-07-29T12:13:04",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2581,8 +2581,31 @@
       "fecha_modificacion": "2026-07-29T12:12:26",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "3900e46d-f96b-4d18-9e7a-d1697836c448",
+      "nombre_ficha": "TECLADO SISTEMA DE ALARMA 108 x 143 x 25 - Honeywell",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Teclado sistema de alarma",
+      "marca": "Honeywell",
+      "categoria": "ELEC",
+      "tipo_producto": "Consola numérica con pantalla LCD",
+      "dimensiones": "108x143x25",
+      "sin_medidas": false,
+      "especificacion": "Consola de fácil manejo, teclas retroiluminadas",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Consola numérica con pantalla LCD fácil de instalar, con teclas retroiluminadas y tapa extraíble. Compatible con mensajes en español.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "teclado sistema de alarma 108 x 143 25 honeywell elec consola numerica con pantalla lcd 108x143x25 facil manejo teclas retroiluminadas sin especificar instalar y tapa extraible compatible mensajes en espanol",
+      "ruta_pdf": "ELEC/TECLADO-SISTEMA-DE-ALARMA-108-x-143-x-25-Honeywell.pdf",
+      "hash_archivo": "29f8518cc2895281",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:13:04",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:11:29"
+  "ultima_sincronizacion_git": "2026-07-29T12:12:30"
 }
