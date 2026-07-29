@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T13:57:16",
+  "ultima_actualizacion": "2026-07-29T14:36:49",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3026,7 +3026,7 @@
       "nombre_ficha_manual": false,
       "nombre_material": "Barra roscada",
       "marca": "All Threaded Rods",
-      "categoria": "ESTR",
+      "categoria": "ELEC",
       "tipo_producto": "Varilla roscada",
       "dimensiones": "MULTIPLES",
       "sin_medidas": false,
@@ -3035,15 +3035,15 @@
       "descripcion_corta": "Varillas roscadas de acero al carbono, SS304 o SS316, electro-galvanizadas, para aplicaciones de fijación en construcción.",
       "aspectos_adicionales": "",
       "sinonimos": "Varilla",
-      "search_keywords": "barra roscada multiple all threaded rods estr varilla multiples acero al carbono ss304 ss316 din unc varillas roscadas de o electro galvanizadas para aplicaciones fijacion en construccion",
+      "search_keywords": "barra roscada multiple all threaded rods elec varilla multiples acero al carbono ss304 ss316 din unc varillas roscadas de o electro galvanizadas para aplicaciones fijacion en construccion",
       "ruta_pdf": "ESTR/BARRA-ROSCADA-MULTIPLE-All-Threaded-Rods.pdf",
       "hash_archivo": "f8e35299750e7725",
       "fecha_carga": "2026-07-29",
-      "fecha_modificacion": "2026-07-29T12:55:37",
+      "fecha_modificacion": "2026-07-29T14:36:49",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T13:52:30"
+  "ultima_sincronizacion_git": "2026-07-29T14:36:32"
 }
