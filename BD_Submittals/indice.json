@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:14:59",
+  "ultima_actualizacion": "2026-07-29T12:15:38",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2650,8 +2650,31 @@
       "fecha_modificacion": "2026-07-29T12:14:59",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "8992942a-259a-4837-bb02-95ccdc156372",
+      "nombre_ficha": "DISYUNTOR 2P20 1.5 x 0.75 x 2.6 20 A 240 V CHF220 - Eaton",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Disyuntor 2P20",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "tipo_producto": "Interruptor automático térmico magnético",
+      "dimensiones": "1.5x0.75x2.6",
+      "sin_medidas": false,
+      "especificacion": "CHF220. 20 A, 120/240V, 10 kAIC",
+      "normativa": "HACR Rated, UL 489",
+      "descripcion_corta": "Interruptor automático térmico magnético tipo CHF, 20 A, 120/240V, 10 kAIC, dos polos, con indicador de disparo.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "disyuntor 2p20 1 5 x 0 75 2 6 20 a 240 v chf220 eaton elec interruptor automatico termico magnetico 5x0 75x2 120 240v 10 kaic hacr rated ul 489 tipo chf dos polos con indicador de disparo",
+      "ruta_pdf": "ELEC/DISYUNTOR-2P20-1-5-x-0-75-x-2-6-20-A-240-V-CHF220-Eaton.pdf",
+      "hash_archivo": "7585ca0620f3efe9",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:15:37",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:14:15"
+  "ultima_sincronizacion_git": "2026-07-29T12:15:02"
 }
