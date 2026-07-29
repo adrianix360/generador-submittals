@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:04:00",
+  "ultima_actualizacion": "2026-07-29T11:04:29",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1730,8 +1730,31 @@
       "fecha_modificacion": "2026-07-29T11:04:00",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "693e9adb-e4c5-479f-a2f2-e9055bc4420e",
+      "nombre_ficha": "TOMACORRIENTE SENCILLO 20 A 125 V - Leviton",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tomacorriente sencillo",
+      "marca": "Leviton",
+      "categoria": "ELEC",
+      "tipo_producto": "Receptáculo dúplex",
+      "dimensiones": "",
+      "sin_medidas": false,
+      "especificacion": "20 Amp, 125 Volt, NEMA 5-20R, 2-Pole, 3-Wire",
+      "normativa": "ANSI C-73, CSA C22.2 No. 42, NEMA WD-1 & WD-6, NOM 057, UL498",
+      "descripcion_corta": "Receptáculo dúplex de grado industrial, cara lisa, autoajustable, diseñado para entornos exigentes.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "tomacorriente sencillo 20 a 125 v leviton elec receptaculo duplex amp volt nema 5 20r 2 pole 3 wire ansi c 73 csa c22 no 42 wd 1 6 nom 057 ul498 de grado industrial cara lisa autoajustable disenado para entornos exigentes",
+      "ruta_pdf": "ELEC/TOMACORRIENTE-SENCILLO-20-A-125-V-Leviton.pdf",
+      "hash_archivo": "05d3a21978009005",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:04:29",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:03:22"
+  "ultima_sincronizacion_git": "2026-07-29T11:04:03"
 }
