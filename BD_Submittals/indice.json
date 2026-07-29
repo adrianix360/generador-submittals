@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T09:49:02",
+  "ultima_actualizacion": "2026-07-29T09:49:49",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1301,24 +1301,25 @@
     },
     {
       "id": "4ca1c1bc-6f70-4abc-ac28-2c94818d4fd7",
-      "nombre_ficha": "PEGAMENTO PVC TRANSPARENTE 4\" - Amanco Wavin",
-      "nombre_ficha_manual": false,
+      "nombre_ficha": "PEGAMENTO PVC TRANSPARENTE - Amanco Wavin",
+      "nombre_ficha_manual": true,
       "nombre_material": "Pegamento PVC Transparente",
       "marca": "Amanco Wavin",
       "categoria": "ARQ",
       "tipo_producto": "Pegamento para PVC",
       "dimensiones": "",
-      "sin_medidas": false,
+      "sin_medidas": true,
       "especificacion": "Cemento disolvente de viscosidad media",
       "normativa": "NQ-4-4597-3-1.6.1",
       "descripcion_corta": "Cemento disolvente de viscosidad media, color transparente para tuberías y conexiones de PVC hasta 4\" de diámetro.",
-      "search_keywords": "pegamento pvc transparente 4 amanco wavin arq para cemento disolvente de viscosidad media nq 4597 3 1 6 color tuberias y conexiones hasta diametro",
+      "search_keywords": "pegamento pvc transparente amanco wavin arq para cemento disolvente de viscosidad media nq 4 4597 3 1 6 color tuberias y conexiones hasta diametro",
       "ruta_pdf": "ARQ/PEGAMENTO-PVC-TRANSPARENTE-4-Amanco-Wavin.pdf",
       "hash_archivo": "de55b8af5581d679",
       "fecha_carga": "2026-07-28",
-      "fecha_modificacion": "2026-07-28T17:17:37",
+      "fecha_modificacion": "2026-07-29T09:49:49",
       "cargada_por": "Keis",
-      "estado": "activo"
+      "estado": "activo",
+      "aspectos_adicionales": ""
     },
     {
       "id": "c27b43c0-9889-406e-b048-865fd845dc69",
@@ -1385,5 +1386,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T09:48:49"
+  "ultima_sincronizacion_git": "2026-07-29T09:49:04"
 }
