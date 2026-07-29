@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T10:32:51",
+  "ultima_actualizacion": "2026-07-29T10:33:57",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1477,8 +1477,31 @@
       "fecha_modificacion": "2026-07-29T10:32:51",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "fc1e501e-3edf-431d-aad0-4d65a13db648",
+      "nombre_ficha": "PLACA INTEMPERIE PARA TOMACORRIENTE IP65 - Eagle",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Placa intemperie para tomacorriente",
+      "marca": "Eagle",
+      "categoria": "ARQ",
+      "tipo_producto": "Placa de intemperie",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Montaje Horizontal, IP65",
+      "normativa": "NEC 406.8 (A), NEC 406.8 (B)(2)",
+      "descripcion_corta": "Placa de intemperie con bisagra y tornillo interno, protección IP65, para uso exterior, resistente a lluvia, hielo y nieve.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "placa intemperie para tomacorriente ip65 eagle arq de montaje horizontal nec 406 8 a b 2 con bisagra y tornillo interno proteccion uso exterior resistente lluvia hielo nieve",
+      "ruta_pdf": "ARQ/PLACA-INTEMPERIE-PARA-TOMACORRIENTE-IP65-Eagle.pdf",
+      "hash_archivo": "f34da56143517950",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T10:33:57",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T10:30:57"
+  "ultima_sincronizacion_git": "2026-07-29T10:32:53"
 }
