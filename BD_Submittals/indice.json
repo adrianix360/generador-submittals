@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T16:12:28",
+  "ultima_actualizacion": "2026-07-29T16:12:55",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3126,8 +3126,29 @@
       "fecha_modificacion": "2026-07-29T16:12:28",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "b472b043-5023-4595-ad06-b162b95896c5",
+      "nombre_ficha": "BESS LÁTEX ESTÁNDAR MICRONIZADO - SUR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "BESS LÁTEX ESTÁNDAR MICRONIZADO",
+      "marca": "SUR",
+      "categoria": "ARQ",
+      "tipo_producto": "Pintura látex",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Acabado mate",
+      "normativa": "ISO 14001, ISO 9001",
+      "descripcion_corta": "Pintura de fácil aplicación y buena nivelación para protección y acabado de superficies de concreto, tablarroca y fibrocemento.",
+      "search_keywords": "bess latex estandar micronizado sur arq pintura acabado mate iso 14001 9001 de facil aplicacion y buena nivelacion para proteccion superficies concreto tablarroca fibrocemento",
+      "ruta_pdf": "ARQ/BESS-LATEX-ESTANDAR-MICRONIZADO-SUR.pdf",
+      "hash_archivo": "351535506190bfdf",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T16:12:55",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T16:12:15"
+  "ultima_sincronizacion_git": "2026-07-29T16:12:31"
 }
