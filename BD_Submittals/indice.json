@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:40:30",
+  "ultima_actualizacion": "2026-07-29T11:42:00",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1891,8 +1891,31 @@
       "fecha_modificacion": "2026-07-29T11:40:30",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "d0bf1c33-d8af-4422-a207-142a7e2c70f3",
+      "nombre_ficha": "PLACA METÁLICA CUADRADA 327A CUADRADO 115 x 115 x 4.2 30 A - Eagle",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Placa metálica cuadrada 327A",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "tipo_producto": "Placa metálica",
+      "dimensiones": "115x115x4.2",
+      "sin_medidas": false,
+      "especificacion": "Para toma de 30A o 50A",
+      "normativa": "UL E327854",
+      "descripcion_corta": "Placa de acero inoxidable con acabado rectificado, resistente a manchas y deformaciones, incluye tornillos para montaje.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "placa metalica cuadrada 327a cuadrado 115 x 4 2 30 a eagle elec 115x115x4 para toma de 30a o 50a ul e327854 acero inoxidable con acabado rectificado resistente manchas y deformaciones incluye tornillos montaje",
+      "ruta_pdf": "ELEC/PLACA-METALICA-CUADRADA-327A-CUADRADO-115-x-115-x-4-2-30-A-Eagle.pdf",
+      "hash_archivo": "adab52a7a702af4a",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:42:00",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:39:36"
+  "ultima_sincronizacion_git": "2026-07-29T11:40:33"
 }
