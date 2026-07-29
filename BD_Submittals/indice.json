@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:06:23",
+  "ultima_actualizacion": "2026-07-29T11:07:30",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1776,8 +1776,31 @@
       "fecha_modificacion": "2026-07-29T11:06:23",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "44cb8f08-b59e-4252-a518-f4daef362885",
+      "nombre_ficha": "TOMA SENCILLO TELEVISIÓN COAXIAL 71 x 115.2 x 5.5 - Eagle",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Toma sencillo televisión COAXIAL",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "tipo_producto": "Adaptador coaxial",
+      "dimensiones": "71x115.2x5.5",
+      "sin_medidas": false,
+      "especificacion": "Salida de cable coaxial para uso de RG6",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Adaptador coaxial para TV satelital, VCR, DVD y antenas externas, con garantía de 5 años.",
+      "aspectos_adicionales": "",
+      "sinonimos": "toma coaxial",
+      "search_keywords": "toma sencillo television coaxial 71 x 115 2 5 eagle elec adaptador 71x115 2x5 salida de cable para uso rg6 sin especificar tv satelital vcr dvd y antenas externas con garantia anos",
+      "ruta_pdf": "ELEC/TOMA-SENCILLO-TELEVISION-COAXIAL-71-x-115-2-x-5-5-Eagle.pdf",
+      "hash_archivo": "28e5feb706181608",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:07:30",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:04:31"
+  "ultima_sincronizacion_git": "2026-07-29T11:06:26"
 }
