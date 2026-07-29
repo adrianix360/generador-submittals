@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:00:39",
+  "ultima_actualizacion": "2026-07-29T12:01:37",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2305,8 +2305,31 @@
       "fecha_modificacion": "2026-07-29T12:00:39",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "a8c5dca5-6532-4161-a301-50e2b3aef646",
+      "nombre_ficha": "CANASTA AERODUCTO MULTIPLE CF54 - CABLOFIL",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Canasta aeroducto",
+      "marca": "CABLOFIL",
+      "categoria": "ELEC",
+      "tipo_producto": "bandeja portacables",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "CF54",
+      "normativa": "ASTM A123, ASTM A3451, ASTM A380, ASTM B633, NEMA VE-1, CSA C22.2 No. 126",
+      "descripcion_corta": "Bandeja portacables con alambre superior, diseñada según NEMA VE-1 y CSA C22.2 No. 126.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "canasta aeroducto multiple cf54 cablofil elec bandeja portacables multiples astm a123 a3451 a380 b633 nema ve 1 csa c22 2 no 126 con alambre superior disenada segun y",
+      "ruta_pdf": "ELEC/CANASTA-AERODUCTO-MULTIPLE-CF54-CABLOFIL.pdf",
+      "hash_archivo": "e47ea0d2522d0300",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:01:37",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:59:23"
+  "ultima_sincronizacion_git": "2026-07-29T12:00:42"
 }
