@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:39:34",
+  "ultima_actualizacion": "2026-07-29T11:40:30",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1868,8 +1868,31 @@
       "fecha_modificacion": "2026-07-29T11:39:33",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "7ec905a3-8f53-4469-bd35-67f9a4146952",
+      "nombre_ficha": "CERRADURA ELECTRICA YALE 130 x 107 - Yale",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Cerradura electrica YALE",
+      "marca": "Yale",
+      "categoria": "ARQ",
+      "tipo_producto": "Cerradura de sobreponer",
+      "dimensiones": "130x107",
+      "sin_medidas": false,
+      "especificacion": "Llave mecánica o eléctrica",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Cerradura de sobreponer con operación mecánica o eléctrica, adecuada para puertas de madera o metal.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "cerradura electrica yale 130 x 107 arq de sobreponer 130x107 llave mecanica o sin especificar con operacion adecuada para puertas madera metal",
+      "ruta_pdf": "ARQ/CERRADURA-ELECTRICA-YALE-130-x-107-Yale.pdf",
+      "hash_archivo": "17d9e3dc2e191422",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:40:30",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:39:00"
+  "ultima_sincronizacion_git": "2026-07-29T11:39:36"
 }
