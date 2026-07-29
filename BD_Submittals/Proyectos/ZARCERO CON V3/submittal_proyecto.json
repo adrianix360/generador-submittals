@@ -17,10 +17,37 @@
       "categoria": "ELEC",
       "marcas_alternativas": [],
       "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC02",
+      "id_ficha_bd": "6240e22a-42d0-4581-90f4-66eec4ddeee3",
+      "nombre_material": "BASE PARA MEDIDOR RESIDENCIAL 200A EATON 19.75 x 5.38 x 14.44 200 A",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC03",
+      "id_ficha_bd": "117c4a76-4c34-435e-8ac8-1db2ff959415",
+      "nombre_material": "AERODUCTO",
+      "marca": "Legrand",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC04",
+      "id_ficha_bd": "966bbf7a-4028-4f7c-82bf-dbd073866443",
+      "nombre_material": "CAJA RECTANGULAR DE ALUMINIO (INTERPERIE) 2 x 4",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
     }
   ],
   "id_proyecto": "dcc4f96b-cb78-4cbb-abbf-517cc0c6a465",
   "fecha_creacion": "2026-07-29",
-  "ultima_actualizacion": "2026-07-29T12:29:31",
+  "ultima_actualizacion": "2026-07-29T12:32:20",
   "actualizado_por": "ProBook_de_Adri"
 }
