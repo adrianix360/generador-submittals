@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T10:33:57",
+  "ultima_actualizacion": "2026-07-29T10:34:51",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1500,8 +1500,31 @@
       "fecha_modificacion": "2026-07-29T10:33:57",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "d2ca9474-1a35-4dd6-bf80-c4d6b59181b2",
+      "nombre_ficha": "BARRA ROSCADA MULTIPLE - SIN ESPECIFICAR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "BARRA ROSCADA",
+      "marca": "SIN ESPECIFICAR",
+      "categoria": "ESTR",
+      "tipo_producto": "Varilla roscada",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "Acero al carbono, SS304, SS316",
+      "normativa": "DIN, UNC",
+      "descripcion_corta": "Varillas roscadas para aplicaciones de fijación en construcción, con acabado electro-galvanizado.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "barra roscada multiple sin especificar estr varilla multiples acero al carbono ss304 ss316 din unc varillas roscadas para aplicaciones de fijacion en construccion con acabado electro galvanizado",
+      "ruta_pdf": "ESTR/BARRA-ROSCADA-MULTIPLE-SIN-ESPECIFICAR.pdf",
+      "hash_archivo": "f8e35299750e7725",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T10:34:51",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T10:32:53"
+  "ultima_sincronizacion_git": "2026-07-29T10:34:00"
 }
