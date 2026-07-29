@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:42:00",
+  "ultima_actualizacion": "2026-07-29T11:42:32",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1914,8 +1914,31 @@
       "fecha_modificacion": "2026-07-29T11:42:00",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "47f0111c-a6c7-49df-9b00-57affa356fae",
+      "nombre_ficha": "LUMINARIA LED EMERGENCIA 58.7 x 301.5 x 131 mm 2 W - SYLVANIA",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Luminaria LED Emergencia",
+      "marca": "SYLVANIA",
+      "categoria": "ELEC",
+      "tipo_producto": "Luminaria LED de emergencia",
+      "dimensiones": "58.7x301.5x131 mm",
+      "sin_medidas": false,
+      "especificacion": "Potencia de entrada 2W",
+      "normativa": "NFPA101",
+      "descripcion_corta": "Luminaria LED de emergencia con batería integrada, más de 90 minutos de autonomía, instalación de sobreponer.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "luminaria led emergencia 58 7 x 301 5 131 mm 2 w sylvania elec de 7x301 5x131 potencia entrada 2w nfpa101 con bateria integrada mas 90 minutos autonomia instalacion sobreponer",
+      "ruta_pdf": "ELEC/LUMINARIA-LED-EMERGENCIA-58-7-x-301-5-x-131-mm-2-W-SYLVANIA.pdf",
+      "hash_archivo": "0b7a886bec9beee1",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:42:32",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:40:33"
+  "ultima_sincronizacion_git": "2026-07-29T11:42:03"
 }
