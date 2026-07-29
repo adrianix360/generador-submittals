@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:09:06",
+  "ultima_actualizacion": "2026-07-29T12:10:37",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2512,8 +2512,31 @@
       "fecha_modificacion": "2026-07-29T12:09:06",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "32fc877f-ff98-4fa4-8aeb-57f894134f77",
+      "nombre_ficha": "PLACA UTP MULTIPLE - Panduit",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Placa UTP",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "tipo_producto": "Placa frontal modular",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "Placas frontales con perfil elevado",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Placas frontales modulares para módulos Mini-Com, compatibles con cajas de conexiones estándar.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "placa utp multiple panduit elec frontal modular multiples placas frontales con perfil elevado sin especificar modulares para modulos mini com compatibles cajas de conexiones estandar",
+      "ruta_pdf": "ELEC/PLACA-UTP-MULTIPLE-Panduit.pdf",
+      "hash_archivo": "5807a64fb5dfc5ff",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:10:37",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:08:18"
+  "ultima_sincronizacion_git": "2026-07-29T12:09:09"
 }
