@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:25:49",
+  "ultima_actualizacion": "2026-07-29T12:27:33",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2949,8 +2949,31 @@
       "fecha_modificacion": "2026-07-29T12:25:49",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "7e49daa6-44d3-4406-bf2c-4402af8f2079",
+      "nombre_ficha": "CONECTOR TSJ 1/2\" - Topaz",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Conector TSJ 1/2\"",
+      "marca": "Topaz",
+      "categoria": "ELEC",
+      "tipo_producto": "Conector de cable NM",
+      "dimensiones": "1/2\"",
+      "sin_medidas": false,
+      "especificacion": "Conector para TSJ",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Conector para cable no metálico a caja o recinto, material de aleación de zinc.",
+      "aspectos_adicionales": "",
+      "sinonimos": "TSJ",
+      "search_keywords": "conector tsj 1 2 topaz elec de cable nm para sin especificar no metalico a caja o recinto material aleacion zinc",
+      "ruta_pdf": "ELEC/CONECTOR-TSJ-1-2-Topaz.pdf",
+      "hash_archivo": "4b0f3f4be68d2604",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:27:33",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:24:49"
+  "ultima_sincronizacion_git": "2026-07-29T12:25:52"
 }
