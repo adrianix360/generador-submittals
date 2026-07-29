@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:43:05",
+  "ultima_actualizacion": "2026-07-29T11:44:56",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1960,8 +1960,31 @@
       "fecha_modificacion": "2026-07-29T11:43:05",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "0625a72d-1469-4246-b3f5-b4f537d5ecd0",
+      "nombre_ficha": "SOPORTERÍA PARA AERODUCTO - Legrand",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Soportería para aeroducto",
+      "marca": "Legrand",
+      "categoria": "ELEC",
+      "tipo_producto": "Sistema de soportería para gestión de cables",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Cabofil es un estándar en gestión de cables, reconocido por su innovación y calidad, con más de 125,000 millas instaladas globalmente.",
+      "aspectos_adicionales": "Sistema completo de soportería",
+      "sinonimos": "",
+      "search_keywords": "soporteria para aeroducto legrand elec sistema de gestion cables sin especificar cabofil es un estandar en reconocido por su innovacion y calidad con mas 125 000 millas instaladas globalmente",
+      "ruta_pdf": "ELEC/SOPORTERIA-PARA-AERODUCTO-Legrand.pdf",
+      "hash_archivo": "d4457959ef40ba4a",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:44:56",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:42:36"
+  "ultima_sincronizacion_git": "2026-07-29T11:43:09"
 }
