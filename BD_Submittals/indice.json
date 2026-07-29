@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:09:15",
+  "ultima_actualizacion": "2026-07-29T11:38:54",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1822,8 +1822,31 @@
       "fecha_modificacion": "2026-07-29T11:09:15",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "023eb31f-6a9d-4884-b479-b5936ef45214",
+      "nombre_ficha": "CAJA RECTANGULAR DE INTEMPERIE 3.27 x 2.87 x 2.56 - RAWELT",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Caja Rectangular de Intemperie",
+      "marca": "RAWELT",
+      "categoria": "ELEC",
+      "tipo_producto": "Caja de conexiones",
+      "dimensiones": "3.27x2.87x2.56",
+      "sin_medidas": false,
+      "especificacion": "Aluminio inyectado a presión",
+      "normativa": "ASTM B117, ASTM 3359, UL 514 A, CAN/CSA-C22.2 No. 18-92",
+      "descripcion_corta": "Caja de aluminio resistente a la corrosión y rayos UV, con rosca NPT para tubo rígido e IMC.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "caja rectangular de intemperie 3 27 x 2 87 56 rawelt elec conexiones 27x2 87x2 aluminio inyectado a presion astm b117 3359 ul 514 can csa c22 no 18 92 resistente la corrosion y rayos uv con rosca npt para tubo rigido e imc",
+      "ruta_pdf": "ELEC/CAJA-RECTANGULAR-DE-INTEMPERIE-3-27-x-2-87-x-2-56-RAWELT.pdf",
+      "hash_archivo": "023980fa81b241c1",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:38:54",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:07:34"
+  "ultima_sincronizacion_git": "2026-07-29T11:17:05"
 }
