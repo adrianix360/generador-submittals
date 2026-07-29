@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:59:19",
+  "ultima_actualizacion": "2026-07-29T12:00:39",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2282,8 +2282,31 @@
       "fecha_modificacion": "2026-07-29T11:59:19",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "8c142d1b-59bc-4ad2-82ad-a65b5b8a044a",
+      "nombre_ficha": "CABLE HDMI MULTIPLE - Panduit",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Cable HDMI",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "tipo_producto": "Cable HDMI óptico activo",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "4K @ 60Hz, Multi-Mode",
+      "normativa": "CEC, EDID, HDCP2.2",
+      "descripcion_corta": "Cable HDMI óptico activo para extender señal 4K hasta 75m, con conectores desmontables y resistencia de tracción de 10 Kg.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "cable hdmi multiple panduit elec optico activo multiples 4k 60hz multi mode cec edid hdcp2 2 para extender senal hasta 75m con conectores desmontables y resistencia de traccion 10 kg",
+      "ruta_pdf": "ELEC/CABLE-HDMI-MULTIPLE-Panduit.pdf",
+      "hash_archivo": "3e450f079446b6da",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:00:39",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:58:19"
+  "ultima_sincronizacion_git": "2026-07-29T11:59:23"
 }
