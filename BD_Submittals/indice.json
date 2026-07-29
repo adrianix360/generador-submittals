@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:06:45",
+  "ultima_actualizacion": "2026-07-29T12:07:31",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2443,8 +2443,31 @@
       "fecha_modificacion": "2026-07-29T12:06:45",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "8905083c-bb3b-49fd-bda2-02ebb57f35ba",
+      "nombre_ficha": "PATCH CORD AZUL MULTIPLE 6 A #28 AWG RJ45 - Panduit",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Patch Cord azul",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "tipo_producto": "Cable de red UTP",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "TX6A",
+      "normativa": "ANSI/TIA-1096-A, CAN/CSA-C22.2, IEC 60603-7, ISO 11801, UL 1863",
+      "descripcion_corta": "Cables de parche UTP de categoría 6A, 28 AWG, con conectores RJ45 de alto rendimiento, adecuados para aplicaciones de alta velocidad.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "patch cord azul multiple 6 a 28 awg rj45 panduit elec cable de red utp multiples tx6a ansi tia 1096 can csa c22 2 iec 60603 7 iso 11801 ul 1863 cables parche categoria 6a con conectores alto rendimiento adecuados para aplicaciones alta velocidad",
+      "ruta_pdf": "ELEC/PATCH-CORD-AZUL-MULTIPLE-6-A-28-AWG-RJ45-Panduit.pdf",
+      "hash_archivo": "0ca9315a692adca6",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:07:31",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:05:51"
+  "ultima_sincronizacion_git": "2026-07-29T12:06:48"
 }
