@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:24:46",
+  "ultima_actualizacion": "2026-07-29T12:25:49",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2926,8 +2926,31 @@
       "fecha_modificacion": "2026-07-29T12:24:46",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "0340395d-4bc4-45f2-b018-5ae00d3725cf",
+      "nombre_ficha": "CABLE TGP MULTIPLE - Prysmian Group",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Cable TGP",
+      "marca": "Prysmian Group",
+      "categoria": "ELEC",
+      "tipo_producto": "Multiconductor de cobre",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "Multiconductor formado por cables individuales de cobre suave tipo EcoPlus THHN/THWN-2",
+      "normativa": "ASTM B3, B8, B787, CIDET # 06061, RETIE 20.2, UL 1277, UL 83, UL E07079",
+      "descripcion_corta": "Multiconductor de cobre con cubierta resistente a la humedad y rayos UV, certificado para enterrado directo.",
+      "aspectos_adicionales": "",
+      "sinonimos": "TGP",
+      "search_keywords": "cable tgp multiple prysmian group elec multiconductor de cobre multiples formado por cables individuales suave tipo ecoplus thhn thwn 2 astm b3 b8 b787 cidet 06061 retie 20 ul 1277 83 e07079 con cubierta resistente a la humedad y rayos uv certificado para enterrado directo",
+      "ruta_pdf": "ELEC/CABLE-TGP-MULTIPLE-Prysmian-Group.pdf",
+      "hash_archivo": "1caaffb144a9265f",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:25:49",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:24:06"
+  "ultima_sincronizacion_git": "2026-07-29T12:24:49"
 }
