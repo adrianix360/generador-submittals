@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:04:21",
+  "ultima_actualizacion": "2026-07-29T12:05:47",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2397,8 +2397,31 @@
       "fecha_modificacion": "2026-07-29T12:04:21",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "4f1c443e-5c49-4ce2-a7a5-7bfb9da61da8",
+      "nombre_ficha": "ORGANIZADOR VERTICAL MULTIPLE - Panduit",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Organizador vertical",
+      "marca": "Panduit",
+      "categoria": "ARQ",
+      "tipo_producto": "Organizador de cables vertical",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "NetRunner",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Organizador vertical de cables para racks EIA, con dedos de administración y control del radio de curvatura.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "organizador vertical multiple panduit arq de cables multiples netrunner sin especificar para racks eia con dedos administracion y control del radio curvatura",
+      "ruta_pdf": "ARQ/ORGANIZADOR-VERTICAL-MULTIPLE-Panduit.pdf",
+      "hash_archivo": "096e35990638964c",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:05:47",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:03:19"
+  "ultima_sincronizacion_git": "2026-07-29T12:04:24"
 }
