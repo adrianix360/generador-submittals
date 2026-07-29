@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:27:33",
+  "ultima_actualizacion": "2026-07-29T12:36:44",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2972,8 +2972,31 @@
       "fecha_modificacion": "2026-07-29T12:27:33",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "c1b215b6-24aa-4598-9676-29987e6be9d2",
+      "nombre_ficha": "PLACA INTERPERIE - Intermatic",
+      "nombre_ficha_manual": false,
+      "nombre_material": "PLACA INTERPERIE",
+      "marca": "Intermatic",
+      "categoria": "ELEC",
+      "tipo_producto": "Cubierta impermeable de plástico",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Cubierta de policarbonato estabilizado UV",
+      "normativa": "RoHS, UL",
+      "descripcion_corta": "Cubierta impermeable de perfil bajo, fácil de instalar, incluye junta de neopreno y tornillos de montaje.",
+      "aspectos_adicionales": "",
+      "sinonimos": "INTERPERIE INTERMATIC",
+      "search_keywords": "placa interperie intermatic elec cubierta impermeable de plastico policarbonato estabilizado uv rohs ul perfil bajo facil instalar incluye junta neopreno y tornillos montaje",
+      "ruta_pdf": "ELEC/PLACA-INTERPERIE-Intermatic.pdf",
+      "hash_archivo": "4b221442dae24f88",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:36:44",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:25:52"
+  "ultima_sincronizacion_git": "2026-07-29T12:32:23"
 }
