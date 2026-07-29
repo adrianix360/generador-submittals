@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:13:04",
+  "ultima_actualizacion": "2026-07-29T12:14:04",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2604,8 +2604,31 @@
       "fecha_modificacion": "2026-07-29T12:13:04",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "3c53bd82-eb23-4b12-9390-3f9d699504e2",
+      "nombre_ficha": "UPS UPO11-2RT - CHICAGO DIGITAL POWER",
+      "nombre_ficha_manual": false,
+      "nombre_material": "UPS",
+      "marca": "CHICAGO DIGITAL POWER",
+      "categoria": "ELEC",
+      "tipo_producto": "UPS online",
+      "dimensiones": "",
+      "sin_medidas": false,
+      "especificacion": "UPO11-2RT 2KVA",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "UPS online de doble conversión para tareas críticas y aplicaciones corporativas, con diseño de conversión Torre-Rack y capacidad de 2kVA.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "ups upo11 2rt chicago digital power elec online 2kva sin especificar de doble conversion para tareas criticas y aplicaciones corporativas con diseno torre rack capacidad",
+      "ruta_pdf": "ELEC/UPS-UPO11-2RT-CHICAGO-DIGITAL-POWER.pdf",
+      "hash_archivo": "08372a2e29c2aeaa",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:14:04",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:12:30"
+  "ultima_sincronizacion_git": "2026-07-29T12:13:07"
 }
