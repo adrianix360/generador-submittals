@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:20:07",
+  "ultima_actualizacion": "2026-07-29T12:20:40",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2811,8 +2811,31 @@
       "fecha_modificacion": "2026-07-29T12:20:07",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "2d541bf9-4fa9-4528-bf5c-d4c6e2dc328d",
+      "nombre_ficha": "DISYUNTOR 1P20 8.3\" x 4.5\" x 4.4\" 20 A 240 V CHB120 - Eaton",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Disyuntor 1P20",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "tipo_producto": "Interruptor termomagnético",
+      "dimensiones": "8.3x4.5x4.4 in",
+      "sin_medidas": false,
+      "especificacion": "CHB120. 20 A, 120/240 V, 10 kAIC",
+      "normativa": "UL 489",
+      "descripcion_corta": "Interruptor termomagnético de falla a tierra, 20 A, 120/240 V, unipolar, para CH Loadcenters.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "disyuntor 1p20 8 3 x 4 5 20 a 240 v chb120 eaton elec interruptor termomagnetico 3x4 5x4 in 120 10 kaic ul 489 de falla tierra unipolar para ch loadcenters",
+      "ruta_pdf": "ELEC/DISYUNTOR-1P20-8-3-x-4-5-x-4-4-20-A-240-V-CHB120-Eaton.pdf",
+      "hash_archivo": "313d6f224aeb5627",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:20:40",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:19:24"
+  "ultima_sincronizacion_git": "2026-07-29T12:20:10"
 }
