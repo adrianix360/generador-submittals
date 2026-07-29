@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:21:40",
+  "ultima_actualizacion": "2026-07-29T12:22:18",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2857,8 +2857,31 @@
       "fecha_modificacion": "2026-07-29T12:21:40",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "9f7b5481-2466-431c-9385-cd22773e2e58",
+      "nombre_ficha": "CURVA EMT - 90 GRADOS MULTIPLE - PST Wiring System",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Curva EMT - 90 Grados",
+      "marca": "PST Wiring System",
+      "categoria": "ELEC",
+      "tipo_producto": "Curva para conducto EMT",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Curva EMT de 90 grados para conectar conductos EMT, permitiendo curvas precisas.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "curva emt 90 grados multiple pst wiring system elec para conducto multiples sin especificar de conectar conductos permitiendo curvas precisas",
+      "ruta_pdf": "ELEC/CURVA-EMT-90-GRADOS-MULTIPLE-PST-Wiring-System.pdf",
+      "hash_archivo": "7ef6b608414dd4ac",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:22:18",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:20:43"
+  "ultima_sincronizacion_git": "2026-07-29T12:21:43"
 }
