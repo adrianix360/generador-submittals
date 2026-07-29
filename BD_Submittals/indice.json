@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:04:29",
+  "ultima_actualizacion": "2026-07-29T11:06:23",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1753,8 +1753,31 @@
       "fecha_modificacion": "2026-07-29T11:04:29",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "b18e3fc0-e8a1-495b-903d-96c565538fbd",
+      "nombre_ficha": "TOMACORRIENTE DOBLE COMERCIAL TAMPER 66.5 x 32.2 x 29.9 125 V - Eagle",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tomacorriente doble comercial tamper",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "tipo_producto": "Tomacorriente",
+      "dimensiones": "66.5x32.2x29.9",
+      "sin_medidas": false,
+      "especificacion": "20A 125V~ 60Hz",
+      "normativa": "NEMA 5-20R, NOM-ANCE 201501-A00047, UL LISTED 14LC",
+      "descripcion_corta": "Tomacorriente doble comercial de grado comercial, resistente a la manipulación, con construcción en termoplástico de alto impacto.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "tomacorriente doble comercial tamper 66 5 x 32 2 29 9 125 v eagle elec 5x32 2x29 20a 125v 60hz nema 20r nom ance 201501 a00047 ul listed 14lc de grado resistente a la manipulacion con construccion en termoplastico alto impacto",
+      "ruta_pdf": "ELEC/TOMACORRIENTE-DOBLE-COMERCIAL-TAMPER-66-5-x-32-2-x-29-9-125-V-Eagle.pdf",
+      "hash_archivo": "816b4b57f35fdd0a",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:06:23",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:04:03"
+  "ultima_sincronizacion_git": "2026-07-29T11:04:31"
 }
