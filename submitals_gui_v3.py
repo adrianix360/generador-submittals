@@ -44,7 +44,7 @@ import nomenclatura
 import ocr_extractor
 import updater_gh
 
-VERSION = "3.3.6"
+VERSION = "3.3.7"
 BASE_DIR = Path(__file__).resolve().parent
 PIN_MODO_DEV = "9119"
 
@@ -181,15 +181,71 @@ def imagen_a_pdf_reader(path):
     return PdfReader(buf)
 
 
+def _caratula_reader_para_compilar(caratula_path, prefijo_campos="", log=print):
+    """PdfReader de la 1a pagina de la caratula, lista para entrar a un
+    compilado: apariencia visual refrescada y (si se indica
+    ``prefijo_campos``) campos renombrados para que sean unicos.
+
+    Historia del problema (v3.3.6 y antes): la caratula se genera con campos
+    AcroForm con ``NeedAppearances`` -- le pide al lector que DIBUJE el valor
+    el mismo. Acrobat lo hace; Chrome, Preview y varios visores livianos no,
+    asi que el campo se veia vacio dentro del compilado.
+
+    v3.3.7 lo arreglo aplanando (``fitz.Document.bake``): el texto quedaba
+    incrustado en el contenido de la pagina, visible en cualquier lector, pero
+    el campo dejaba de ser editable.
+
+    Este cambio resuelve las 2 cosas SIN perder edicion:
+      1. ``widget.update()`` regenera la apariencia visual correcta de cada
+         campo (se ve bien en cualquier visor) sin destruir el widget -- sigue
+         siendo un campo real, editable donde el lector soporte formularios
+         (Acrobat, Foxit, PDF-XChange, navegadores de escritorio).
+      2. Con ``prefijo_campos`` se renombra cada campo (ej. ``ARQ01_marca``).
+         Todas las caratulas salen del mismo template, con los MISMOS nombres
+         de campo -- al fusionar varias en un compilado (``CMP SUBMITTAL
+         <disciplina>.pdf``, que puede juntar decenas), el PDF trata los
+         campos homonimos como un solo campo logico: Acrobat termina
+         mostrando el valor de uno solo y deja el resto en blanco (bug real,
+         reportado en un compilado de +500 paginas donde solo se veian los
+         datos de la 1a caratula). Con el prefijo cada campo queda unico y
+         esto no puede volver a pasar, sin importar cuantas se fusionen.
+
+    Si PyMuPDF no esta disponible o falla, se cae a la caratula tal cual (los
+    campos quedan como estaban, sin renombrar ni refrescar).
+    """
+    import io
+    from pypdf import PdfReader
+    ruta = str(caratula_path)
+    try:
+        import fitz
+        doc = fitz.open(ruta)
+        try:
+            for page in doc:
+                for widget in page.widgets():
+                    if prefijo_campos:
+                        widget.field_name = f"{prefijo_campos}_{widget.field_name}"
+                    widget.update()
+            datos = doc.tobytes(garbage=3, deflate=True)
+        finally:
+            doc.close()
+        return PdfReader(io.BytesIO(datos))
+    except Exception as e:
+        log(f"AVISO: no se pudo preparar la caratula para el compilado ({e}); "
+            "se usa la version original")
+        return PdfReader(ruta)
+
+
 def generar_compilado(caratula_path, doc_paths, out_path, log=print):
-    """Une la carATula (solo 1a pagina, conservando campos editables) con las
-    fichas de la carpeta -> PDF ``-CMP.pdf``. Replica ``generar_compilado`` v2.6.
+    """Une la carATula (solo 1a pagina, con la apariencia de sus campos
+    refrescada para que se vea bien en cualquier visor y siga siendo
+    editable) con las fichas de la carpeta -> PDF ``-CMP.pdf``.
+    Replica ``generar_compilado`` v2.6.
     """
     from pypdf import PdfWriter, PdfReader
     w = PdfWriter()
     if caratula_path and Path(caratula_path).exists():
         try:
-            w.append(PdfReader(str(caratula_path)), pages=(0, 1))
+            w.append(_caratula_reader_para_compilar(caratula_path, log=log), pages=(0, 1))
         except Exception:
             w.add_page(PdfReader(str(caratula_path)).pages[0])
     anexados = 0
@@ -270,13 +326,19 @@ def compilar_disciplinas(destino, log=print):
             continue
         w = PdfWriter()
         procesados = 0
-        for _n, sub in entradas:
+        for n, sub in entradas:
             caratulas = sorted(sub.glob("CARATULA*.pdf"))
             if not caratulas:
                 log(f"AVISO {madre}: '{sub.name}' sin carATula, se omite")
                 continue
             try:
-                w.append(PdfReader(str(caratulas[0])))
+                # Prefijo unico por caratula (ej. "ARQ01"): sin esto, al
+                # fusionar varias del mismo template (mismos nombres de
+                # campo) el PDF resultante colapsa los campos homonimos y
+                # solo se ve el valor de la 1a caratula en cualquier lector.
+                prefijo = f"{cat}{n:02d}"
+                w.append(_caratula_reader_para_compilar(
+                    caratulas[0], prefijo_campos=prefijo, log=log), pages=(0, 1))
             except Exception as e:
                 log(f"AVISO {madre}: carATula ilegible en '{sub.name}' ({e})")
                 continue
@@ -544,6 +606,24 @@ if _TK_OK:
                              border_color=AZUL_ES, width=ancho, height=alto,
                              corner_radius=10, font=_fuente(11), **kw)
 
+    def _avisar_resultado_git(parent, r, mensaje_ok):
+        """Muestra el resultado de un ``git_push()`` (subido/offline/sin token/
+        error), igual que ``VentanaCatalogo._avisar_push`` pero reutilizable
+        desde cualquier ventana."""
+        if r.get("offline"):
+            messagebox.showinfo("Sin conexión",
+                                mensaje_ok + "\n\nEl cambio se guardó localmente "
+                                "y se subirá al reconectar.", parent=parent)
+        elif r.get("auth"):
+            messagebox.showwarning("Falta el token",
+                                   mensaje_ok + "\n\nNo se pudo subir a GitHub: "
+                                   "configure el token.", parent=parent)
+        elif r.get("subido") or r.get("nada_que_subir") or r.get("desactivado"):
+            messagebox.showinfo("Listo", mensaje_ok, parent=parent)
+        else:
+            messagebox.showwarning("No se pudo subir",
+                                   mensaje_ok + f"\n\n{r.get('error', '')}", parent=parent)
+
     def _traer_al_frente(win):
         """Fuerza que una ventana nueva quede al frente y con el foco.
 
@@ -556,6 +636,30 @@ if _TK_OK:
         win.attributes("-topmost", True)
         win.after_idle(lambda: win.attributes("-topmost", False))
         win.focus_force()
+
+    def _dimensionar_ventana(win, ancho=0, alto=0, margen=90):
+        """Abre la ventana con un tamano que garantice que TODOS los controles
+        (incluidos los botones de abajo y los de la derecha) queden visibles, y
+        la centra en pantalla.
+
+        Se usa el tamano REQUERIDO por el contenido (``winfo_reqwidth/height``,
+        que ya suma la barra de botones inferior y la fila de botones mas ancha)
+        como piso: la ventana nunca abre — ni el usuario puede encogerla —
+        por debajo de lo que hace falta para ver todo. ``ancho``/``alto`` son un
+        tamano comodo preferido; si el contenido pide mas, se respeta el
+        contenido. Todo acotado al tamano de pantalla menos un margen.
+        """
+        win.update_idletasks()
+        sw, sh = win.winfo_screenwidth(), win.winfo_screenheight()
+        req_w, req_h = win.winfo_reqwidth(), win.winfo_reqheight()
+        min_w = min(max(req_w, 320), sw - margen)
+        min_h = min(max(req_h, 240), sh - margen)
+        w = min(max(ancho, min_w), sw - margen)
+        h = min(max(alto, min_h), sh - margen)
+        x = max(0, (sw - w) // 2)
+        y = max(0, (sh - h) // 2 - 20)
+        win.geometry(f"{w}x{h}+{x}+{y}")
+        win.minsize(min_w, min_h)
 
     def _vista_previa_ficha(master, bd, ficha):
         """Abre el PDF de una ficha tecnica con el visor predeterminado."""
@@ -574,7 +678,9 @@ if _TK_OK:
                                  parent=master.winfo_toplevel())
 
     class DatosProyectoDialog(ctk.CTkToplevel):
-        """Dialogo para capturar los datos del procedimiento (obligatorios)."""
+        """Dialogo para capturar los datos del procedimiento (ninguno obligatorio:
+        a veces se arma la caratula antes de tener el numero de procedimiento o
+        el monto definitivos)."""
 
         def __init__(self, master, datos=None):
             super().__init__(master)
@@ -608,16 +714,11 @@ if _TK_OK:
             barra.grid(row=len(campos) + 1, column=0, columnspan=2, pady=(14, 16))
             _boton(barra, "Guardar", self._guardar, color=AZUL_ES).pack(side="left", padx=6)
             _boton_secundario(barra, "Cancelar", self.destroy).pack(side="left", padx=6)
+            _dimensionar_ventana(self, 460, 360)
             _traer_al_frente(self)
 
         def _guardar(self):
-            datos = {k: v.get().strip() for k, v in self.vars.items()}
-            faltan = [k for k in bd_manager.CAMPOS_PROCEDIMIENTO if not datos.get(k)]
-            if faltan:
-                messagebox.showwarning("Datos incompletos",
-                                       "Complete todos los campos:\n" + ", ".join(faltan), parent=self.winfo_toplevel())
-                return
-            self.resultado = datos
+            self.resultado = {k: v.get().strip() for k, v in self.vars.items()}
             self.destroy()
 
 
@@ -648,12 +749,179 @@ if _TK_OK:
                 side="left", padx=6)
             _boton_secundario(barra, "Cancelar", self.destroy, ancho=110).pack(
                 side="left", padx=6)
+            _dimensionar_ventana(self)
             _traer_al_frente(self)
             e.focus_set()
 
         def _ok(self):
             self.resultado = self.v_pin.get()
             self.destroy()
+
+
+    class _BuscadorFichas(ctk.CTkFrame):
+        """Buscador de fichas reutilizable, con la mejor coincidencia de
+        primera, filtros (categoria / marca / modelo / nombre), columnas para
+        distinguir un material entre muchos, y lista con scroll.
+
+        Se usa tanto al armar un submittal (``TablaMateriales``, doble clic =
+        agregar) como al gestionar la BD (``VentanaGestionarBD``, doble clic =
+        editar). El widget no sabe que se hace con la ficha elegida: avisa por
+        ``on_activar(ficha)`` y expone ``ficha_seleccionada()``.
+        """
+
+        def __init__(self, master, bd, on_activar=None, permitir_inactivas=False,
+                     alto_filas=12, top_n=80):
+            super().__init__(master, fg_color="transparent")
+            self.bd = bd
+            self.on_activar = on_activar
+            self.permitir_inactivas = permitir_inactivas
+            self.top_n = top_n
+            self._resultados = []
+            self._debounce = None
+            self._build(alto_filas)
+            self.refrescar()
+
+        def _build(self, alto_filas):
+            filtros = ctk.CTkFrame(self, fg_color="transparent")
+            filtros.pack(fill="x")
+            # Fila 1: busqueda libre (fuzzy) + categoria
+            f1 = ctk.CTkFrame(filtros, fg_color="transparent")
+            f1.pack(fill="x", pady=(0, 4))
+            ctk.CTkLabel(f1, text="🔎 Buscar:", text_color=GRIS_TEXTO,
+                        font=_fuente(11, "bold")).pack(side="left")
+            self.var_q = tk.StringVar()
+            ent = ctk.CTkEntry(f1, textvariable=self.var_q, width=300, height=32,
+                               corner_radius=8, border_color=BORDE_SUAVE,
+                               placeholder_text="material, marca, modelo, sinónimo…")
+            ent.pack(side="left", padx=6)
+            ctk.CTkLabel(f1, text="Categoría:", text_color=GRIS_TEXTO).pack(
+                side="left", padx=(8, 2))
+            self.var_cat = tk.StringVar(value="TODAS")
+            ctk.CTkComboBox(f1, variable=self.var_cat, width=100, height=32,
+                            corner_radius=8, border_color=BORDE_SUAVE,
+                            button_color=ROJO_ES, button_hover_color=_HOVER[ROJO_ES],
+                            state="readonly", dropdown_fg_color="white",
+                            values=["TODAS"] + list(bd_manager.CATEGORIAS)).pack(side="left")
+            if self.permitir_inactivas:
+                self.var_inact = tk.BooleanVar(value=False)
+                ctk.CTkCheckBox(f1, text="Ver desactivadas", variable=self.var_inact,
+                               command=self.refrescar, text_color=GRIS_TEXTO,
+                               fg_color=AZUL_ES, hover_color=_HOVER[AZUL_ES]).pack(
+                    side="left", padx=(12, 0))
+            else:
+                self.var_inact = None
+            # Fila 2: filtros por campo
+            f2 = ctk.CTkFrame(filtros, fg_color="transparent")
+            f2.pack(fill="x", pady=(0, 6))
+            ctk.CTkLabel(f2, text="Filtros:", text_color=GRIS_TEXTO_SUAVE,
+                        font=_fuente(10)).pack(side="left", padx=(0, 4))
+            self.var_marca = tk.StringVar()
+            self.var_modelo = tk.StringVar()
+            self.var_nombre = tk.StringVar()
+            for etiqueta, var, ancho in (("Marca", self.var_marca, 140),
+                                         ("Modelo/espec.", self.var_modelo, 140),
+                                         ("Nombre", self.var_nombre, 150)):
+                ctk.CTkLabel(f2, text=etiqueta + ":", text_color=GRIS_TEXTO,
+                            font=_fuente(10)).pack(side="left", padx=(6, 2))
+                ctk.CTkEntry(f2, textvariable=var, width=ancho, height=28,
+                            corner_radius=8, border_color=BORDE_SUAVE).pack(side="left")
+            _boton_secundario(f2, "Limpiar", self._limpiar, ancho=80, alto=28).pack(
+                side="left", padx=(10, 0))
+
+            # Resultados: Treeview con scroll. Columnas para reconocer la ficha.
+            cont = ctk.CTkFrame(self, fg_color="transparent")
+            cont.pack(fill="both", expand=True)
+            cols = ("nombre", "marca", "modelo", "dim", "cat", "match")
+            if self.permitir_inactivas:
+                cols = cols + ("estado",)
+            self.tree = ttk.Treeview(cont, columns=cols, show="headings",
+                                     height=alto_filas)
+            anchos = {"nombre": 340, "marca": 130, "modelo": 130, "dim": 120,
+                      "cat": 60, "match": 70, "estado": 90}
+            titulos = {"nombre": "Nombre", "marca": "Marca", "modelo": "Modelo/espec.",
+                       "dim": "Dimensiones", "cat": "Cat.", "match": "Coincid.",
+                       "estado": "Estado"}
+            for c in cols:
+                self.tree.heading(c, text=titulos[c])
+                self.tree.column(c, width=anchos[c],
+                                 anchor=("center" if c in ("cat", "match", "estado") else "w"))
+            vsb = ttk.Scrollbar(cont, orient="vertical", command=self.tree.yview)
+            self.tree.configure(yscrollcommand=vsb.set)
+            self.tree.pack(side="left", fill="both", expand=True)
+            vsb.pack(side="right", fill="y")
+            self.tree.bind("<Double-Button-1>", lambda _ev: self._activar())
+            self.tree.bind("<Return>", lambda _ev: self._activar())
+
+            self.lbl_estado = ctk.CTkLabel(self, text="", text_color=GRIS_TEXTO_SUAVE,
+                                           font=_fuente(10))
+            self.lbl_estado.pack(anchor="w", pady=(2, 0))
+
+            # Refresco con pequeno "debounce" para no releer en cada tecla en
+            # catalogos grandes.
+            for var in (self.var_q, self.var_marca, self.var_modelo, self.var_nombre,
+                        self.var_cat):
+                var.trace_add("write", lambda *_a: self._pedir_refresco())
+
+        def _pedir_refresco(self):
+            if self._debounce is not None:
+                try:
+                    self.after_cancel(self._debounce)
+                except Exception:
+                    pass
+            self._debounce = self.after(140, self.refrescar)
+
+        def _limpiar(self):
+            for v in (self.var_q, self.var_marca, self.var_modelo, self.var_nombre):
+                v.set("")
+            self.var_cat.set("TODAS")
+
+        def refrescar(self):
+            self._debounce = None
+            cat = self.var_cat.get()
+            cat = None if cat == "TODAS" else cat
+            inact = bool(self.var_inact.get()) if self.var_inact is not None else False
+            self._resultados = fuzzy_search.buscar(
+                self.var_q.get(),
+                self.bd.listar_fichas(incluir_inactivas=inact),
+                categoria=cat, marca=self.var_marca.get(),
+                modelo=self.var_modelo.get(), nombre=self.var_nombre.get(),
+                top_n=self.top_n, incluir_inactivas=inact)
+            for i in self.tree.get_children():
+                self.tree.delete(i)
+            for idx, f in enumerate(self._resultados):
+                sim = f.get("_similitud", 0)
+                match = f"{int(sim * 100)}%" if sim else "—"
+                modelo = (f.get("especificacion") or f.get("tipo_producto") or "").strip()
+                vals = [bd_manager.BDManager.nombre_de(f), f.get("marca", ""),
+                        modelo, f.get("dimensiones", ""), f.get("categoria", ""), match]
+                if self.permitir_inactivas:
+                    estado = f.get("estado", "activo")
+                    vals.append("desactivada" if estado != "activo" else "activa")
+                self.tree.insert("", "end", iid=str(idx), values=vals)
+            # La MEJOR coincidencia queda seleccionada de primera.
+            if self._resultados:
+                self.tree.selection_set("0")
+                self.tree.focus("0")
+                self.tree.see("0")
+            n = len(self._resultados)
+            tope = "" if n < self.top_n else f" (se muestran los primeros {self.top_n})"
+            self.lbl_estado.configure(
+                text=(f"{n} resultado(s){tope}" if n else
+                      "Sin resultados — probá con menos texto o revisá los filtros"))
+
+        def ficha_seleccionada(self):
+            sel = self.tree.selection()
+            if not sel:
+                return None
+            try:
+                return self._resultados[int(sel[0])]
+            except (ValueError, IndexError):
+                return None
+
+        def _activar(self):
+            f = self.ficha_seleccionada()
+            if f and callable(self.on_activar):
+                self.on_activar(f)
 
 
     class TablaMateriales(ctk.CTkFrame):
@@ -668,84 +936,51 @@ if _TK_OK:
             self._refrescar()
 
         def _build(self):
-            # Barra de busqueda
+            # Barra superior: acciones de catalogo
             top = ctk.CTkFrame(self, fg_color="transparent")
-            top.pack(fill="x", pady=(0, 8))
-            ctk.CTkLabel(top, text="Buscar material:", text_color=GRIS_TEXTO,
-                        font=_fuente(11)).pack(side="left")
-            self.var_busq = tk.StringVar()
-            e = ctk.CTkEntry(top, textvariable=self.var_busq, width=280, height=32,
-                             corner_radius=8, border_color=BORDE_SUAVE)
-            e.pack(side="left", padx=6)
-            e.bind("<KeyRelease>", lambda _ev: self._sugerir())
-            ctk.CTkLabel(top, text="Categoría:", text_color=GRIS_TEXTO,
-                        font=_fuente(11)).pack(side="left", padx=(10, 2))
-            self.var_cat = tk.StringVar(value="TODAS")
-            cat_combo = ctk.CTkComboBox(top, variable=self.var_cat, width=110, height=32,
-                                        corner_radius=8, border_color=BORDE_SUAVE,
-                                        button_color=ROJO_ES,
-                                        button_hover_color=_HOVER[ROJO_ES],
-                                        state="readonly", dropdown_fg_color="white",
-                                        values=["TODAS"] + list(bd_manager.CATEGORIAS))
-            cat_combo.pack(side="left")
-            self.var_cat.trace_add("write", lambda *_: self._sugerir())
+            top.pack(fill="x", pady=(0, 4))
+            ctk.CTkLabel(top, text="Catálogo de fichas — doble clic para agregar",
+                        text_color=GRIS_TEXTO, font=_fuente(11, "bold")).pack(side="left")
             _boton(top, "＋ Cargar ficha nueva a BD", self._cargar_ficha,
                   color=AZUL_CLARO, ancho=200).pack(side="right")
+            _boton_secundario(top, "🔄 Actualizar catálogo", self._actualizar_catalogo,
+                              ancho=170).pack(side="right", padx=(0, 6))
 
-            self.lst = tk.Listbox(self, height=5, font=(FUENTE, 10),
-                                  bg="white", fg=GRIS_TEXTO,
-                                  selectbackground=AZUL_CLARO, selectforeground="white",
-                                  relief="solid", borderwidth=1,
-                                  highlightthickness=1, highlightbackground=BORDE_SUAVE,
-                                  highlightcolor=AZUL_ES)
-            self.lst.pack(fill="x")
-            self.lst.bind("<Double-Button-1>", lambda _ev: self._agregar_seleccion())
+            # Buscador reutilizable (mejor coincidencia primero + filtros + scroll)
+            self.buscador = _BuscadorFichas(self, self.bd,
+                                            on_activar=self._agregar_ficha, alto_filas=8)
+            self.buscador.pack(fill="both", expand=True)
 
+            ctk.CTkLabel(self, text="Materiales del submittal:", text_color=GRIS_TEXTO,
+                        font=_fuente(11, "bold")).pack(anchor="w", pady=(8, 2))
             self.tree = ttk.Treeview(self, columns=("cons", "nombre", "marca"),
-                                     show="headings", height=10)
+                                     show="headings", height=8)
             for c, t, w in (("cons", "Consecutivo", 90), ("nombre", "Nombre", 320),
                             ("marca", "Marca", 180)):
                 self.tree.heading(c, text=t); self.tree.column(c, width=w)
-            self.tree.pack(fill="both", expand=True, pady=8)
+            self.tree.pack(fill="both", expand=True, pady=4)
 
             bar = ctk.CTkFrame(self, fg_color="transparent")
             bar.pack(fill="x")
+            _boton_secundario(bar, "↑ Subir", lambda: self._mover(-1), ancho=90).pack(
+                side="left", padx=4)
+            _boton_secundario(bar, "↓ Bajar", lambda: self._mover(1), ancho=90).pack(
+                side="left", padx=4)
             _boton_secundario(bar, "Editar marca(s)", self._editar, ancho=140).pack(
                 side="left", padx=4)
             _boton_secundario(bar, "👁 Vista previa", self._vista_previa, ancho=150).pack(
                 side="left", padx=4)
             _boton(bar, "Eliminar", self._eliminar, color=ROJO_ES, ancho=110).pack(
                 side="left", padx=4)
-            self._sug = []
 
-        def _sugerir(self):
-            q = self.var_busq.get().strip()
-            cat = self.var_cat.get()
-            cat = None if cat == "TODAS" else cat
-            self.lst.delete(0, "end")
-            if q:
-                self._sug = self.bd.buscar(q, categoria=cat)
-            elif cat:
-                # Sin texto de busqueda: navega todos los productos disponibles
-                # de la categoria elegida (permite explorar el catalogo).
-                self._sug = [f for f in self.bd.listar_fichas()
-                            if f.get("categoria") == cat]
-            else:
-                self._sug = []
-            for r in self._sug:
-                # Se muestra el nombre descriptivo completo: es lo que permite
-                # distinguir dos fichas del mismo material.
-                extra = f"({int(r['_similitud']*100)}%)" if "_similitud" in r else ""
-                self.lst.insert("end", f"{bd_manager.BDManager.nombre_de(r)}  ·  "
-                                       f"{r['categoria']}  {extra}")
-            if not self._sug and (q or cat):
-                self.lst.insert("end", "❌ No encontrado — use 'Cargar ficha nueva a BD'")
+        def _actualizar_catalogo(self):
+            """Trae los cambios de otras PCs (git pull) y vuelve a correr la
+            busqueda actual: cubre el caso de agregar una ficha nueva y que el
+            buscador no la reconociera hasta cerrar y reabrir esta ventana."""
+            self.bd.sincronizar()
+            self.buscador.refrescar()
 
-        def _agregar_seleccion(self):
-            sel = self.lst.curselection()
-            if not sel or sel[0] >= len(self._sug):
-                return
-            ficha = self._sug[sel[0]]
+        def _agregar_ficha(self, ficha):
             cat = ficha["categoria"]
             cons = self._siguiente_consecutivo(cat)
             # El material hereda el nombre descriptivo SIN la marca (la marca ya
@@ -759,7 +994,7 @@ if _TK_OK:
                 "marca": ficha["marca"],
                 "categoria": cat, "marcas_alternativas": [], "justificacion_stock": False,
             })
-            self.var_busq.set(""); self._sugerir(); self._refrescar()
+            self._refrescar(resaltar=cons)
 
         def _siguiente_consecutivo(self, cat):
             nums = [int(re.match(rf"{cat}(\d+)", m["consecutivo"]).group(1))
@@ -768,13 +1003,16 @@ if _TK_OK:
             return f"{cat}{(max(nums) + 1 if nums else 1):02d}"
 
         def _renumerar(self):
+            # Se numera respetando el ORDEN ACTUAL de self.materiales (no el
+            # consecutivo previo) para que "Subir"/"Bajar" puedan decidir
+            # manualmente que material ocupa cada numero dentro de su categoria.
             contadores = {}
-            for m in sorted(self.materiales, key=lambda x: bd_manager._clave_orden(x["consecutivo"])):
+            for m in self.materiales:
                 cat = m["categoria"]
                 contadores[cat] = contadores.get(cat, 0) + 1
                 m["consecutivo"] = f"{cat}{contadores[cat]:02d}"
 
-        def _refrescar(self):
+        def _refrescar(self, resaltar=None):
             self._renumerar()
             self.materiales.sort(key=lambda x: bd_manager._clave_orden(x["consecutivo"]))
             for i in self.tree.get_children():
@@ -783,6 +1021,46 @@ if _TK_OK:
                 marca = bd_manager._marcas_material(m, {})
                 self.tree.insert("", "end", iid=m["consecutivo"],
                                  values=(m["consecutivo"], m["nombre_material"], marca))
+            if resaltar and self.tree.exists(resaltar):
+                self.tree.selection_set(resaltar)
+                self.tree.see(resaltar)
+                self._animar_ingreso(resaltar)
+
+        def _animar_ingreso(self, iid):
+            """Resalta en verde el renglon recien agregado y lo desvanece a
+            blanco en unos pocos pasos, para dar feedback visual inmediato de
+            que el material entro a la lista del submittal."""
+            colores = ["#BBF7D0", "#D6F5E0", "#EEFBF2", "#FFFFFF"]
+            tag = f"nuevo_{iid}"
+
+            def paso(i=0):
+                if not self.tree.exists(iid) or i >= len(colores):
+                    return
+                self.tree.item(iid, tags=(tag,))
+                self.tree.tag_configure(tag, background=colores[i])
+                self.after(110, lambda: paso(i + 1))
+            paso()
+
+        def _mover(self, direccion):
+            """Sube/baja el material seleccionado un puesto DENTRO DE SU MISMA
+            categoria (ej. mover el cemento de ESTR04 a ESTR06), permitiendo
+            elegir manualmente el orden de los consecutivos por trazabilidad."""
+            m = self._sel_material()
+            if not m:
+                return
+            cat = m["categoria"]
+            pos_categoria = [i for i, x in enumerate(self.materiales) if x["categoria"] == cat]
+            idx = self.materiales.index(m)
+            pos = pos_categoria.index(idx)
+            nueva_pos = pos + direccion
+            if not (0 <= nueva_pos < len(pos_categoria)):
+                return
+            otro_idx = pos_categoria[nueva_pos]
+            self.materiales[idx], self.materiales[otro_idx] = (
+                self.materiales[otro_idx], self.materiales[idx])
+            self._refrescar()
+            self.tree.selection_set(m["consecutivo"])
+            self.tree.see(m["consecutivo"])
 
         def _sel_material(self):
             sel = self.tree.selection()
@@ -794,40 +1072,238 @@ if _TK_OK:
             m = self._sel_material()
             if not m:
                 return
-            alt = ", ".join(m.get("marcas_alternativas", []))
+            ficha = self.bd.obtener_ficha(m.get("id_ficha_bd")) or {}
+            # ``marcas_alternativas`` acepta el formato viejo (string suelto,
+            # solo texto) y el nuevo (dict vinculado a una ficha real de la BD,
+            # cuyo PDF se adjunta de verdad al compilado). Se normaliza al abrir
+            # para poder editar ambos casos con la misma lista.
+            alternativas = []
+            for a in m.get("marcas_alternativas", []) or []:
+                if isinstance(a, dict):
+                    alternativas.append(dict(a))
+                else:
+                    alternativas.append({"id_ficha_bd": None, "marca": str(a)})
+
+            # Valores por defecto (los que trae la ficha del catalogo, o el
+            # texto auto-generado de "aspectos"), para poder detectar al
+            # guardar si el usuario en verdad escribio algo distinto (override
+            # para ESTE submittal) o si dejo el campo tal cual venia.
+            desc_defecto = ficha.get("descripcion_corta", "")
+            norm_defecto = ficha.get("normativa", "")
+
+            def _aspectos_auto():
+                temp = {"marcas_alternativas": alternativas, "justificacion_stock": v_s.get()}
+                return bd_manager._texto_aspectos(temp, ficha) or ficha.get("aspectos_adicionales", "")
+
             top = ctk.CTkToplevel(self)
-            top.title("Editar marcas"); top.grab_set()
+            top.title("Editar material"); top.grab_set()
             top.configure(fg_color=GRIS_BG, padx=14, pady=14)
+            top.geometry("620x760")
             tarjeta = _tarjeta(top); tarjeta.pack(fill="both", expand=True)
-            ctk.CTkLabel(tarjeta, text=f"{m['consecutivo']} — {m['nombre_material']}",
+            tarjeta.grid_columnconfigure(1, weight=1)
+            ctk.CTkLabel(tarjeta, text=f"{m['consecutivo']} — texto de la carátula",
                         font=_fuente(11, "bold"), text_color=GRIS_TEXTO).grid(
-                row=0, column=0, columnspan=2, padx=16, pady=(16, 10))
-            ctk.CTkLabel(tarjeta, text="Marca principal:", text_color=GRIS_TEXTO).grid(
+                row=0, column=0, columnspan=3, padx=16, pady=(16, 10), sticky="w")
+
+            ctk.CTkLabel(tarjeta, text="Nombre del material:", text_color=GRIS_TEXTO).grid(
                 row=1, column=0, sticky="e", pady=4, padx=(16, 6))
+            v_nombre = tk.StringVar(value=m["nombre_material"])
+            ctk.CTkEntry(tarjeta, textvariable=v_nombre, height=32,
+                        corner_radius=8, border_color=BORDE_SUAVE).grid(
+                row=1, column=1, columnspan=2, padx=(0, 16), sticky="we")
+
+            ctk.CTkLabel(tarjeta, text="Marca principal:", text_color=GRIS_TEXTO).grid(
+                row=2, column=0, sticky="e", pady=4, padx=(16, 6))
             v_p = tk.StringVar(value=m["marca"])
-            ctk.CTkEntry(tarjeta, textvariable=v_p, width=220, height=32,
+            ctk.CTkEntry(tarjeta, textvariable=v_p, height=32,
                         corner_radius=8, border_color=BORDE_SUAVE).grid(
-                row=1, column=1, padx=(0, 16))
-            ctk.CTkLabel(tarjeta, text="Marcas alternativas (coma):",
-                        text_color=GRIS_TEXTO).grid(row=2, column=0, sticky="e",
-                                                    pady=4, padx=(16, 6))
-            v_a = tk.StringVar(value=alt)
-            ctk.CTkEntry(tarjeta, textvariable=v_a, width=220, height=32,
+                row=2, column=1, columnspan=2, padx=(0, 16), sticky="we")
+
+            ctk.CTkLabel(tarjeta, text="Marcas alternativas\n(con ficha adjunta):",
+                        text_color=GRIS_TEXTO, justify="right").grid(
+                row=3, column=0, sticky="ne", pady=4, padx=(16, 6))
+            lst_alt = tk.Listbox(tarjeta, height=4, width=34, font=(FUENTE, 10),
+                                 bg="white", fg=GRIS_TEXTO, selectbackground=AZUL_CLARO,
+                                 selectforeground="white", relief="solid", borderwidth=1)
+            lst_alt.grid(row=3, column=1, padx=(0, 6), pady=4, sticky="w")
+
+            def _pintar_alt():
+                lst_alt.delete(0, "end")
+                for a in alternativas:
+                    nombre = a.get("marca") or "(sin nombre)"
+                    if not a.get("id_ficha_bd"):
+                        nombre += "  (solo texto, sin PDF)"
+                    lst_alt.insert("end", nombre)
+            _pintar_alt()
+
+            def _quitar_alt():
+                sel = lst_alt.curselection()
+                if sel:
+                    alternativas.pop(sel[0]); _pintar_alt()
+            _boton_secundario(tarjeta, "Quitar", _quitar_alt, ancho=90).grid(
+                row=3, column=2, padx=(0, 16), pady=4, sticky="n")
+
+            ctk.CTkLabel(tarjeta, text="Buscar en catálogo para\nagregar como alternativa:",
+                        text_color=GRIS_TEXTO, justify="right").grid(
+                row=4, column=0, sticky="ne", pady=(10, 4), padx=(16, 6))
+            v_busq_alt = tk.StringVar()
+            ctk.CTkEntry(tarjeta, textvariable=v_busq_alt, height=32,
                         corner_radius=8, border_color=BORDE_SUAVE).grid(
-                row=2, column=1, padx=(0, 16))
+                row=4, column=1, columnspan=2, padx=(0, 16), pady=(10, 4), sticky="we")
+            lst_busq_alt = tk.Listbox(tarjeta, height=4, width=34, font=(FUENTE, 10),
+                                      bg="white", fg=GRIS_TEXTO, selectbackground=AZUL_CLARO,
+                                      selectforeground="white", relief="solid", borderwidth=1)
+            lst_busq_alt.grid(row=5, column=1, columnspan=2, padx=(0, 16), pady=(0, 4), sticky="w")
+            sug_alt = []
+
+            def _buscar_alt(*_ev):
+                q = v_busq_alt.get().strip()
+                lst_busq_alt.delete(0, "end")
+                sug_alt.clear()
+                if not q:
+                    return
+                ya_puestas = {m.get("id_ficha_bd")} | {a.get("id_ficha_bd") for a in alternativas}
+                for f in self.bd.buscar(q, categoria=m.get("categoria")):
+                    if f["id"] in ya_puestas:
+                        continue
+                    sug_alt.append(f)
+                    lst_busq_alt.insert(
+                        "end", f"{bd_manager.BDManager.nombre_de(f)}  ·  {f.get('marca', '')}")
+            v_busq_alt.trace_add("write", lambda *_ev: _buscar_alt())
+
+            def _agregar_alt(_ev=None):
+                sel = lst_busq_alt.curselection()
+                if not sel or sel[0] >= len(sug_alt):
+                    return
+                f = sug_alt[sel[0]]
+                alternativas.append({"id_ficha_bd": f["id"], "marca": f.get("marca", "")})
+                v_busq_alt.set(""); _buscar_alt(); _pintar_alt()
+            lst_busq_alt.bind("<Double-Button-1>", _agregar_alt)
+
+            ctk.CTkLabel(tarjeta, text="Descripción técnica\n(carátula):",
+                        text_color=GRIS_TEXTO, justify="right").grid(
+                row=6, column=0, sticky="ne", pady=(10, 4), padx=(16, 6))
+            txt_desc = ctk.CTkTextbox(tarjeta, height=70, corner_radius=8,
+                                      border_width=1, border_color=BORDE_SUAVE)
+            txt_desc.grid(row=6, column=1, columnspan=2, padx=(0, 16), pady=(10, 4), sticky="we")
+            txt_desc.insert("1.0", m["descripcion"] if "descripcion" in m else desc_defecto)
+
+            ctk.CTkLabel(tarjeta, text="Normativa (carátula):", text_color=GRIS_TEXTO).grid(
+                row=7, column=0, sticky="e", pady=4, padx=(16, 6))
+            v_norm = tk.StringVar(value=m["normativa"] if "normativa" in m else norm_defecto)
+            ctk.CTkEntry(tarjeta, textvariable=v_norm, height=32,
+                        corner_radius=8, border_color=BORDE_SUAVE).grid(
+                row=7, column=1, columnspan=2, padx=(0, 16), sticky="we")
+
+            ctk.CTkLabel(tarjeta, text="Aspectos adicionales /\nnotas (carátula):",
+                        text_color=GRIS_TEXTO, justify="right").grid(
+                row=8, column=0, sticky="ne", pady=(10, 4), padx=(16, 6))
+            txt_aspectos = ctk.CTkTextbox(tarjeta, height=90, corner_radius=8,
+                                         border_width=1, border_color=BORDE_SUAVE)
+            txt_aspectos.grid(row=8, column=1, columnspan=2, padx=(0, 16), pady=(10, 4), sticky="we")
+            txt_aspectos.insert(
+                "1.0", m["aspectos_adicionales"] if "aspectos_adicionales" in m else _aspectos_auto())
+
+            def _recalcular_aspectos():
+                txt_aspectos.delete("1.0", "end")
+                txt_aspectos.insert("1.0", _aspectos_auto())
+            _boton_secundario(tarjeta, "↻ Recalcular automático", _recalcular_aspectos,
+                              ancho=180).grid(row=9, column=1, columnspan=2, padx=(0, 16),
+                                              pady=(0, 4), sticky="w")
+
             v_s = tk.BooleanVar(value=m.get("justificacion_stock", False))
             ctk.CTkCheckBox(tarjeta, text="Justificar por stock (marcas alternativas aprobadas)",
                            variable=v_s, text_color=GRIS_TEXTO,
                            fg_color=AZUL_ES, hover_color=_HOVER[AZUL_ES]).grid(
-                row=3, column=0, columnspan=2, sticky="w", padx=16, pady=4)
+                row=10, column=0, columnspan=3, sticky="w", padx=16, pady=4)
 
-            def _ok():
+            def _guardar_local():
+                """Guarda los campos como texto/overrides de ESTE material en
+                ESTE submittal unicamente (no toca la ficha del catalogo)."""
+                m["nombre_material"] = v_nombre.get().strip() or m["nombre_material"]
                 m["marca"] = v_p.get().strip()
-                m["marcas_alternativas"] = [a.strip() for a in v_a.get().split(",") if a.strip()]
+                m["marcas_alternativas"] = alternativas
                 m["justificacion_stock"] = v_s.get()
+
+                desc_final = txt_desc.get("1.0", "end-1c").strip()
+                if desc_final == desc_defecto.strip():
+                    m.pop("descripcion", None)
+                else:
+                    m["descripcion"] = desc_final
+
+                norm_final = v_norm.get().strip()
+                if norm_final == norm_defecto.strip():
+                    m.pop("normativa", None)
+                else:
+                    m["normativa"] = norm_final
+
+                aspectos_final = txt_aspectos.get("1.0", "end-1c").strip()
+                if aspectos_final == _aspectos_auto().strip():
+                    m.pop("aspectos_adicionales", None)
+                else:
+                    m["aspectos_adicionales"] = aspectos_final
+
+            def _guardar_solo_proyecto():
+                _guardar_local()
                 top.destroy(); self._refrescar()
-            _boton(tarjeta, "Confirmar", _ok, color=AZUL_ES).grid(
-                row=4, column=0, columnspan=2, pady=(12, 16))
+
+            def _guardar_en_bd():
+                if not ficha.get("id"):
+                    messagebox.showerror(
+                        "Sin ficha en la BD",
+                        "Este material no tiene una ficha vinculada en la Base "
+                        "de Datos (fue agregado de otra forma); no se puede "
+                        "guardar ahi. Use 'Guardar solo este proyecto'.",
+                        parent=top)
+                    return
+                if not messagebox.askyesno(
+                        "Guardar en la Base de Datos",
+                        "Esto modifica la ficha del catálogo:\n"
+                        f"{bd_manager.BDManager.nombre_de(ficha)}\n\n"
+                        "El cambio se aplicará a TODOS los submittals (los que "
+                        "ya existen y los futuros) que usen esta ficha, no "
+                        "solo a este proyecto.\n\n¿Continuar?", parent=top):
+                    return
+                cambios_bd = {
+                    "nombre_material": v_nombre.get().strip(),
+                    "marca": v_p.get().strip(),
+                    "descripcion_corta": txt_desc.get("1.0", "end-1c").strip(),
+                    "normativa": v_norm.get().strip(),
+                    "aspectos_adicionales": txt_aspectos.get("1.0", "end-1c").strip(),
+                }
+                try:
+                    ficha_act = self.bd.editar_ficha(ficha["id"], cambios_bd,
+                                                     regenerar_nombre=False)
+                except Exception as e:
+                    messagebox.showerror("No se pudo guardar en la BD", str(e), parent=top)
+                    return
+                r = self.bd.git_push(
+                    f"editar ficha {ficha_act.get('nombre_ficha', ficha['id'])} desde submittal")
+                # El valor recien guardado en la ficha YA es el nuevo default:
+                # se limpian los overrides locales de descripcion/normativa/
+                # aspectos para que este submittal (y los futuros) sigan el
+                # valor de la ficha en vez de quedar pisado con una copia vieja.
+                m["nombre_material"] = cambios_bd["nombre_material"] or m["nombre_material"]
+                m["marca"] = cambios_bd["marca"]
+                m["marcas_alternativas"] = alternativas
+                m["justificacion_stock"] = v_s.get()
+                m.pop("descripcion", None)
+                m.pop("normativa", None)
+                m.pop("aspectos_adicionales", None)
+                top.destroy(); self._refrescar()
+                _avisar_resultado_git(
+                    self.winfo_toplevel(), r,
+                    f"Ficha actualizada en la Base de Datos:\n"
+                    f"{ficha_act.get('nombre_ficha', '')}\n\n"
+                    "Afecta a todos los submittals que usen esta ficha.")
+
+            barra_guardar = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            barra_guardar.grid(row=11, column=0, columnspan=3, pady=(12, 16))
+            _boton_secundario(barra_guardar, "💾 Guardar solo este proyecto",
+                             _guardar_solo_proyecto, ancho=220).pack(side="left", padx=6)
+            _boton(barra_guardar, "☁️ Guardar en la BD (todos los proyectos)",
+                  _guardar_en_bd, color=NARANJA_CTA, ancho=280).pack(side="left", padx=6)
+            _dimensionar_ventana(top, 680, 800)
             _traer_al_frente(top)
 
         def _eliminar(self):
@@ -895,6 +1371,7 @@ if _TK_OK:
             self.btn_cerrar = _boton_secundario(tarjeta, "Cerrar", self._on_close, ancho=120)
             self.btn_cerrar.pack(pady=(0, 18))
             self.protocol("WM_DELETE_WINDOW", self._on_close)
+            _dimensionar_ventana(self, 760, 620)
             _traer_al_frente(self)
 
         def _on_close(self):
@@ -1109,6 +1586,8 @@ if _TK_OK:
             ("descripcion_corta", "Descripción corta / presentación"),
             ("aspectos_adicionales", "Notas adicionales para la carátula (opcional; "
                                      "ej: ficha de un sistema completo)"),
+            ("sinonimos", "Sinónimos para la búsqueda (coma; ej: interruptor "
+                          "-> \"apagador, breaker\")"),
         ]
 
         def __init__(self, master, bd, ruta, datos, titulo=None, es_edicion=False):
@@ -1124,6 +1603,7 @@ if _TK_OK:
             self.grab_set()
             self._construir()
             self._recalcular()
+            _dimensionar_ventana(self, 720, 740)
             _traer_al_frente(self)
 
         # ------------------------------------------------------------ armado
@@ -1353,10 +1833,125 @@ if _TK_OK:
                     side="left", padx=8)
             _boton_secundario(tarjeta, "Cancelar", top.destroy, ancho=120).pack(
                 pady=(10, 16))
+            _dimensionar_ventana(top, 560, 320)
             _traer_al_frente(top)
             self.wait_window(top)
             return eleccion["v"]
 
+
+    class _SelectorProyectoNube(ctk.CTkToplevel):
+        """Lista los submittals ya guardados en la BD (``Proyectos/`` en
+        GitHub, via ``BDManager.listar_proyectos()``) para continuarlos desde
+        cualquier PC sin necesitar la carpeta local de quien los creo -- solo
+        hace falta que ambas PCs sincronicen con la misma BD.
+
+        ``self.resultado`` queda con el ``dict`` del proyecto elegido (o
+        ``None`` si se cancela) para que quien la abre decida que hacer.
+        """
+
+        def __init__(self, master, bd):
+            super().__init__(master)
+            self.bd = bd
+            self.resultado = None
+            self._proyectos = []
+            self.title("Abrir submittal existente")
+            self.configure(fg_color=GRIS_BG, padx=14, pady=14)
+            tarjeta = _tarjeta(self)
+            tarjeta.pack(fill="both", expand=True, padx=4, pady=4)
+            ctk.CTkLabel(tarjeta, text="☁️ Proyectos sincronizados en la nube",
+                        font=_fuente(14, "bold"), text_color=GRIS_TEXTO).pack(
+                anchor="w", padx=18, pady=(16, 4))
+            self.lbl_estado = ctk.CTkLabel(tarjeta, text="🔄 Sincronizando…",
+                                           text_color=AZUL_ES)
+            self.lbl_estado.pack(anchor="w", padx=18)
+
+            barra = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            barra.pack(fill="x", padx=18, pady=(6, 8))
+            _boton_secundario(barra, "🔄 Actualizar", self._sincronizar_y_listar,
+                              ancho=130).pack(side="left")
+            _boton_secundario(barra, "💻 Buscar carpeta en esta PC…", self._buscar_local,
+                              ancho=230).pack(side="left", padx=(8, 0))
+
+            self.tree = ttk.Treeview(
+                tarjeta, columns=("nombre", "materiales", "actualizado", "por"),
+                show="headings", height=10)
+            for c, t, w in (("nombre", "Proyecto", 260), ("materiales", "Materiales", 90),
+                            ("actualizado", "Última actualización", 160),
+                            ("por", "Actualizado por", 150)):
+                self.tree.heading(c, text=t); self.tree.column(c, width=w)
+            self.tree.pack(fill="both", expand=True, padx=18, pady=4)
+            self.tree.bind("<Double-1>", self._abrir_seleccion)
+
+            barra_final = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            barra_final.pack(pady=(4, 18))
+            _boton(barra_final, "Abrir proyecto seleccionado", self._abrir_seleccion,
+                  color=NARANJA_CTA, ancho=280, alto=42).pack(side="left", padx=6)
+            _boton_secundario(barra_final, "Cancelar", self.destroy,
+                              ancho=120, alto=42).pack(side="left", padx=6)
+
+            _dimensionar_ventana(self, 760, 560)
+            _traer_al_frente(self)
+            self.after(100, self._sincronizar_y_listar)
+
+        def _sincronizar_y_listar(self):
+            self.lbl_estado.configure(text="🔄 Sincronizando con GitHub…",
+                                      text_color=AZUL_ES)
+
+            def trabajo():
+                try:
+                    self.bd.sincronizar()
+                except Exception:
+                    pass  # sin conexion: se sigue con la copia local de la BD
+                proyectos = self.bd.listar_proyectos()
+                try:
+                    self.after(0, lambda: self._pintar(proyectos))
+                except tk.TclError:
+                    pass  # la ventana se cerro mientras sincronizaba
+            threading.Thread(target=trabajo, daemon=True).start()
+
+        def _pintar(self, proyectos):
+            if not self.winfo_exists():
+                return
+            self._proyectos = proyectos
+            for i in self.tree.get_children():
+                self.tree.delete(i)
+            for p in proyectos:
+                fecha = (p.get("ultima_actualizacion") or "")[:16].replace("T", " ")
+                self.tree.insert("", "end", iid=p["carpeta_bd"],
+                                 values=(p["nombre_proyecto"], p["materiales"], fecha,
+                                         p.get("actualizado_por", "")))
+            n = len(proyectos)
+            self.lbl_estado.configure(
+                text=(f"☁️ {n} proyecto(s) sincronizado(s)" if n else
+                      "☁️ Todavía no hay proyectos guardados en la BD"),
+                text_color=GRIS_TEXTO_SUAVE)
+
+        def _abrir_seleccion(self, _ev=None):
+            sel = self.tree.selection()
+            if not sel:
+                messagebox.showinfo("Seleccione un proyecto",
+                                    "Elija un proyecto de la lista.", parent=self)
+                return
+            try:
+                proyecto = bd_manager.BDManager.cargar_submittal(sel[0])
+            except Exception as e:
+                messagebox.showerror("No se pudo abrir", str(e), parent=self); return
+            self.resultado = proyecto
+            self.destroy()
+
+        def _buscar_local(self):
+            """Alternativa para carpetas que todavia no estan en la BD (ej.
+            submittals viejos de v2.6 nunca guardados con 'Guardar avance')."""
+            carpeta = filedialog.askdirectory(
+                title="Carpeta del submittal (con submittal_proyecto.json)", parent=self)
+            if not carpeta:
+                return
+            try:
+                proyecto = bd_manager.BDManager.cargar_submittal(carpeta)
+            except Exception as e:
+                messagebox.showerror("No se pudo abrir", str(e), parent=self); return
+            self.resultado = proyecto
+            self.destroy()
 
     class _VentanaSubmittal(ctk.CTkToplevel):
         """Base comun para 'Generar desde BD' y 'Abrir existente'."""
@@ -1408,8 +2003,14 @@ if _TK_OK:
                                       fg_color="#0F172A", text_color="#4ADE80",
                                       font=("Consolas", 10))
             self.txt.pack(fill="x", padx=18, pady=(4, 4))
-            _boton(tarjeta, "🚀 Generar / Confirmar cambios", self._generar,
-                  color=NARANJA_CTA, ancho=280, alto=42).pack(pady=(4, 18))
+            barra_final = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            barra_final.pack(pady=(4, 18))
+            _boton_secundario(barra_final, "💾 Guardar avance", self._guardar_avance,
+                             ancho=200, alto=42).pack(side="left", padx=6)
+            _boton(barra_final, "🚀 Generar / Confirmar cambios", self._generar,
+                  color=NARANJA_CTA, ancho=280, alto=42).pack(side="left", padx=6)
+            self.protocol("WM_DELETE_WINDOW", self._on_close)
+            _dimensionar_ventana(self, 920, 720)
             _traer_al_frente(self)
 
         def _log(self, m):
@@ -1429,6 +2030,46 @@ if _TK_OK:
         def _cambiar_tipo_caratula(self, valor):
             self.proyecto["tipo_caratula"] = (
                 "ministerio_salud" if valor == self._ETIQ_MINSAL else "clasica")
+
+        def _guardar_avance(self, silencioso=False):
+            """Guarda el submittal (materiales + datos del proyecto) en la BD
+            SIN generar caratulas/compilados/Excel, para seguir despues desde
+            'Abrir existente'. No necesita carpeta destino.
+
+            Con ``silencioso=True`` (usado al cerrar la ventana) no muestra
+            avisos ni escribe en el log -- solo guarda."""
+            self.proyecto["materiales_seleccionados"] = self.tabla.materiales
+            destino = self.var_dest.get().strip()
+            self.bd.guardar_submittal(self.proyecto, destino=destino or None)
+            r = self.bd.git_push(
+                f"guardar avance de {self.proyecto.get('nombre_proyecto', 'submittal')}")
+            if silencioso:
+                return
+            self._log("\n💾 Avance guardado (sin generar carátulas/compilados).")
+            _avisar_resultado_git(
+                self.winfo_toplevel(), r,
+                "Avance guardado. Podés cerrar esta ventana y continuar después "
+                "con 'Abrir existente'.")
+
+        def _on_close(self):
+            """Guarda el avance SIEMPRE al cerrar la ventana (aunque sea con la
+            X, sin tocar "Guardar avance" o "Generar"). Antes, cerrar sin
+            guardar perdia en silencio los materiales agregados en la sesion;
+            al reabrir se continuaba desde el ultimo guardado real (menos
+            materiales de los que la persona alcanzo a ver en pantalla), lo
+            que se percibia como "el contador de consecutivos se resetea"
+            -- la numeracion en si nunca estuvo mal, era el progreso el que
+            no se habia guardado."""
+            try:
+                self._guardar_avance(silencioso=True)
+            except Exception as e:
+                if not messagebox.askyesno(
+                        "No se pudo guardar",
+                        f"No se pudo guardar el avance antes de cerrar:\n{e}\n\n"
+                        "¿Cerrar de todas formas? Se perderían los cambios sin "
+                        "guardar de esta sesión.", parent=self.winfo_toplevel()):
+                    return
+            self.destroy()
 
         def _generar(self):
             self.proyecto["materiales_seleccionados"] = self.tabla.materiales
@@ -1546,6 +2187,7 @@ if _TK_OK:
 
             nb.set("🔑 OpenAI (lectura de fichas)" if tab_inicial == "openai"
                   else "☁️ GitHub (sincronización)")
+            _dimensionar_ventana(self, 600, 560)
             _traer_al_frente(self)
 
         # -------------------------------------------------- pestaña OpenAI
@@ -1731,10 +2373,10 @@ if _TK_OK:
             _configurar_estilo_ttk()
             self.title(f"Generador de Submittals ES v{VERSION}")
             self.configure(fg_color=GRIS_BG, padx=20, pady=20)
-            self.geometry("680x600")
             self._sincronizando = False
             self.modo_dev = False
             self._construir()
+            _dimensionar_ventana(self, 720, 620)
             # Se revisa/instala Git ANTES de crear el BDManager: la eleccion de
             # transporte (git vs API REST) se decide una sola vez, al construir
             # el GitSync de adentro. Solo tarda si esta PC no tiene git (primera
@@ -1948,11 +2590,39 @@ if _TK_OK:
             return d.resultado
 
         def _generar_desde_bd(self):
-            datos = self._pedir_datos_proyecto()
-            if not datos:
-                return
             destino = filedialog.askdirectory(title="Carpeta destino del submittal")
             if not destino:
+                return
+            # Si esta carpeta ya tiene un submittal guardado (con materiales),
+            # "Generar desde BD" NO debe pisarlo con uno vacio: eso es lo que
+            # reseteaba el contador de consecutivos al "reabrir" un proyecto
+            # por aca en vez de con "Abrir submittal existente". Se ofrece
+            # continuar el que ya existe.
+            existente_path = Path(destino) / bd_manager.NOMBRE_SUBMITTAL_JSON
+            if existente_path.exists():
+                try:
+                    existente = bd_manager.BDManager.cargar_submittal(destino)
+                except Exception:
+                    existente = None
+                n = len((existente or {}).get("materiales_seleccionados", []))
+                if existente and n:
+                    continuar = messagebox.askyesno(
+                        "Ya hay un submittal en esta carpeta",
+                        f"Esta carpeta ya tiene un submittal guardado con {n} "
+                        "material(es).\n\n"
+                        "¿Continuar ESE submittal? Es lo recomendado: si empieza "
+                        "uno nuevo en esta misma carpeta, los consecutivos "
+                        "arrancan de nuevo desde 1 y corre riesgo de pisar lo "
+                        "ya guardado.\n\n"
+                        "Sí = continuar el existente.\n"
+                        "No = empezar uno nuevo vacío en esta misma carpeta.",
+                        parent=self.winfo_toplevel())
+                    if continuar:
+                        _VentanaSubmittal(self, self.bd, existente, destino,
+                                          f"Editando: {existente.get('nombre_proyecto', '')}")
+                        return
+            datos = self._pedir_datos_proyecto()
+            if not datos:
                 return
             proyecto = {"nombre_proyecto": Path(destino).name,
                         "datos_procedimiento": datos, "tipo_caratula": "clasica",
@@ -1960,14 +2630,21 @@ if _TK_OK:
             _VentanaSubmittal(self, self.bd, proyecto, destino, "Generar submittal desde BD")
 
         def _abrir_existente(self):
-            carpeta = filedialog.askdirectory(title="Carpeta del submittal (con submittal_proyecto.json)")
-            if not carpeta:
+            """Abre un submittal ya guardado, ya sea eligiendolo de la lista
+            sincronizada en la BD (para continuar el trabajo de otra PC sin
+            tener acceso a su carpeta) o buscando una carpeta local."""
+            d = _SelectorProyectoNube(self, self.bd)
+            self.wait_window(d)
+            proyecto = d.resultado
+            if not proyecto:
                 return
-            try:
-                proyecto = bd_manager.BDManager.cargar_submittal(carpeta)
-            except Exception as e:
-                messagebox.showerror("No se pudo abrir", str(e), parent=self.winfo_toplevel()); return
-            _VentanaSubmittal(self, self.bd, proyecto, carpeta,
+            # La carpeta de entregables de quien guardo por ultima vez puede
+            # ser de OTRA PC (no existe aqui); solo se reutiliza como destino
+            # si de verdad existe en este equipo, si no se deja vacia y se
+            # pide al generar (igual que "Generar desde BD").
+            ruta_previa = proyecto.get("ruta_entregables", "")
+            destino = ruta_previa if ruta_previa and Path(ruta_previa).is_dir() else ""
+            _VentanaSubmittal(self, self.bd, proyecto, destino,
                               f"Editando: {proyecto.get('nombre_proyecto', '')}")
 
         def _cargar_ficha(self):
@@ -2103,35 +2780,15 @@ if _TK_OK:
             self.configure(fg_color=GRIS_BG, padx=12, pady=12)
             tarjeta = _tarjeta(self)
             tarjeta.pack(fill="both", expand=True, padx=4, pady=4)
-            top = ctk.CTkFrame(tarjeta, fg_color="transparent")
-            top.pack(fill="x", padx=16, pady=(16, 8))
-            ctk.CTkLabel(top, text="Buscar:", text_color=GRIS_TEXTO).pack(side="left")
-            self.var_q = tk.StringVar()
-            e = ctk.CTkEntry(top, textvariable=self.var_q, width=220, height=32,
-                             corner_radius=8, border_color=BORDE_SUAVE)
-            e.pack(side="left", padx=4)
-            e.bind("<KeyRelease>", lambda _e: self._refrescar())
-            ctk.CTkLabel(top, text="Categoría:", text_color=GRIS_TEXTO).pack(
-                side="left", padx=(10, 2))
-            self.var_cat = tk.StringVar(value="TODAS")
-            ctk.CTkComboBox(top, variable=self.var_cat, width=110, height=32,
-                            corner_radius=8, border_color=BORDE_SUAVE,
-                            button_color=ROJO_ES, button_hover_color=_HOVER[ROJO_ES],
-                            state="readonly", dropdown_fg_color="white",
-                            values=["TODAS"] + list(bd_manager.CATEGORIAS)).pack(side="left")
-            self.var_cat.trace_add("write", lambda *_: self._refrescar())
-            self.var_inact = tk.BooleanVar(value=False)
-            ctk.CTkCheckBox(top, text="Mostrar desactivadas", variable=self.var_inact,
-                           command=self._refrescar, text_color=GRIS_TEXTO,
-                           fg_color=AZUL_ES, hover_color=_HOVER[AZUL_ES]).pack(
-                side="left", padx=(12, 0))
-
-            self.tree = ttk.Treeview(tarjeta, columns=("n", "c", "e", "f"), show="headings")
-            for c, t, w in (("n", "Nombre de la ficha", 600), ("c", "Categoría", 80),
-                            ("e", "Estado", 90), ("f", "Cargada", 100)):
-                self.tree.heading(c, text=t); self.tree.column(c, width=w)
-            self.tree.pack(fill="both", expand=True, padx=16, pady=8)
-            self.tree.bind("<Double-Button-1>", lambda _ev: self._editar())
+            ctk.CTkLabel(tarjeta, text="Fichas en la Base de Datos — doble clic para editar",
+                        text_color=GRIS_TEXTO, font=_fuente(12, "bold")).pack(
+                anchor="w", padx=16, pady=(16, 4))
+            # Mismo buscador que al armar un submittal, con la mejor coincidencia
+            # de primera, filtros y scroll; aqui ademas puede mostrar las fichas
+            # desactivadas (para reactivarlas).
+            self.buscador = _BuscadorFichas(tarjeta, self.bd, on_activar=lambda _f: self._editar(),
+                                            permitir_inactivas=True, alto_filas=14)
+            self.buscador.pack(fill="both", expand=True, padx=16, pady=(0, 8))
 
             bar = ctk.CTkFrame(tarjeta, fg_color="transparent")
             bar.pack(fill="x", padx=16, pady=(0, 16))
@@ -2145,50 +2802,25 @@ if _TK_OK:
                 side="left", padx=6)
             _boton_secundario(bar, "♻️ Reactivar", self._reactivar, ancho=140).pack(
                 side="left")
-            self.lbl = ctk.CTkLabel(bar, text="", text_color=GRIS_TEXTO_SUAVE)
-            self.lbl.pack(side="right")
-            self._map = {}
-            self._refrescar()
+            r = self.bd.resumen_por_categoria()
+            ctk.CTkLabel(bar, text=f"{r['TOTAL']} activas · ARQ {r['ARQ']} · ESTR {r['ESTR']} · "
+                                   f"MEC {r['MEC']} · ELEC {r['ELEC']}",
+                        text_color=GRIS_TEXTO_SUAVE).pack(side="right")
             self._ofrecer_migracion()
+            _dimensionar_ventana(self, 1060, 680)
             _traer_al_frente(self)
 
         # ------------------------------------------------------------ listado
         def _refrescar(self):
-            q = self.var_q.get().strip()
-            cat = self.var_cat.get()
-            cat = None if cat == "TODAS" else cat
-            inact = self.var_inact.get()
-            if q:
-                fichas = fuzzy_search.buscar(
-                    q, self.bd.listar_fichas(incluir_inactivas=inact),
-                    categoria=cat, top_n=200, incluir_inactivas=inact)
-            else:
-                fichas = [f for f in self.bd.listar_fichas(incluir_inactivas=inact)
-                          if not cat or f.get("categoria") == cat]
-            for i in self.tree.get_children():
-                self.tree.delete(i)
-            self._map.clear()
-            for f in fichas:
-                iid = f.get("id")
-                if not iid:
-                    continue          # índice inconsistente: no reventar la lista
-                self._map[iid] = f
-                estado = f.get("estado", "activo")
-                self.tree.insert("", "end", iid=iid,
-                                 values=(self.bd.nombre_de(f), f.get("categoria", ""),
-                                         "desactivada" if estado != "activo" else "activa",
-                                         f.get("fecha_carga", "")))
-            r = self.bd.resumen_por_categoria()
-            self.lbl.configure(text=f"{r['TOTAL']} activas · ARQ {r['ARQ']} · ESTR {r['ESTR']} · "
-                                    f"MEC {r['MEC']} · ELEC {r['ELEC']}")
+            self.buscador.refrescar()
 
         def _sel(self):
-            sel = self.tree.selection()
-            if not sel:
+            f = self.buscador.ficha_seleccionada()
+            if not f:
                 messagebox.showinfo("Seleccione una ficha",
                                     "Elija una ficha de la lista.", parent=self.winfo_toplevel())
                 return None
-            return self._map.get(sel[0])
+            return f
 
         def _ofrecer_migracion(self):
             """Fichas de versiones anteriores sin nombre descriptivo."""
@@ -2226,7 +2858,8 @@ if _TK_OK:
                        if not k.startswith("_") and k in
                        ("nombre_material", "marca", "categoria", "dimensiones",
                         "sin_medidas", "tipo_producto", "especificacion",
-                        "normativa", "descripcion_corta", "aspectos_adicionales")}
+                        "normativa", "descripcion_corta", "aspectos_adicionales",
+                        "sinonimos")}
             manual = res["datos"].get("nombre_ficha", "")
             if manual:
                 cambios["nombre_ficha"] = manual

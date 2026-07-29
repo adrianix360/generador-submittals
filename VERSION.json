@@ -1,16 +1,16 @@
 {
-  "version": "3.3.6",
+  "version": "3.3.7",
   "tipo_actualizacion": "ejecutable",
-  "fecha": "2026-07-28",
-  "changelog": "Nuevo campo 'Notas adicionales para la caratula' al cargar o editar una ficha tecnica: permite aclarar cuando la ficha corresponde a un sistema completo o a un lineal de productos, y ese texto se usa como aspectos_adicionales de la caratula",
+  "fecha": "2026-07-29",
+  "changelog": "Version 3.3.7: se reemplaza el aplanado de la caratula en los compilados por actualizacion de apariencia con widget.update() (PyMuPDF) y renombrado de campos por consecutivo para eliminar la colision de nombres entre caratulas fusionadas, manteniendo los campos editables; se agrega orden manual de consecutivos (subir/bajar) en la tabla de materiales; las marcas alternativas ahora se vinculan a fichas reales de la BD y sus PDF se copian al compilado; se puede editar libremente nombre, descripcion, normativa y aspectos adicionales de cada material por submittal, con guardado a eleccion solo en el proyecto o tambien en la ficha de la BD; se agrega boton Actualizar catalogo al armar un submittal; los datos del proyecto dejan de ser obligatorios para generar; se agregan sinonimos de busqueda al cargar o editar una ficha; se agrega boton Guardar avance y autoguardado silencioso al cerrar la ventana del submittal (causa real del reseteo de consecutivos que se reportaba, nunca fue un bug de numeracion sino avance no guardado); se reescribe el buscador de fichas corrigiendo el bug de scoring que lo hacia inservible y con una UI nueva con filtros y scroll; las ventanas se auto-dimensionan para que ningun boton quede fuera de pantalla; se agrega un guardrail para no resetear el contador de consecutivos al usar Generar desde BD sobre una carpeta que ya tenia avance; se agrega una animacion al agregar un material a la lista del submittal; y Abrir submittal existente ahora lista los proyectos ya sincronizados en la BD para continuarlos desde otra PC sin compartir carpeta (con aviso de que la edicion simultanea del mismo proyecto todavia no fusiona por material).",
   "archivos": {
     "submitals_gui_v3.py": {
-      "hash": "867a52dd91ec5fc722ae14e19ce8ed7baee72856437d2721150af9e44a83abe3",
+      "hash": "cd31386ea9f51b44a7adc79ea5bcbe7ff489da6ca3c9d66bfad91b5c8f1682b2",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui_v3.py",
       "tipo": "python"
     },
     "bd_manager.py": {
-      "hash": "b320e1a35eaaaefb991584fdd527ae4d070bfff840db3845901a6dc9b40a454d",
+      "hash": "808f46a1517e11ca869440f8995a551e40ca6093ca779310c6dcef5e1f42d8c9",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/bd_manager.py",
       "tipo": "python"
     },
@@ -20,7 +20,7 @@
       "tipo": "python"
     },
     "fuzzy_search.py": {
-      "hash": "0b3196170e2998ba6e465cfb0f6b9d14b4341074ca626e321167a0f9a7c87b1f",
+      "hash": "8a43bf9788d479de853c1cdf6759382fea0d3a30ae8ee369315c7d39dda3f6ea",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/fuzzy_search.py",
       "tipo": "python"
     },
@@ -65,8 +65,8 @@
       "tipo": "html"
     },
     "GeneradorSubmittalsES_v3.exe": {
-      "hash": "087e8d274d015a3ecadbe9a60b046f4f7200b5a711ec20653fd76b5a4ee0b7b9",
-      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.6/GeneradorSubmittalsES_v3.exe",
+      "hash": "82de25828d8ee48eb11e62fc104567e8bc4d886a7026da8f2810130e2c070990",
+      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.7/GeneradorSubmittalsES_v3.exe",
       "tipo": "ejecutable",
       "requerido": false
     }

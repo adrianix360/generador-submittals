@@ -166,7 +166,7 @@ from tkinter import ttk, filedialog, messagebox
 # ============================================================================
 # CONSTANTES / TEMA
 # ============================================================================
-VERSION   = "3.3.6"
+VERSION   = "3.3.7"
 AUTOR     = "Adrián Castro"
 ROJO_ES   = "#E11D2D"
 AZUL_ES   = "#1F3864"
@@ -1654,16 +1654,68 @@ def imagen_a_pdf_reader(path):
             pass
 
 
+def _caratula_reader_para_compilar(caratula_path, q=None, cons="-"):
+    """PdfReader de la 1a pagina de la caratula, lista para entrar a un
+    compilado: apariencia visual refrescada y campos renombrados con el
+    consecutivo (``cons``) para que sean unicos.
+
+    Historia del problema: la caratula se genera con campos AcroForm con
+    ``NeedAppearances`` -- le pide al lector que DIBUJE el valor el mismo.
+    Acrobat lo hace; Chrome, Preview y varios visores livianos no, asi que el
+    campo se veia vacio dentro de un compilado grande.
+
+    v3.3.7 lo arreglo aplanando (``fitz.Document.bake``): se veia bien en
+    cualquier lector, pero el campo dejaba de ser editable.
+
+    Este cambio resuelve las 2 cosas SIN perder edicion:
+      1. ``widget.update()`` regenera la apariencia visual correcta de cada
+         campo sin destruir el widget -- sigue editable donde el lector
+         soporte formularios (Acrobat, Foxit, PDF-XChange...).
+      2. El nombre de cada campo se prefija con ``cons`` (ej. "ARQ01_marca").
+         Todas las caratulas salen del mismo template, con los MISMOS nombres
+         de campo -- al fusionar varias en el compilado por disciplina (puede
+         juntar decenas), el PDF trata los campos homonimos como un solo
+         campo logico: Acrobat termina mostrando el valor de uno solo y deja
+         el resto en blanco (bug real, reportado en un compilado de +500
+         paginas donde solo se veian los datos de la 1a caratula). Con el
+         prefijo cada campo queda unico y esto no puede volver a pasar.
+
+    Si PyMuPDF no esta o falla, se cae a la caratula tal cual (los campos
+    quedan como estaban, sin renombrar ni refrescar).
+    """
+    import io
+    from pypdf import PdfReader
+    try:
+        import fitz
+        doc = fitz.open(str(caratula_path))
+        try:
+            prefijo = re.sub(r"[^A-Za-z0-9]", "", str(cons)) or None
+            for page in doc:
+                for widget in page.widgets():
+                    if prefijo:
+                        widget.field_name = f"{prefijo}_{widget.field_name}"
+                    widget.update()
+            datos = doc.tobytes(garbage=3, deflate=True)
+        finally:
+            doc.close()
+        return PdfReader(io.BytesIO(datos))
+    except Exception as e:
+        if q:
+            q.put(("WARN", f"{cons}: no se pudo preparar la caratula para el "
+                           f"compilado ({e}); se usa la version original"))
+        return PdfReader(str(caratula_path))
+
+
 def generar_compilado(caratula_path, doc_paths, out_path, q=None, cons="-"):
     from pypdf import PdfWriter, PdfReader
     w = PdfWriter()
     # Solo la 1a pagina de la caratula (evita la 2a hoja en blanco que agrega
-    # Chromium). Se usa append(pages=(0,1)) en vez de add_page() para CONSERVAR
-    # los campos de formulario editables de la caratula (v2.6.18): add_page copia
-    # la pagina pero NO el AcroForm del documento, y los lectores dejarian de
-    # reconocer los campos como editables en el compilado.
+    # Chromium). Apariencia de sus campos refrescada y campos renombrados con
+    # el consecutivo (ver _caratula_reader_para_compilar): se ve bien en
+    # cualquier visor y sigue siendo editable donde el lector soporte forms.
     try:
-        w.append(PdfReader(str(caratula_path)), pages=(0, 1))
+        w.append(_caratula_reader_para_compilar(caratula_path, q=q, cons=cons),
+                 pages=(0, 1))
     except Exception:
         # Respaldo: caratula plana (sin formulario) -> basta con la pagina.
         w.add_page(PdfReader(str(caratula_path)).pages[0])
@@ -1902,16 +1954,24 @@ def compilar_por_disciplina(carpeta_base, disciplina, q=None):
     total_paginas = 0
     materiales_procesados = 0
     try:
-        for _, sub in entradas:
+        for n, sub in entradas:
             caratulas = sorted(sub.glob("CARATULA*.pdf"))
             if not caratulas:
                 if q:
                     q.put(("WARN", f"{disciplina}: '{sub.name}' sin caratula, se omite del compilado"))
                 continue
             try:
-                r = PdfReader(str(caratulas[0]))
-                w.append(r)
-                total_paginas += len(r.pages)
+                # Apariencia refrescada + campo renombrado con el consecutivo
+                # propio de ESTA caratula (ej. "ARQ01"), no el de la disciplina:
+                # todas salen del mismo template con los MISMOS nombres de
+                # campo, asi que al fusionar varias (compilado por disciplina
+                # puede juntar decenas) un prefijo repetido para todas seguiria
+                # colapsando los campos homonimos -- el bug que se busca evitar.
+                # Solo la 1a pagina de la caratula.
+                cons_material = f"{pfx}{n:02d}"
+                r = _caratula_reader_para_compilar(caratulas[0], q=q, cons=cons_material)
+                w.append(r, pages=(0, 1))
+                total_paginas += 1
             except Exception as e:
                 if q:
                     q.put(("WARN", f"{disciplina}: no se pudo leer caratula de '{sub.name}' ({e})"))

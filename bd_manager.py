@@ -105,7 +105,6 @@ ESTADO_ACTIVO = "activo"
 ESTADO_INACTIVO = "inactivo"
 
 CAMPOS_OBLIGATORIOS_FICHA = ("nombre_material", "marca", "categoria")
-CAMPOS_PROCEDIMIENTO = ("numero_procedimiento", "institucion", "detalle", "plazo", "monto")
 
 
 # --------------------------------------------------------------------------
@@ -727,6 +726,7 @@ class BDManager:
             "normativa": str(datos.get("normativa", "SIN ESPECIFICAR")).strip() or "SIN ESPECIFICAR",
             "descripcion_corta": str(datos.get("descripcion_corta", "")).strip(),
             "aspectos_adicionales": str(datos.get("aspectos_adicionales", "")).strip(),
+            "sinonimos": str(datos.get("sinonimos", "")).strip(),
             "search_keywords": "",
             "ruta_pdf": destino_rel,
             "hash_archivo": sha256_file(destino_abs),
@@ -1091,6 +1091,7 @@ class BDManager:
                 "carpeta_bd": str(sub),
                 "ruta_entregables": d.get("ruta_entregables", ""),
                 "ultima_actualizacion": d.get("ultima_actualizacion", ""),
+                "actualizado_por": d.get("actualizado_por", ""),
                 "materiales": len(d.get("materiales_seleccionados", [])),
             })
         salida.sort(key=lambda x: x.get("ultima_actualizacion", ""), reverse=True)
@@ -1106,10 +1107,9 @@ class BDManager:
         if not materiales:
             errores.append("El submittal no tiene materiales (minimo 1).")
 
-        datos = proyecto.get("datos_procedimiento", {})
-        faltan = [c for c in CAMPOS_PROCEDIMIENTO if not str(datos.get(c, "")).strip()]
-        if faltan:
-            errores.append("Faltan datos del proyecto: " + ", ".join(faltan))
+        # Los datos del proyecto (CAMPOS_PROCEDIMIENTO) ya NO son obligatorios:
+        # a veces se generan carATulas antes de tener el numero de procedimiento
+        # o el monto definitivos. Se dejan en blanco si el usuario no los tiene.
 
         activas = {f["id"] for f in self.listar_fichas()}
         for m in materiales:
@@ -1134,16 +1134,28 @@ class BDManager:
             marcas = _marcas_material(m, ficha)
             ruta_carpeta = str(Path(destino) / carpeta_madre /
                                (sanitizar_nombre(f"{cons}-{nombre}")))
+            documentos = [Path(ficha.get("ruta_pdf", "")).name] if ficha else []
+            for alt in m.get("marcas_alternativas", []) or []:
+                ficha_alt = fichas_idx.get(_id_ficha_alternativa(alt))
+                if ficha_alt:
+                    documentos.append(Path(ficha_alt.get("ruta_pdf", "")).name)
+            # "descripcion"/"normativa"/"aspectos_adicionales" en ``m`` son
+            # overrides manuales (editados por el usuario para ESTE submittal
+            # via "Editar marca(s)"); si no estan presentes se usa el valor de
+            # la ficha del catalogo (o el texto auto-generado, para aspectos).
+            descripcion = m["descripcion"] if "descripcion" in m else ficha.get("descripcion_corta", "")
+            normativa = m["normativa"] if "normativa" in m else ficha.get("normativa", "SIN ESPECIFICAR")
+            aspectos = (m["aspectos_adicionales"] if "aspectos_adicionales" in m
+                        else (_texto_aspectos(m, ficha) or ficha.get("aspectos_adicionales", "")))
             materiales.append({
                 "consecutivo": cons,
                 "nombre": nombre,
                 "categoria": cat,
                 "marca": marcas or "POR DEFINIR",
-                "descripcion": ficha.get("descripcion_corta", ""),
-                "normativa": ficha.get("normativa", "SIN ESPECIFICAR"),
-                "aspectos_adicionales": (_texto_aspectos(m, ficha)
-                                        or ficha.get("aspectos_adicionales", "")),
-                "documentos_encontrados": [Path(ficha.get("ruta_pdf", "")).name] if ficha else [],
+                "descripcion": descripcion,
+                "normativa": normativa,
+                "aspectos_adicionales": aspectos,
+                "documentos_encontrados": documentos,
                 "compilado_generado": None,
                 "estado": "FICHA_DISPONIBLE",
                 "carpeta_vacia": False,
@@ -1180,6 +1192,19 @@ class BDManager:
                     shutil.copy2(pdf_local, carpeta / Path(ficha["ruta_pdf"]).name)
                 except Exception as e:
                     self.log.error("No se pudo copiar ficha %s: %s", mat.get("consecutivo"), e)
+            # Marcas alternativas vinculadas a una ficha real del catalogo: se
+            # copia tambien su PDF a la misma carpeta (antes solo quedaban
+            # mencionadas en el texto de la caratula, sin adjuntar el PDF).
+            for alt in m.get("marcas_alternativas", []) or []:
+                ficha_alt = fichas_idx.get(_id_ficha_alternativa(alt))
+                if not ficha_alt:
+                    continue
+                try:
+                    pdf_local = self.ruta_local_ficha(ficha_alt)
+                    shutil.copy2(pdf_local, carpeta / Path(ficha_alt["ruta_pdf"]).name)
+                except Exception as e:
+                    self.log.error("No se pudo copiar ficha alternativa de %s: %s",
+                                   mat.get("consecutivo"), e)
 
         json_path = destino / "datos_materiales.json"
         json_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -1205,6 +1230,18 @@ def _clave_orden(consec):
     return (orden.get(m.group(1).upper(), 98), int(m.group(2)))
 
 
+def _nombre_alternativa(alt):
+    """``marcas_alternativas`` acepta 2 formatos por compatibilidad:
+    - antiguo: string con el nombre de la marca (solo texto, sin PDF propio).
+    - nuevo: dict {"marca": ..., "id_ficha_bd": ...} vinculado a una ficha real
+      del catalogo, cuyo PDF si se adjunta al compilado."""
+    return str(alt.get("marca", "")).strip() if isinstance(alt, dict) else str(alt).strip()
+
+
+def _id_ficha_alternativa(alt):
+    return alt.get("id_ficha_bd") if isinstance(alt, dict) else None
+
+
 def _marcas_material(material, ficha):
     """Marca principal + marcas alternativas separadas por ' / ' (formato v2.6)."""
     marcas = []
@@ -1212,7 +1249,7 @@ def _marcas_material(material, ficha):
     if principal:
         marcas.append(str(principal).strip())
     for alt in material.get("marcas_alternativas", []) or []:
-        alt = str(alt).strip()
+        alt = _nombre_alternativa(alt)
         if alt and alt not in marcas:
             marcas.append(alt)
     return " / ".join(marcas)

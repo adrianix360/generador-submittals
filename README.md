@@ -20,7 +20,7 @@
 
 **Generador de Submittals ES** es una aplicación desktop que automatiza la creación de documentos de aprobación de materiales (submittales) para proyectos constructivos. 
 
-Con v3.0.0, implementamos una **base de datos centralizada en GitHub** que permite:
+Con v3.3.5, implementamos una **base de datos centralizada en GitHub** que permite:
 - ✅ Reutilizar fichas técnicas sin regenerarlas
 - ✅ Crear submittales desde una biblioteca compartida
 - ✅ Editar proyectos y regenerar entregables dinámicamente
