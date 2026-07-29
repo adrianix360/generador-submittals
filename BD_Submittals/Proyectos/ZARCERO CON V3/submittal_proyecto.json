@@ -10,6 +10,15 @@
   "tipo_caratula": "ministerio_salud",
   "materiales_seleccionados": [
     {
+      "consecutivo": "ARQ01",
+      "id_ficha_bd": "7ec905a3-8f53-4469-bd35-67f9a4146952",
+      "nombre_material": "CERRADURA ELECTRICA YALE 130 x 107",
+      "marca": "Yale",
+      "categoria": "ARQ",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
       "consecutivo": "ELEC01",
       "id_ficha_bd": "76cca228-4841-4bc1-992b-88f4cbfee78b",
       "nombre_material": "INTERRUPTOR SENCILLO TRES VÍAS 106.8 x 96.8 x 83.3",
@@ -62,10 +71,154 @@
       "categoria": "ELEC",
       "marcas_alternativas": [],
       "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC07",
+      "id_ficha_bd": "b00e7cda-6ee1-40c3-bcb6-0b2ab90f5a30",
+      "nombre_material": "BARRA ROSCADA MULTIPLE",
+      "marca": "All Threaded Rods",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC08",
+      "id_ficha_bd": "621d5330-b3cb-4f74-95bf-0871378f166e",
+      "nombre_material": "CAJA CUADRADA CUADRADO 4 x 4 x 1.5",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC09",
+      "id_ficha_bd": "7ad81c91-d6f3-4fb6-9d9a-0331eeb88a3f",
+      "nombre_material": "TOMACORRIENTE 50A 57.5 x 54.5 x 32.5 125 V",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC10",
+      "id_ficha_bd": "85c2206f-3ba2-4de4-b012-eadcbe2346d4",
+      "nombre_material": "ENCHUFE 50A 63.5 x 80.2 250 V",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC11",
+      "id_ficha_bd": "cef5c542-1af5-4511-9177-e61dd58b2ac0",
+      "nombre_material": "CENTRO DE CARGA EATON CHP32N 34.12 x 14.31 x 3.88 225 A",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC12",
+      "id_ficha_bd": "8f9fcef4-fdf6-4dc2-88c2-47f81c88605c",
+      "nombre_material": "TIMBRE CAMPANA 224 100 x 53.35 110 V",
+      "marca": "EAGLE",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC13",
+      "id_ficha_bd": "76d335a9-4f3d-4e5c-976f-b87957e29314",
+      "nombre_material": "FOTOCELDA 76.2 x 76.2 x 56.4 277 V",
+      "marca": "Intermatic",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC14",
+      "id_ficha_bd": "d5749cf1-c685-4216-a056-dd3bc0c782c0",
+      "nombre_material": "TOMACORRIENTE ROJO DOBLE GRADO HOSPITALARIO H8300 103.3 x 29 x 21.2 125 V",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC15",
+      "id_ficha_bd": "40f3f17b-5378-47d3-94e1-f67f7304d3e4",
+      "nombre_material": "CALENTADOR LORENZTTI HIGIENICA 3T",
+      "marca": "LORENZETTI",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC16",
+      "id_ficha_bd": "d037981e-7e6d-4663-ada6-db85c9bf02b1",
+      "nombre_material": "TOMACORRIENTE DOBLE GFCI TST20 105.2 x 52.3 x 27 125 V",
+      "marca": "EAGLE",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC17",
+      "id_ficha_bd": "693e9adb-e4c5-479f-a2f2-e9055bc4420e",
+      "nombre_material": "TOMACORRIENTE SENCILLO 20 A 125 V",
+      "marca": "Leviton",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC18",
+      "id_ficha_bd": "b18e3fc0-e8a1-495b-903d-96c565538fbd",
+      "nombre_material": "TOMACORRIENTE DOBLE COMERCIAL TAMPER 66.5 x 32.2 x 29.9 125 V",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC19",
+      "id_ficha_bd": "44cb8f08-b59e-4252-a518-f4daef362885",
+      "nombre_material": "TOMA SENCILLO TELEVISIÓN COAXIAL 71 x 115.2 x 5.5",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC20",
+      "id_ficha_bd": "d3c9862d-0aee-44a2-ab1a-ad1cee61fb05",
+      "nombre_material": "VENTILADOR DE TECHO - BOREAS 152 cm",
+      "marca": "Boreas",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC21",
+      "id_ficha_bd": "023eb31f-6a9d-4884-b479-b5936ef45214",
+      "nombre_material": "CAJA RECTANGULAR DE INTEMPERIE 3.27 x 2.87 x 2.56",
+      "marca": "RAWELT",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC22",
+      "id_ficha_bd": "2b62dcd9-ce92-44c4-8acd-18d895733ad2",
+      "nombre_material": "GAZA TUBO EMT OREJAS",
+      "marca": "Steel Elecktrik",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
     }
   ],
   "id_proyecto": "dcc4f96b-cb78-4cbb-abbf-517cc0c6a465",
   "fecha_creacion": "2026-07-29",
-  "ultima_actualizacion": "2026-07-29T14:36:29",
+  "ultima_actualizacion": "2026-07-29T14:44:05",
   "actualizado_por": "ProBook_de_Adri"
 }
