@@ -206,10 +206,217 @@
       "categoria": "ELEC",
       "marcas_alternativas": [],
       "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC23",
+      "id_ficha_bd": "7ec905a3-8f53-4469-bd35-67f9a4146952",
+      "nombre_material": "CERRADURA ELECTRICA YALE 130 x 107",
+      "marca": "Yale",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC24",
+      "id_ficha_bd": "d0bf1c33-d8af-4422-a207-142a7e2c70f3",
+      "nombre_material": "PLACA METÁLICA CUADRADA 327A CUADRADO 115 x 115 x 4.2 30 A",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC25",
+      "id_ficha_bd": "47f0111c-a6c7-49df-9b00-57affa356fae",
+      "nombre_material": "LUMINARIA LED EMERGENCIA 58.7 x 301.5 x 131 mm 2 W",
+      "marca": "SYLVANIA",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC26",
+      "id_ficha_bd": "08d7bbfe-9f88-4f9c-8c21-1deb31b0c186",
+      "nombre_material": "LUMINARIA LED EMERGENCIA RÓTULO SALIDA E-30G 354 x 273 x 42 IP20",
+      "marca": "SYLVANIA",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC27",
+      "id_ficha_bd": "0625a72d-1469-4246-b3f5-b4f537d5ecd0",
+      "nombre_material": "SOPORTERÍA PARA AERODUCTO",
+      "marca": "Legrand",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC28",
+      "id_ficha_bd": "773641a3-b95a-4ddd-b8f5-362b76a0e5ed",
+      "nombre_material": "LUMINARIA LED DOWNLIGHT SYL-LIGHTER II \" 22W TUN 209 x 101 22 W",
+      "marca": "SYLVANIA",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC29",
+      "id_ficha_bd": "6142e7cf-c31a-4053-95d3-6dd376048769",
+      "nombre_material": "CABLE ECOPLUS THHN/THWN-2",
+      "marca": "Phelps Dodge",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC30",
+      "id_ficha_bd": "ae9d4be2-8ba1-40f9-a67e-02a27a2b19f5",
+      "nombre_material": "TUBERÍA EMT MULTIPLE",
+      "marca": "RYMCO",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC31",
+      "id_ficha_bd": "a96a4c4d-f80a-4276-8c7b-3165b634c6c9",
+      "nombre_material": "TUBO BIEX CON FORRO MULTIPLE",
+      "marca": "ELEKSTEEL",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC32",
+      "id_ficha_bd": "dcee9d07-c61e-49e1-aa0c-512ffd84adf3",
+      "nombre_material": "TUBO CONDUIT RIGIDO MULTIPLE",
+      "marca": "Amanco Wavin",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC33",
+      "id_ficha_bd": "698cc5cf-bc92-4c68-896b-b5f5fe73b4ed",
+      "nombre_material": "TRANSFORMADOR 286 PARA CERRADURA 16 V #18 AWG",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC34",
+      "id_ficha_bd": "5a6a45df-89a2-4299-ac8d-e2f378a9c00e",
+      "nombre_material": "PULSANTE PARA TIMBRE 1002 113 x 70 x 25 15 A 125 V",
+      "marca": "EAGLE",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC35",
+      "id_ficha_bd": "5bb207d8-880f-448f-b620-f997811c644a",
+      "nombre_material": "ACOPLE HDMI 1.24 x 1.13 x 0.72",
+      "marca": "PANDUIT",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC36",
+      "id_ficha_bd": "b73887f2-2e58-485d-81f6-5d51ad471dcb",
+      "nombre_material": "BARRA TIERRA PARA RACK 25 x 491.5",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC37",
+      "id_ficha_bd": "1d37343d-8206-40a0-ade8-ae7e5b1326d8",
+      "nombre_material": "CABLE UTP CAT6A 6.3 mm 6 A",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC38",
+      "id_ficha_bd": "8c142d1b-59bc-4ad2-82ad-a65b5b8a044a",
+      "nombre_material": "CABLE HDMI MULTIPLE",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC39",
+      "id_ficha_bd": "a8c5dca5-6532-4161-a301-50e2b3aef646",
+      "nombre_material": "CANASTA AERODUCTO MULTIPLE CF54",
+      "marca": "CABLOFIL",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC40",
+      "id_ficha_bd": "8d41e98f-a614-4011-a523-59ce0f2aff5c",
+      "nombre_material": "JACK CAT6A 6 A",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC41",
+      "id_ficha_bd": "d9876a76-07f4-4ae6-a7b7-7af19ea552e0",
+      "nombre_material": "EXPANSOR DE ZONAS 6.438\"",
+      "marca": "Honeywell",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC42",
+      "id_ficha_bd": "b1c3f70e-1ebe-4d77-837e-f5dc6c6554e2",
+      "nombre_material": "ORGANIZADOR HORIZONTAL 19\"",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC43",
+      "id_ficha_bd": "f9dda280-e57a-48a3-a181-5ede7fd4e6f2",
+      "nombre_material": "PANEL ROBO",
+      "marca": "Honeywell",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC44",
+      "id_ficha_bd": "8905083c-bb3b-49fd-bda2-02ebb57f35ba",
+      "nombre_material": "PATCH CORD AZUL MULTIPLE 6 A #28 AWG RJ45",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC45",
+      "id_ficha_bd": "4cf6e1c1-acf1-4d4c-8114-1f3c75da74f8",
+      "nombre_material": "PATCH PANEL 24 PUERTOS 482.6 x 43.68 x 22.35",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
     }
   ],
   "id_proyecto": "dcc4f96b-cb78-4cbb-abbf-517cc0c6a465",
   "fecha_creacion": "2026-07-29",
-  "ultima_actualizacion": "2026-07-29T14:49:05",
+  "ultima_actualizacion": "2026-07-29T14:58:58",
   "actualizado_por": "ProBook_de_Adri"
 }
