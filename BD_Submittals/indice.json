@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T09:51:41",
+  "ultima_actualizacion": "2026-07-29T09:51:50",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1036,7 +1036,7 @@
       "categoria": "ELEC",
       "tipo_producto": "Cinta Premium de PVC",
       "dimensiones": "18,0 mm x 20,0 m",
-      "sin_medidas": false,
+      "sin_medidas": true,
       "especificacion": "Cinta aislante de vinilo",
       "normativa": "NMX-J-541/3-1-ANCE-2004, RoHS, UL 510, UL 539H",
       "descripcion_corta": "Cinta eléctrica de PVC con alta resistencia dieléctrica, autoextinguible, para temperaturas de -5°C a 90°C.",
@@ -1044,7 +1044,7 @@
       "ruta_pdf": "ELEC/SCOTCH-SUPER-33-18-x-20-m-3M.pdf",
       "hash_archivo": "a10ea7279d39238e",
       "fecha_carga": "2026-07-28",
-      "fecha_modificacion": "2026-07-29T09:51:41",
+      "fecha_modificacion": "2026-07-29T09:51:50",
       "cargada_por": "Keis",
       "estado": "activo",
       "aspectos_adicionales": ""
@@ -1388,5 +1388,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T09:50:40"
+  "ultima_sincronizacion_git": "2026-07-29T09:51:43"
 }
