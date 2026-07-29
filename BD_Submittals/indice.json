@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:01:03",
+  "ultima_actualizacion": "2026-07-29T11:03:15",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1684,8 +1684,31 @@
       "fecha_modificacion": "2026-07-29T11:01:03",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "40f3f17b-5378-47d3-94e1-f67f7304d3e4",
+      "nombre_ficha": "CALENTADOR LORENZTTI HIGIENICA 3T - LORENZETTI",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Calentador Lorenztti higienica 3t",
+      "marca": "LORENZETTI",
+      "categoria": "ELEC",
+      "tipo_producto": "Ducha eléctrica HIGIENICA 3T",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Grado de protección: IP 24",
+      "normativa": "ABNT NBR 5410, ABNT NBR 5626",
+      "descripcion_corta": "Ducha eléctrica con tres temperaturas, adecuada para uso residencial, con protección IP 24 y conexión hidráulica sencilla.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "calentador lorenztti higienica 3t lorenzetti elec ducha electrica grado de proteccion ip 24 abnt nbr 5410 5626 con tres temperaturas adecuada para uso residencial y conexion hidraulica sencilla",
+      "ruta_pdf": "ELEC/CALENTADOR-LORENZTTI-HIGIENICA-3T-LORENZETTI.pdf",
+      "hash_archivo": "87fc992b87156c73",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:03:15",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:00:38"
+  "ultima_sincronizacion_git": "2026-07-29T11:01:06"
 }
