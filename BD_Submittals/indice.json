@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:18:02",
+  "ultima_actualizacion": "2026-07-29T12:18:33",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2742,8 +2742,31 @@
       "fecha_modificacion": "2026-07-29T12:18:02",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "f3038410-29e1-40fd-be15-491e0f954243",
+      "nombre_ficha": "UNIÓN EMT MULTIPLE - PST",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Unión EMT",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "tipo_producto": "Acoplamiento de compresión",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "Acero con recubrimiento de zinc",
+      "normativa": "UL File E358076",
+      "descripcion_corta": "Acoplamiento de compresión para tubería EMT, hermético al concreto, adecuado para unir dos longitudes de conducto EMT en ubicaciones secas.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "union emt multiple pst elec acoplamiento de compresion multiples acero con recubrimiento zinc ul file e358076 para tuberia hermetico al concreto adecuado unir dos longitudes conducto en ubicaciones secas",
+      "ruta_pdf": "ELEC/UNION-EMT-MULTIPLE-PST.pdf",
+      "hash_archivo": "b59d624610807a3c",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:18:32",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:17:20"
+  "ultima_sincronizacion_git": "2026-07-29T12:18:06"
 }
