@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:16:34",
+  "ultima_actualizacion": "2026-07-29T12:17:17",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2696,8 +2696,31 @@
       "fecha_modificacion": "2026-07-29T12:16:34",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "c47ace0c-0a8f-413d-a939-71061456cbea",
+      "nombre_ficha": "CAJA FS 2 x 4 - SIN ESPECIFICAR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Caja FS",
+      "marca": "SIN ESPECIFICAR",
+      "categoria": "ELEC",
+      "tipo_producto": "Caja FS 2X4",
+      "dimensiones": "2x4",
+      "sin_medidas": false,
+      "especificacion": "3 / 4 / 5 / 5X Holes",
+      "normativa": "UL # E482630",
+      "descripcion_corta": "Caja de aluminio resistente a la intemperie para cableado en lugares húmedos o secos.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "caja fs 2 x 4 sin especificar elec 2x4 3 5 5x holes ul e482630 de aluminio resistente a la intemperie para cableado en lugares humedos o secos",
+      "ruta_pdf": "ELEC/CAJA-FS-2-x-4-SIN-ESPECIFICAR.pdf",
+      "hash_archivo": "43b86e4b495f8a53",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:17:17",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:15:41"
+  "ultima_sincronizacion_git": "2026-07-29T12:16:38"
 }
