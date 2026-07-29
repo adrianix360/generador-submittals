@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:00:35",
+  "ultima_actualizacion": "2026-07-29T11:01:03",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1661,8 +1661,31 @@
       "fecha_modificacion": "2026-07-29T11:00:35",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "d5749cf1-c685-4216-a056-dd3bc0c782c0",
+      "nombre_ficha": "TOMACORRIENTE ROJO DOBLE GRADO HOSPITALARIO H8300 103.3 x 29 x 21.2 125 V - Eagle",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tomacorriente Rojo doble Grado Hospitalario H8300",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "tipo_producto": "Tomacorriente",
+      "dimensiones": "103.3x29.0x21.2",
+      "sin_medidas": false,
+      "especificacion": "20A 125V~ 60Hz, Nema 5-20",
+      "normativa": "UL 498, UL E325115",
+      "descripcion_corta": "Tomacorriente doble de grado hospitalario con terminales de tornillo y tuerca, resistente a la identificación y fácil instalación.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "tomacorriente rojo doble grado hospitalario h8300 103 3 x 29 21 2 125 v eagle elec 3x29 0x21 20a 125v 60hz nema 5 20 ul 498 e325115 de con terminales tornillo y tuerca resistente a la identificacion facil instalacion",
+      "ruta_pdf": "ELEC/TOMACORRIENTE-ROJO-DOBLE-GRADO-HOSPITALARIO-H8300-103-3-x-29-x-21-2-125-V-Eagle.pdf",
+      "hash_archivo": "2af1f6aafe3a187d",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:01:03",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:00:04"
+  "ultima_sincronizacion_git": "2026-07-29T11:00:38"
 }
