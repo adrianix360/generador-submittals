@@ -1,0 +1,26 @@
+{
+  "nombre_proyecto": "ZARCERO CON V3",
+  "datos_procedimiento": {
+    "numero_procedimiento": "CAMBIO DE CUBIERTA DE TECHO DEL AREA RECTORA DE SALUD ZARCERO",
+    "institucion": "E.S. Consultoría y Construcción S.A.",
+    "detalle": "N/A",
+    "plazo": "5 MESES",
+    "monto": "134.916.104,112"
+  },
+  "tipo_caratula": "ministerio_salud",
+  "materiales_seleccionados": [
+    {
+      "consecutivo": "ELEC01",
+      "id_ficha_bd": "76cca228-4841-4bc1-992b-88f4cbfee78b",
+      "nombre_material": "INTERRUPTOR SENCILLO TRES VÍAS 106.8 x 96.8 x 83.3",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    }
+  ],
+  "id_proyecto": "dcc4f96b-cb78-4cbb-abbf-517cc0c6a465",
+  "fecha_creacion": "2026-07-29",
+  "ultima_actualizacion": "2026-07-29T12:29:31",
+  "actualizado_por": "ProBook_de_Adri"
+}
