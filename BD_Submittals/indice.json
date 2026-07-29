@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:55:16",
+  "ultima_actualizacion": "2026-07-29T11:55:48",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2190,8 +2190,31 @@
       "fecha_modificacion": "2026-07-29T11:55:16",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "5bb207d8-880f-448f-b620-f997811c644a",
+      "nombre_ficha": "ACOPLE HDMI 1.24 x 1.13 x 0.72 - PANDUIT",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Acople HDMI",
+      "marca": "PANDUIT",
+      "categoria": "ELEC",
+      "tipo_producto": "acoplador HDMI hembra a hembra",
+      "dimensiones": "1.24x1.13x0.72",
+      "sin_medidas": false,
+      "especificacion": "MINI-COM DUAL MODULE SPACE HDMI 2.0 TYPE 'A'",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Acoplador HDMI hembra a hembra para módulo dual, compatible con HDMI 2.0.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "acople hdmi 1 24 x 13 0 72 panduit elec acoplador hembra a 24x1 13x0 mini com dual module space 2 type sin especificar para modulo compatible con",
+      "ruta_pdf": "ELEC/ACOPLE-HDMI-1-24-x-1-13-x-0-72-PANDUIT.pdf",
+      "hash_archivo": "d96e2c072ed2ca99",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:55:48",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:54:51"
+  "ultima_sincronizacion_git": "2026-07-29T11:55:19"
 }
