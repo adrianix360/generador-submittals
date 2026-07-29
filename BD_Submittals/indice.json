@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:05:47",
+  "ultima_actualizacion": "2026-07-29T12:06:45",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2420,8 +2420,31 @@
       "fecha_modificacion": "2026-07-29T12:05:47",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "f9dda280-e57a-48a3-a181-5ede7fd4e6f2",
+      "nombre_ficha": "PANEL ROBO - Honeywell",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Panel robo",
+      "marca": "Honeywell",
+      "categoria": "ELEC",
+      "tipo_producto": "Panel de control",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "VISTA-48LA",
+      "normativa": "Australia Approved, CE Approved, West Europe Approved",
+      "descripcion_corta": "Panel de control avanzado con capacidad de hasta 48 zonas, compatible con dispositivos inalámbricos y cableados, y funciones de monitoreo y programación remota.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "panel robo honeywell elec de control vista 48la australia approved ce west europe avanzado con capacidad hasta 48 zonas compatible dispositivos inalambricos y cableados funciones monitoreo programacion remota",
+      "ruta_pdf": "ELEC/PANEL-ROBO-Honeywell.pdf",
+      "hash_archivo": "d7b64fc0c891de59",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:06:45",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:04:24"
+  "ultima_sincronizacion_git": "2026-07-29T12:05:51"
 }
