@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T10:30:54",
+  "ultima_actualizacion": "2026-07-29T10:32:51",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1454,8 +1454,31 @@
       "fecha_modificacion": "2026-07-29T10:30:54",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "5bbd87c9-8a25-41d2-a132-80e4f8ddc4ef",
+      "nombre_ficha": "BARRA DE TIERRA 254 x 50.8 x 6.4 - Panduit",
+      "nombre_ficha_manual": false,
+      "nombre_material": "BARRA DE TIERRA",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "tipo_producto": "Barra de puesta a tierra",
+      "dimensiones": "254x50.8x6.4",
+      "sin_medidas": false,
+      "especificacion": "Kit completamente ensamblado",
+      "normativa": "BICSI-J-STD-607-A",
+      "descripcion_corta": "Barra de puesta a tierra con soportes de montaje, aisladores y hardware incluido.",
+      "aspectos_adicionales": "",
+      "sinonimos": "PLACA DE TIERRA",
+      "search_keywords": "barra de tierra 254 x 50 8 6 4 panduit elec puesta a 254x50 8x6 kit completamente ensamblado bicsi j std 607 con soportes montaje aisladores y hardware incluido placa",
+      "ruta_pdf": "ELEC/BARRA-DE-TIERRA-254-x-50-8-x-6-4-Panduit.pdf",
+      "hash_archivo": "81e71e0a7fbe7dbd",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T10:32:51",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T10:29:17"
+  "ultima_sincronizacion_git": "2026-07-29T10:30:57"
 }
