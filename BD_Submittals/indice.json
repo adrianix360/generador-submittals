@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:03:15",
+  "ultima_actualizacion": "2026-07-29T11:04:00",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1707,8 +1707,31 @@
       "fecha_modificacion": "2026-07-29T11:03:15",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "d037981e-7e6d-4663-ada6-db85c9bf02b1",
+      "nombre_ficha": "TOMACORRIENTE DOBLE GFCI TST20 105.2 x 52.3 x 27 125 V - EAGLE",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tomacorriente doble GFCI TST20",
+      "marca": "EAGLE",
+      "categoria": "ELEC",
+      "tipo_producto": "Tomacorriente GFCI",
+      "dimensiones": "105.2x52.3x27.0",
+      "sin_medidas": false,
+      "especificacion": "20A 125V~ 60 Hz, NEMA 5-20R",
+      "normativa": "NOM 200M02652, UL E364819",
+      "descripcion_corta": "Tomacorriente GFCI con indicador de vida, alta resistencia mecánica, conexión a tierra, placa termoplástica, protege hasta 4 tomacorrientes.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "tomacorriente doble gfci tst20 105 2 x 52 3 27 125 v eagle elec 2x52 3x27 0 20a 125v 60 hz nema 5 20r nom 200m02652 ul e364819 con indicador de vida alta resistencia mecanica conexion a tierra placa termoplastica protege hasta 4 tomacorrientes",
+      "ruta_pdf": "ELEC/TOMACORRIENTE-DOBLE-GFCI-TST20-105-2-x-52-3-x-27-125-V-EAGLE.pdf",
+      "hash_archivo": "4fe0ebc6452876f4",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:04:00",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:01:06"
+  "ultima_sincronizacion_git": "2026-07-29T11:03:22"
 }
