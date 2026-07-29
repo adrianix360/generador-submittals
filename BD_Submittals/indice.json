@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:20:40",
+  "ultima_actualizacion": "2026-07-29T12:21:40",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2834,8 +2834,31 @@
       "fecha_modificacion": "2026-07-29T12:20:40",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "5f169cb4-d294-4ab2-b0f6-989a8c4e8bbf",
+      "nombre_ficha": "LUMINARIA PARA EXTERIOR BVP150 213 mm 100 W - PHILIPS",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Luminaria para exterior BVP150",
+      "marca": "PHILIPS",
+      "categoria": "ELEC",
+      "tipo_producto": "Proyector LED",
+      "dimensiones": "213mm",
+      "sin_medidas": false,
+      "especificacion": "BVP150 LED85/CW 120-277V 100W",
+      "normativa": "IEC",
+      "descripcion_corta": "Proyector LED eficiente con tecnología avanzada, ideal para ahorro energético. Protección IP65 e IK06, vida útil de 30000 h.",
+      "aspectos_adicionales": "",
+      "sinonimos": "BVP150",
+      "search_keywords": "luminaria para exterior bvp150 213 mm 100 w philips elec proyector led 213mm led85 cw 120 277v 100w iec eficiente con tecnologia avanzada ideal ahorro energetico proteccion ip65 e ik06 vida util de 30000 h",
+      "ruta_pdf": "ELEC/LUMINARIA-PARA-EXTERIOR-BVP150-213-mm-100-W-PHILIPS.pdf",
+      "hash_archivo": "0de6b6d8185b8fac",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:21:40",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:20:10"
+  "ultima_sincronizacion_git": "2026-07-29T12:20:43"
 }
