@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T16:12:55",
+  "ultima_actualizacion": "2026-07-29T16:15:20",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3147,8 +3147,29 @@
       "fecha_modificacion": "2026-07-29T16:12:55",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "36481ec2-c72b-4608-a9b0-41466b9a7ed4",
+      "nombre_ficha": "ESMALTE FAST DRY - SUR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "ESMALTE FAST DRY",
+      "marca": "SUR",
+      "categoria": "ARQ",
+      "tipo_producto": "Esmalte alquídico",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Resistencia a la intemperie",
+      "normativa": "ASTM D523-14",
+      "descripcion_corta": "Esmalte alquídico de alta resistencia a la abrasión y durabilidad, adecuado para interiores y exteriores sobre hierro negro.",
+      "search_keywords": "esmalte fast dry sur arq alquidico resistencia a la intemperie astm d523 14 de alta abrasion y durabilidad adecuado para interiores exteriores sobre hierro negro",
+      "ruta_pdf": "ARQ/ESMALTE-FAST-DRY-SUR.pdf",
+      "hash_archivo": "422585e7a5ab801c",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T16:15:20",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T16:12:31"
+  "ultima_sincronizacion_git": "2026-07-29T16:12:58"
 }
