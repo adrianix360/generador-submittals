@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:42:32",
+  "ultima_actualizacion": "2026-07-29T11:43:05",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1937,8 +1937,31 @@
       "fecha_modificacion": "2026-07-29T11:42:32",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "08d7bbfe-9f88-4f9c-8c21-1deb31b0c186",
+      "nombre_ficha": "LUMINARIA LED EMERGENCIA RÓTULO SALIDA E-30G 354 x 273 x 42 IP20 - SYLVANIA",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Luminaria LED Emergencia RÓTULO SALIDA E-30G",
+      "marca": "SYLVANIA",
+      "categoria": "ELEC",
+      "tipo_producto": "Luminaria LED de emergencia",
+      "dimensiones": "354x273x42",
+      "sin_medidas": false,
+      "especificacion": "Batería de Niquel-Cadmio, IP20",
+      "normativa": "UL LISTED",
+      "descripcion_corta": "Luminaria LED para salidas de emergencia con letras verdes, indicador de carga y autonomía de más de 180 minutos.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "luminaria led emergencia rotulo salida e 30g 354 x 273 42 ip20 sylvania elec de 354x273x42 bateria niquel cadmio ul listed para salidas con letras verdes indicador carga y autonomia mas 180 minutos",
+      "ruta_pdf": "ELEC/LUMINARIA-LED-EMERGENCIA-ROTULO-SALIDA-E-30G-354-x-273-x-42-IP20-SYLVANIA.pdf",
+      "hash_archivo": "3dac5e0a9b50f7c6",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:43:05",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:42:03"
+  "ultima_sincronizacion_git": "2026-07-29T11:42:36"
 }
