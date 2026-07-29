@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T10:36:22",
+  "ultima_actualizacion": "2026-07-29T10:56:50",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1546,8 +1546,31 @@
       "fecha_modificacion": "2026-07-29T10:36:22",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "7ad81c91-d6f3-4fb6-9d9a-0331eeb88a3f",
+      "nombre_ficha": "TOMACORRIENTE 50A 57.5 x 54.5 x 32.5 125 V - Eagle",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tomacorriente 50a",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "tipo_producto": "Tomacorriente",
+      "dimensiones": "57.5x54.5x32.5",
+      "sin_medidas": false,
+      "especificacion": "NEMA 10-50R, 50A 125V/250V~",
+      "normativa": "NOM, UL E325115",
+      "descripcion_corta": "Tomacorriente de empotrar con cuerpo robusto, ideal para uso comercial. Incluye guía de instalación y garantía de 5 años.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "tomacorriente 50a 57 5 x 54 32 125 v eagle elec 5x54 5x32 nema 10 50r 125v 250v nom ul e325115 de empotrar con cuerpo robusto ideal para uso comercial incluye guia instalacion y garantia anos",
+      "ruta_pdf": "ELEC/TOMACORRIENTE-50A-57-5-x-54-5-x-32-5-125-V-Eagle.pdf",
+      "hash_archivo": "a658d8b4e53b0f44",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T10:56:50",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T10:34:53"
+  "ultima_sincronizacion_git": "2026-07-29T10:36:25"
 }
