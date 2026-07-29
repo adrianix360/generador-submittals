@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:10:37",
+  "ultima_actualizacion": "2026-07-29T12:11:25",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2535,8 +2535,31 @@
       "fecha_modificacion": "2026-07-29T12:10:37",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "dce320bf-984e-44ba-85ec-7e6b4e12f8b9",
+      "nombre_ficha": "PLACA INTERPERIE SALIDAS ESPECIALES IP65 - Eagle",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Placa interperie salidas especiales",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "tipo_producto": "Placa metálica para intemperie",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Montaje Vertical, IP65",
+      "normativa": "NEC 406.8 (A), NEC 406.8 (B)(2)",
+      "descripcion_corta": "Placa metálica con bisagra para uso exterior, protege de lluvia y nieve, incluye guía y tornillos de instalación, garantía de 5 años.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "placa interperie salidas especiales ip65 eagle elec metalica para intemperie montaje vertical nec 406 8 a b 2 con bisagra uso exterior protege de lluvia y nieve incluye guia tornillos instalacion garantia 5 anos",
+      "ruta_pdf": "ELEC/PLACA-INTERPERIE-SALIDAS-ESPECIALES-IP65-Eagle.pdf",
+      "hash_archivo": "a4b5b34011d15724",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:11:25",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:09:09"
+  "ultima_sincronizacion_git": "2026-07-29T12:10:40"
 }
