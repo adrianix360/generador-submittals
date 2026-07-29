@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-28T17:24:56",
+  "ultima_actualizacion": "2026-07-29T16:10:29",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1380,8 +1380,29 @@
       "fecha_modificacion": "2026-07-28T17:24:56",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "ff5feee7-d0a5-408a-983c-5d7599703d72",
+      "nombre_ficha": "LARO MAX 917 - TekWood",
+      "nombre_ficha_manual": false,
+      "nombre_material": "LARO MAX 917",
+      "marca": "TekWood",
+      "categoria": "ARQ",
+      "tipo_producto": "Producto monocomponente base agua",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Sólidos por peso 33-35, Viscosidad 55-60 Ku",
+      "normativa": "ISO 9001, ISO 14001",
+      "descripcion_corta": "Producto base agua con filtros UV, fácil aplicación, secado rápido, no inflamable, acabado satinado.",
+      "search_keywords": "laro max 917 tekwood arq producto monocomponente base agua solidos por peso 33 35 viscosidad 55 60 ku iso 9001 14001 con filtros uv facil aplicacion secado rapido no inflamable acabado satinado",
+      "ruta_pdf": "ARQ/LARO-MAX-917-TekWood.pdf",
+      "hash_archivo": "7bc9052e860fb56c",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T16:10:29",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-28T17:18:55"
+  "ultima_sincronizacion_git": "2026-07-28T17:24:58"
 }
