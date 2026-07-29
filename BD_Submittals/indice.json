@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T10:59:09",
+  "ultima_actualizacion": "2026-07-29T10:59:42",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1592,8 +1592,31 @@
       "fecha_modificacion": "2026-07-29T10:59:09",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "cef5c542-1af5-4511-9177-e61dd58b2ac0",
+      "nombre_ficha": "CENTRO DE CARGA EATON CHP32N 34.12 x 14.31 x 3.88 225 A - Eaton",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Centro de carga Eaton CHP32N225X6",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "tipo_producto": "Centro de carga convertible",
+      "dimensiones": "34.12x14.31x3.88",
+      "sin_medidas": false,
+      "especificacion": "225 A, 32 espacios",
+      "normativa": "UL 50, UL 67",
+      "descripcion_corta": "Centro de carga Eaton CH convertible, 225A, 32 espacios, material de barra de cobre, tipo de alimentación superior/inferior.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "centro de carga eaton chp32n 34 12 x 14 31 3 88 225 a chp32n225x6 elec convertible 12x14 31x3 32 espacios ul 50 67 ch 225a material barra cobre tipo alimentacion superior inferior",
+      "ruta_pdf": "ELEC/CENTRO-DE-CARGA-EATON-CHP32N-34-12-x-14-31-x-3-88-225-A-Eaton.pdf",
+      "hash_archivo": "14bda39385ce80dd",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T10:59:42",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T10:56:53"
+  "ultima_sincronizacion_git": "2026-07-29T10:59:11"
 }
