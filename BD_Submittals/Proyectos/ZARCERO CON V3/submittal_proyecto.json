@@ -10,15 +10,6 @@
   "tipo_caratula": "ministerio_salud",
   "materiales_seleccionados": [
     {
-      "consecutivo": "ARQ01",
-      "id_ficha_bd": "7ec905a3-8f53-4469-bd35-67f9a4146952",
-      "nombre_material": "CERRADURA ELECTRICA YALE 130 x 107",
-      "marca": "Yale",
-      "categoria": "ARQ",
-      "marcas_alternativas": [],
-      "justificacion_stock": false
-    },
-    {
       "consecutivo": "ELEC01",
       "id_ficha_bd": "76cca228-4841-4bc1-992b-88f4cbfee78b",
       "nombre_material": "INTERRUPTOR SENCILLO TRES VÍAS 106.8 x 96.8 x 83.3",
@@ -219,6 +210,6 @@
   ],
   "id_proyecto": "dcc4f96b-cb78-4cbb-abbf-517cc0c6a465",
   "fecha_creacion": "2026-07-29",
-  "ultima_actualizacion": "2026-07-29T14:44:11",
+  "ultima_actualizacion": "2026-07-29T14:49:05",
   "actualizado_por": "ProBook_de_Adri"
 }
