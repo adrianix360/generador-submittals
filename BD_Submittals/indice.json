@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:46:37",
+  "ultima_actualizacion": "2026-07-29T11:47:52",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2006,8 +2006,31 @@
       "fecha_modificacion": "2026-07-29T11:46:37",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "1b65789f-44ad-4107-83bc-5ebad2a32af1",
+      "nombre_ficha": "LUMINARIA 705 TUBO LED 48 x 120 x 1260 - SYLVANIA",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Luminaria 705 Tubo LED",
+      "marca": "SYLVANIA",
+      "categoria": "ARQ",
+      "tipo_producto": "Luminaria LED",
+      "dimensiones": "48x120x1260",
+      "sin_medidas": false,
+      "especificacion": "Temperatura de color 4000K y 6500K",
+      "normativa": "UL",
+      "descripcion_corta": "Luminaria LED para instalación sobrepuesta en estructuras, con empaque para sellado hermético.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "luminaria 705 tubo led 48 x 120 1260 sylvania arq 48x120x1260 temperatura de color 4000k y 6500k ul para instalacion sobrepuesta en estructuras con empaque sellado hermetico",
+      "ruta_pdf": "ARQ/LUMINARIA-705-TUBO-LED-48-x-120-x-1260-SYLVANIA.pdf",
+      "hash_archivo": "7630adc4686e2857",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:47:51",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:45:19"
+  "ultima_sincronizacion_git": "2026-07-29T11:46:45"
 }
