@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T16:11:06",
+  "ultima_actualizacion": "2026-07-29T16:12:12",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3084,8 +3084,29 @@
       "fecha_modificacion": "2026-07-29T16:11:06",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "2a8c23e5-4801-4c4c-8b45-605484666361",
+      "nombre_ficha": "DILUYENTE ODORLESS - SUR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "DILUYENTE ODORLESS",
+      "marca": "SUR",
+      "categoria": "ARQ",
+      "tipo_producto": "Solvente líquido",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Densidad 0,78 g/cm³, Flash point > 40",
+      "normativa": "ISO 14001, ISO 45001, ISO 9001",
+      "descripcion_corta": "Solvente líquido no higroscópico, de bajo olor, para diluir y ajustar la viscosidad de pinturas industriales.",
+      "search_keywords": "diluyente odorless sur arq solvente liquido densidad 0 78 g cm flash point 40 iso 14001 45001 9001 no higroscopico de bajo olor para diluir y ajustar la viscosidad pinturas industriales",
+      "ruta_pdf": "ARQ/DILUYENTE-ODORLESS-SUR.pdf",
+      "hash_archivo": "a4acdc19bc37face",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T16:12:12",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T16:10:40"
+  "ultima_sincronizacion_git": "2026-07-29T16:11:09"
 }
