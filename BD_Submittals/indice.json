@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:03:16",
+  "ultima_actualizacion": "2026-07-29T12:04:21",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2374,8 +2374,31 @@
       "fecha_modificacion": "2026-07-29T12:03:16",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "b1c3f70e-1ebe-4d77-837e-f5dc6c6554e2",
+      "nombre_ficha": "ORGANIZADOR HORIZONTAL 19\" - Panduit",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Organizador horizontal",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "tipo_producto": "Gestor de cables horizontal",
+      "dimensiones": "",
+      "sin_medidas": false,
+      "especificacion": "Patchlink",
+      "normativa": "CSA C22.2, UL 2416",
+      "descripcion_corta": "Gestores de cables horizontales para racks EIA 19 in., con construcción de plástico de una sola pieza y control de radio de curvatura integrado.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "organizador horizontal 19 panduit elec gestor de cables patchlink csa c22 2 ul 2416 gestores horizontales para racks eia in con construccion plastico una sola pieza y control radio curvatura integrado",
+      "ruta_pdf": "ELEC/ORGANIZADOR-HORIZONTAL-19-Panduit.pdf",
+      "hash_archivo": "08f99b72f181add5",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:04:21",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:02:31"
+  "ultima_sincronizacion_git": "2026-07-29T12:03:19"
 }
