@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:44:56",
+  "ultima_actualizacion": "2026-07-29T11:46:37",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1983,8 +1983,31 @@
       "fecha_modificacion": "2026-07-29T11:44:56",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "773641a3-b95a-4ddd-b8f5-362b76a0e5ed",
+      "nombre_ficha": "LUMINARIA LED DOWNLIGHT SYL-LIGHTER II \" 22W TUN 209 x 101 22 W - SYLVANIA",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Luminaria LED Downlight SYL-LIGHTER II UL 6\" 22W TUN",
+      "marca": "SYLVANIA",
+      "categoria": "ELEC",
+      "tipo_producto": "Luminaria LED tipo downlight",
+      "dimensiones": "209x101",
+      "sin_medidas": false,
+      "especificacion": "Temperatura de color seleccionable",
+      "normativa": "UL",
+      "descripcion_corta": "Luminaria LED downlight con driver integrado, proyección uniforme de luz, reduce costos de energía y mantenimiento.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "luminaria led downlight syl lighter ii 22w tun 209 x 101 22 w sylvania ul 6 elec tipo 209x101 temperatura de color seleccionable con driver integrado proyeccion uniforme luz reduce costos energia y mantenimiento",
+      "ruta_pdf": "ELEC/LUMINARIA-LED-DOWNLIGHT-SYL-LIGHTER-II-22W-TUN-209-x-101-22-W-SYLVANIA.pdf",
+      "hash_archivo": "0500564d566d6e1c",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:46:37",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:43:09"
+  "ultima_sincronizacion_git": "2026-07-29T11:45:19"
 }
