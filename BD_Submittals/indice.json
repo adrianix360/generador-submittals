@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:55:37",
+  "ultima_actualizacion": "2026-07-29T13:57:16",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1520,9 +1520,10 @@
       "ruta_pdf": "ESTR/BARRA-ROSCADA-MULTIPLE-SIN-ESPECIFICAR.pdf",
       "hash_archivo": "f8e35299750e7725",
       "fecha_carga": "2026-07-29",
-      "fecha_modificacion": "2026-07-29T10:34:51",
+      "fecha_modificacion": "2026-07-29T13:57:16",
       "cargada_por": "ProBook_de_Adri",
-      "estado": "activo"
+      "estado": "inactivo",
+      "desactivada_por": "ProBook_de_Adri"
     },
     {
       "id": "621d5330-b3cb-4f74-95bf-0871378f166e",
@@ -3044,5 +3045,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:53:51"
+  "ultima_sincronizacion_git": "2026-07-29T13:52:30"
 }
