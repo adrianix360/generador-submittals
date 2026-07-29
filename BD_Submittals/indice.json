@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T10:29:07",
+  "ultima_actualizacion": "2026-07-29T10:30:54",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1431,8 +1431,31 @@
       "fecha_modificacion": "2026-07-29T10:29:07",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "fbe3ddff-c1d2-43e5-a606-b72de0b1f983",
+      "nombre_ficha": "PLACA PARA INTERPERIE 5.5 x 3.75 x 1.5 - Intermatic",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Placa para interperie",
+      "marca": "Intermatic",
+      "categoria": "ARQ",
+      "tipo_producto": "Cubierta a prueba de intemperie",
+      "dimensiones": "5.5x3.75x1.5",
+      "sin_medidas": false,
+      "especificacion": "Cubierta de policarbonato estabilizado UV",
+      "normativa": "RoHS, UL",
+      "descripcion_corta": "Cubierta de plástico de perfil bajo para exteriores, fácil de instalar, incluye junta y tornillos de montaje.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "placa para interperie 5 x 3 75 1 intermatic arq cubierta a prueba de intemperie 5x3 75x1 policarbonato estabilizado uv rohs ul plastico perfil bajo exteriores facil instalar incluye junta y tornillos montaje",
+      "ruta_pdf": "ARQ/PLACA-PARA-INTERPERIE-5-5-x-3-75-x-1-5-Intermatic.pdf",
+      "hash_archivo": "4b221442dae24f88",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T10:30:54",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T10:15:33"
+  "ultima_sincronizacion_git": "2026-07-29T10:29:17"
 }
