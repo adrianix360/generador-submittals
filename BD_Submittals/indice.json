@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:02:28",
+  "ultima_actualizacion": "2026-07-29T12:03:16",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2351,8 +2351,31 @@
       "fecha_modificacion": "2026-07-29T12:02:28",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "d9876a76-07f4-4ae6-a7b7-7af19ea552e0",
+      "nombre_ficha": "EXPANSOR DE ZONAS 6.438\" - Honeywell",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Expansor de zonas",
+      "marca": "Honeywell",
+      "categoria": "ELEC",
+      "tipo_producto": "Expansor de zonas",
+      "dimensiones": "6.438\" W x 4.25\" H x 1.25\" D",
+      "sin_medidas": false,
+      "especificacion": "Expansor de ocho zonas para sistemas ECP 4219",
+      "normativa": "UL1023, UL1610, UL1635, UL1641, UL464, UL609, UL636, UL985",
+      "descripcion_corta": "Expansor de ocho zonas direccionable para sistemas ECP de Honeywell, compatible con paneles VISTA, supervisado para condiciones de circuito abierto, cortocircuito y normales.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "expansor de zonas 6 438 honeywell elec w x 4 25 h 1 d ocho para sistemas ecp 4219 ul1023 ul1610 ul1635 ul1641 ul464 ul609 ul636 ul985 direccionable compatible con paneles vista supervisado condiciones circuito abierto cortocircuito y normales",
+      "ruta_pdf": "ELEC/EXPANSOR-DE-ZONAS-6-438-Honeywell.pdf",
+      "hash_archivo": "0fb72ae4815a36b9",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:03:16",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:01:40"
+  "ultima_sincronizacion_git": "2026-07-29T12:02:31"
 }
