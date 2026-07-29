@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:01:37",
+  "ultima_actualizacion": "2026-07-29T12:02:28",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2328,8 +2328,31 @@
       "fecha_modificacion": "2026-07-29T12:01:37",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "8d41e98f-a614-4011-a523-59ce0f2aff5c",
+      "nombre_ficha": "JACK CAT6A 6 A - Panduit",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Jack cat6A",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "tipo_producto": "Módulo de conector UTP",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Con tecnología MaTriX",
+      "normativa": "ANSI/TIA-1096-A, CSA C22.2, IEC 352, IEC 512-11a, IEC 512-11c, IEC 512-11d, IEC 512-11g, IEC 512-2a, IEC 512-3a, IEC 512-6a, IEC 512-6b, IEC 512-6c, IEC 512-9b, IEC 60603-7, ISO 11801",
+      "descripcion_corta": "Módulo de conector UTP categoría 6A para transmisión 10GBASE-T, compatible con el sistema de cableado TX6A 10Gig UTP Copper.",
+      "aspectos_adicionales": "",
+      "sinonimos": "conector",
+      "search_keywords": "jack cat6a 6 a panduit elec modulo de conector utp con tecnologia matrix ansi tia 1096 csa c22 2 iec 352 512 11a 11c 11d 11g 2a 3a 6a 6b 6c 9b 60603 7 iso 11801 categoria para transmision 10gbase t compatible el sistema cableado tx6a 10gig copper",
+      "ruta_pdf": "ELEC/JACK-CAT6A-6-A-Panduit.pdf",
+      "hash_archivo": "4dcba53ed1fd58f2",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:02:28",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:00:42"
+  "ultima_sincronizacion_git": "2026-07-29T12:01:40"
 }
