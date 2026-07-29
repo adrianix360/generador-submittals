@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T10:01:10",
+  "ultima_actualizacion": "2026-07-29T10:29:07",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1408,8 +1408,31 @@
       "fecha_modificacion": "2026-07-29T10:01:10",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "117c4a76-4c34-435e-8ac8-1db2ff959415",
+      "nombre_ficha": "AERODUCTO - Legrand",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Aeroducto",
+      "marca": "Legrand",
+      "categoria": "ELEC",
+      "tipo_producto": "Sistema de gestión de cables",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Sistema de gestión de cables reconocido por su innovación y calidad, instalado globalmente con más de 125,000 millas en uso.",
+      "aspectos_adicionales": "Ficha del sistema completo de aeroducto",
+      "sinonimos": "Canasta",
+      "search_keywords": "aeroducto legrand elec sistema de gestion cables sin especificar reconocido por su innovacion y calidad instalado globalmente con mas 125 000 millas en uso canasta",
+      "ruta_pdf": "ELEC/AERODUCTO-Legrand.pdf",
+      "hash_archivo": "c322c626ac9187ba",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T10:29:07",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T09:56:13"
+  "ultima_sincronizacion_git": "2026-07-29T10:15:33"
 }
