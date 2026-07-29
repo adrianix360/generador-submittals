@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:54:47",
+  "ultima_actualizacion": "2026-07-29T11:55:16",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2167,8 +2167,31 @@
       "fecha_modificacion": "2026-07-29T11:54:47",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "5a6a45df-89a2-4299-ac8d-e2f378a9c00e",
+      "nombre_ficha": "PULSANTE PARA TIMBRE 1002 113 x 70 x 25 15 A 125 V - EAGLE",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Pulsante para timbre 1002",
+      "marca": "EAGLE",
+      "categoria": "ELEC",
+      "tipo_producto": "Pulsante para timbre",
+      "dimensiones": "113x70x25",
+      "sin_medidas": false,
+      "especificacion": "Capacidad: 15A / 125V~",
+      "normativa": "NEMA WD-6, NOM-ANCE ANC2201A00004116",
+      "descripcion_corta": "Pulsante para timbre con diseño elegante, resistente al impacto, con capacidad de 15A/125V y sistema de cableado rápido.",
+      "aspectos_adicionales": "",
+      "sinonimos": "timbre",
+      "search_keywords": "pulsante para timbre 1002 113 x 70 25 15 a 125 v eagle elec 113x70x25 capacidad 15a 125v nema wd 6 nom ance anc2201a00004116 con diseno elegante resistente al impacto de y sistema cableado rapido",
+      "ruta_pdf": "ELEC/PULSANTE-PARA-TIMBRE-1002-113-x-70-x-25-15-A-125-V-EAGLE.pdf",
+      "hash_archivo": "6b44d475dbf0c573",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:55:16",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:53:24"
+  "ultima_sincronizacion_git": "2026-07-29T11:54:51"
 }
