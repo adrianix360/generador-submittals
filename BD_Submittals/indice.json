@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:08:15",
+  "ultima_actualizacion": "2026-07-29T12:09:06",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2489,8 +2489,31 @@
       "fecha_modificacion": "2026-07-29T12:08:15",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "f70265bb-edf3-4614-8020-2d0e49a415de",
+      "nombre_ficha": "PDU BÁSICO 15 A 120 V - Panduit",
+      "nombre_ficha_manual": false,
+      "nombre_material": "PDU Básico",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "tipo_producto": "PDU",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "",
+      "normativa": "FCC Pat 15 Class A (USA), NOM (Mexico), RETIE (Colombia), UL 62368-1",
+      "descripcion_corta": "PDU básico de 15 amperios, 120 V, con 12 salidas 5-20R y enchufe NEMA 5-15P. Incluye hardware de montaje.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "pdu basico 15 a 120 v panduit elec fcc pat class usa nom mexico retie colombia ul 62368 1 de amperios con 12 salidas 5 20r y enchufe nema 15p incluye hardware montaje",
+      "ruta_pdf": "ELEC/PDU-BASICO-15-A-120-V-Panduit.pdf",
+      "hash_archivo": "929c8e55cc297802",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:09:06",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:07:34"
+  "ultima_sincronizacion_git": "2026-07-29T12:08:18"
 }
