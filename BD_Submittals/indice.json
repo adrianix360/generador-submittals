@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:49:41",
+  "ultima_actualizacion": "2026-07-29T11:50:27",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2052,8 +2052,31 @@
       "fecha_modificacion": "2026-07-29T11:49:41",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "6142e7cf-c31a-4053-95d3-6dd376048769",
+      "nombre_ficha": "CABLE ECOPLUS THHN/THWN-2 - Phelps Dodge",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Cable EcoPlus THHN/THWN-2",
+      "marca": "Phelps Dodge",
+      "categoria": "ELEC",
+      "tipo_producto": "Conductor eléctrico",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Cableado Clase B o C, aislamiento PVC",
+      "normativa": "ASTM B3, ASTM B8, ASTM B787, RoHS, UL 83",
+      "descripcion_corta": "Conductor eléctrico de cobre suave recocido con aislamiento termoplástico de PVC y cubierta de Nylon, libre de plomo.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "cable ecoplus thhn thwn 2 phelps dodge elec conductor electrico cableado clase b o c aislamiento pvc astm b3 b8 b787 rohs ul 83 de cobre suave recocido con termoplastico y cubierta nylon libre plomo",
+      "ruta_pdf": "ELEC/CABLE-ECOPLUS-THHN-THWN-2-Phelps-Dodge.pdf",
+      "hash_archivo": "c2af2b10431f38cb",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:50:27",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:47:55"
+  "ultima_sincronizacion_git": "2026-07-29T11:49:47"
 }
