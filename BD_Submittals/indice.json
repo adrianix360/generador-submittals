@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T16:12:12",
+  "ultima_actualizacion": "2026-07-29T16:12:28",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3105,8 +3105,29 @@
       "fecha_modificacion": "2026-07-29T16:12:12",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "e9aaef24-9c89-4137-ac1b-8e4236e489d2",
+      "nombre_ficha": "SUR ESMALTE 100 - SUR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "SUR ESMALTE 100",
+      "marca": "SUR",
+      "categoria": "ARQ",
+      "tipo_producto": "Esmalte alquídico",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Acabado brillante, bajo olor",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Esmalte alquídico de buena calidad para interiores y exteriores, aplicable sobre diversas superficies.",
+      "search_keywords": "sur esmalte 100 arq alquidico acabado brillante bajo olor sin especificar de buena calidad para interiores y exteriores aplicable sobre diversas superficies",
+      "ruta_pdf": "ARQ/SUR-ESMALTE-100-SUR.pdf",
+      "hash_archivo": "5f80f516e6b7206e",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T16:12:28",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T16:11:09"
+  "ultima_sincronizacion_git": "2026-07-29T16:12:15"
 }
