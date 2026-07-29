@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T09:49:49",
+  "ultima_actualizacion": "2026-07-29T09:50:38",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -734,8 +734,8 @@
     },
     {
       "id": "d5ddfc7f-04de-4025-9b72-dff6fbf5c373",
-      "nombre_ficha": "PROFORM JOINT TAPES - ProForm",
-      "nombre_ficha_manual": false,
+      "nombre_ficha": "CINTA PARA GYPSUM",
+      "nombre_ficha_manual": true,
       "nombre_material": "ProForm Joint Tapes",
       "marca": "ProForm",
       "categoria": "ARQ",
@@ -745,13 +745,14 @@
       "especificacion": "",
       "normativa": "SIN ESPECIFICAR",
       "descripcion_corta": "Cintas para juntas de papel, fibra de vidrio y multi-flex para reforzar uniones en paredes interiores y techos.",
-      "search_keywords": "proform joint tapes arq cinta para juntas sin especificar cintas de papel fibra vidrio y multi flex reforzar uniones en paredes interiores techos",
+      "search_keywords": "cinta para gypsum proform joint tapes arq juntas sin especificar cintas de papel fibra vidrio y multi flex reforzar uniones en paredes interiores techos",
       "ruta_pdf": "ARQ/PROFORM-JOINT-TAPES-ProForm.pdf",
       "hash_archivo": "d829bb256f4ff70b",
       "fecha_carga": "2026-07-28",
-      "fecha_modificacion": "2026-07-28T16:18:43",
+      "fecha_modificacion": "2026-07-29T09:50:38",
       "cargada_por": "Keis",
-      "estado": "activo"
+      "estado": "activo",
+      "aspectos_adicionales": ""
     },
     {
       "id": "6d3b68c1-02e5-41c4-9720-8da125c3a3bd",
@@ -1386,5 +1387,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T09:49:04"
+  "ultima_sincronizacion_git": "2026-07-29T09:49:52"
 }
