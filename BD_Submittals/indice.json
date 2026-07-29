@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T09:53:23",
+  "ultima_actualizacion": "2026-07-29T10:01:10",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1386,8 +1386,30 @@
       "fecha_modificacion": "2026-07-28T17:24:56",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "6240e22a-42d0-4581-90f4-66eec4ddeee3",
+      "nombre_ficha": "BASE PARA MEDIDOR RESIDENCIAL 200A EATON 19.75 x 5.38 x 14.44 200 A - Eaton",
+      "nombre_ficha_manual": false,
+      "nombre_material": "BASE PARA MEDIDOR RESIDENCIAL 200A EATON",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "tipo_producto": "Interruptor de medidor residencial",
+      "dimensiones": "19.75x5.38x14.44",
+      "sin_medidas": false,
+      "especificacion": "Amperaje 200A, NEMA 3R",
+      "normativa": "UL Listed",
+      "descripcion_corta": "Interruptor de medidor residencial de aluminio, 200A, monofásico, con diseño compacto de dos cubiertas y caja NEMA 3R.",
+      "aspectos_adicionales": "",
+      "search_keywords": "base para medidor residencial 200a eaton 19 75 x 5 38 14 44 200 a elec interruptor de 75x5 38x14 amperaje nema 3r ul listed aluminio monofasico con diseno compacto dos cubiertas y caja",
+      "ruta_pdf": "ELEC/BASE-PARA-MEDIDOR-RESIDENCIAL-200A-EATON-19-75-x-5-38-x-14-44-200-A-Eaton.pdf",
+      "hash_archivo": "90b1bca2ee129e0b",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T10:01:10",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T09:51:53"
+  "ultima_sincronizacion_git": "2026-07-29T09:56:13"
 }
