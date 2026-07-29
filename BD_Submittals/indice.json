@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:56:33",
+  "ultima_actualizacion": "2026-07-29T11:58:16",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2236,8 +2236,31 @@
       "fecha_modificacion": "2026-07-29T11:56:33",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "cd6716fc-6a6a-4525-b07e-d0b0a5a3e8b1",
+      "nombre_ficha": "BARRA DE TIERRA TGB 304.8 x 101.6 x 6.4 GB4B0612TPI-1 - Panduit",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Barra de tierra TGB",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "tipo_producto": "Grounding Busbar",
+      "dimensiones": "304.8x101.6x6.4",
+      "sin_medidas": false,
+      "especificacion": "GB4B0612TPI-1",
+      "normativa": "BICSI/TIA-607-D, cULus Listed for Grounding and Bonding Equipment",
+      "descripcion_corta": "Barra de puesta a tierra de cobre de alta conductividad, estañada para inhibir la corrosión, preensamblada con soportes e aisladores para instalación rápida.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "barra de tierra tgb 304 8 x 101 6 4 gb4b0612tpi 1 panduit elec grounding busbar 8x101 6x6 bicsi tia 607 d culus listed for and bonding equipment puesta a cobre alta conductividad estanada para inhibir la corrosion preensamblada con soportes e aisladores instalacion rapida",
+      "ruta_pdf": "ELEC/BARRA-DE-TIERRA-TGB-304-8-x-101-6-x-6-4-GB4B0612TPI-1-Panduit.pdf",
+      "hash_archivo": "7f14fdc4bfcf06ec",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:58:16",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:55:51"
+  "ultima_sincronizacion_git": "2026-07-29T11:56:36"
 }
