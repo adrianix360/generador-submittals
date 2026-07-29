@@ -1,0 +1,35 @@
+{
+  "nombre_proyecto": "Documentos",
+  "datos_procedimiento": {
+    "numero_procedimiento": "",
+    "institucion": "",
+    "detalle": "",
+    "plazo": "",
+    "monto": ""
+  },
+  "tipo_caratula": "clasica",
+  "materiales_seleccionados": [
+    {
+      "consecutivo": "ELEC01",
+      "id_ficha_bd": "621d5330-b3cb-4f74-95bf-0871378f166e",
+      "nombre_material": "CAJA CUADRADA CUADRADO 4 x 4 x 1.5",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC02",
+      "id_ficha_bd": "d037981e-7e6d-4663-ada6-db85c9bf02b1",
+      "nombre_material": "TOMACORRIENTE DOBLE GFCI TST20 105.2 x 52.3 x 27 125 V",
+      "marca": "EAGLE",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    }
+  ],
+  "id_proyecto": "a76188b8-cc34-4449-9e04-7729825f7204",
+  "fecha_creacion": "2026-07-29",
+  "ultima_actualizacion": "2026-07-29T16:33:10",
+  "actualizado_por": "ProBook_de_Adri"
+}
