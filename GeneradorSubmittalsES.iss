@@ -26,7 +26,7 @@ AppName=Generador de Submittals ES
 
 ; Version mostrada en "Agregar o quitar programas". Mantener sincronizada con
 ; VERSION_v3.json.
-AppVersion=3.3.6
+AppVersion=3.3.7
 
 ; Editor / fabricante. Solo cosmetico: aparece en el asistente y en la lista de
 ; programas como senal de confianza.
@@ -53,7 +53,7 @@ DisableProgramGroupPage=yes
 DisableDirPage=yes
 
 ; Nombre del instalador .exe generado (sin extension).
-OutputBaseFilename=GeneradorSubmittalsES_Setup_v3.3.6
+OutputBaseFilename=GeneradorSubmittalsES_Setup_v3.3.7
 
 ; Carpeta donde se escribe el instalador compilado, relativa a este .iss.
 OutputDir=Instalador

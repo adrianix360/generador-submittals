@@ -8,6 +8,9 @@ dist/
 build/
 Instalador/
 *.spec~
+
+# Salida del skill graphify (grafo de conocimiento local, no es parte del app)
+graphify-out/
 .DS_Store
 
 # Configuracion local de asistentes/herramientas
