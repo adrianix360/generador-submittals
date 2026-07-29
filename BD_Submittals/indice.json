@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:19:21",
+  "ultima_actualizacion": "2026-07-29T12:20:07",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2788,8 +2788,31 @@
       "fecha_modificacion": "2026-07-29T12:19:21",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "f88d2233-4159-4473-ba57-d01e9fde2e4b",
+      "nombre_ficha": "CONECTOR PARA EMT MULTIPLE - SIN ESPECIFICAR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Conector para EMT",
+      "marca": "SIN ESPECIFICAR",
+      "categoria": "ELEC",
+      "tipo_producto": "Conector para conductos",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "",
+      "normativa": "UL",
+      "descripcion_corta": "Conector para sellar conductos metálicos flexibles herméticos a líquidos, aceite o lluvia.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "conector para emt multiple sin especificar elec conductos multiples ul sellar metalicos flexibles hermeticos a liquidos aceite o lluvia",
+      "ruta_pdf": "ELEC/CONECTOR-PARA-EMT-MULTIPLE-SIN-ESPECIFICAR.pdf",
+      "hash_archivo": "4234af93c0a3775c",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:20:07",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:18:35"
+  "ultima_sincronizacion_git": "2026-07-29T12:19:24"
 }
