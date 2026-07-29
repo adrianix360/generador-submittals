@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T10:56:50",
+  "ultima_actualizacion": "2026-07-29T10:59:09",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1569,8 +1569,31 @@
       "fecha_modificacion": "2026-07-29T10:56:50",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "85c2206f-3ba2-4de4-b012-eadcbe2346d4",
+      "nombre_ficha": "ENCHUFE 50A 63.5 x 80.2 250 V - Eagle",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Enchufe 50A",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "tipo_producto": "Enchufe eléctrico",
+      "dimensiones": "63.5x80.2",
+      "sin_medidas": false,
+      "especificacion": "50A 125/250V~60 Hz",
+      "normativa": "NOM 190OM05168, RETIE 230000, UL E493433",
+      "descripcion_corta": "Enchufe de alta resistencia mecánica, diseño compacto, grado comercial, 50A 125/250V~60 Hz, material termostable y bronce.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "enchufe 50a 63 5 x 80 2 250 v eagle elec electrico 5x80 125 250v 60 hz nom 190om05168 retie 230000 ul e493433 de alta resistencia mecanica diseno compacto grado comercial material termostable y bronce",
+      "ruta_pdf": "ELEC/ENCHUFE-50A-63-5-x-80-2-250-V-Eagle.pdf",
+      "hash_archivo": "71755eff52742200",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T10:59:09",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T10:36:25"
+  "ultima_sincronizacion_git": "2026-07-29T10:56:53"
 }
