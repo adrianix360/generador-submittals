@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:58:16",
+  "ultima_actualizacion": "2026-07-29T11:59:19",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2259,8 +2259,31 @@
       "fecha_modificacion": "2026-07-29T11:58:16",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "1d37343d-8206-40a0-ade8-ae7e5b1326d8",
+      "nombre_ficha": "CABLE UTP CAT6A 6.3 mm 6 A - Panduit",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Cable UTP cat6A",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "tipo_producto": "Cable de cobre U/UTP",
+      "dimensiones": "6.3mm",
+      "sin_medidas": false,
+      "especificacion": "TX6A",
+      "normativa": "ANSI/TIA-568.2-E, IEC 61156-5, ISO 11801 Class Ea",
+      "descripcion_corta": "Cable de cobre U/UTP categoría 6A con tecnología Vari-MaTriX, diseñado para transmisión 10GBASE-T y aplicaciones PoE.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "cable utp cat6a 6 3 mm a panduit elec de cobre u 3mm tx6a ansi tia 568 2 e iec 61156 5 iso 11801 class ea categoria 6a con tecnologia vari matrix disenado para transmision 10gbase t y aplicaciones poe",
+      "ruta_pdf": "ELEC/CABLE-UTP-CAT6A-6-3-mm-6-A-Panduit.pdf",
+      "hash_archivo": "eb69a99c9f8bd822",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:59:19",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:56:36"
+  "ultima_sincronizacion_git": "2026-07-29T11:58:19"
 }
