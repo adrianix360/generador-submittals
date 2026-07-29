@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:38:54",
+  "ultima_actualizacion": "2026-07-29T11:39:34",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1845,8 +1845,31 @@
       "fecha_modificacion": "2026-07-29T11:38:54",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "2b62dcd9-ce92-44c4-8acd-18d895733ad2",
+      "nombre_ficha": "GAZA TUBO EMT OREJAS - Steel Elecktrik",
+      "nombre_ficha_manual": false,
+      "nombre_material": "GAZA TUBO EMT UL 2 OREJAS",
+      "marca": "Steel Elecktrik",
+      "categoria": "ELEC",
+      "tipo_producto": "Abrazadera de acero",
+      "dimensiones": "SIN ESPECIFICAR",
+      "sin_medidas": true,
+      "especificacion": "E483327",
+      "normativa": "UL",
+      "descripcion_corta": "Abrazadera de acero para tubo EMT con dos orejas, certificada UL.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "gaza tubo emt orejas steel elecktrik ul 2 elec abrazadera de acero sin especificar e483327 para con dos certificada",
+      "ruta_pdf": "ELEC/GAZA-TUBO-EMT-OREJAS-Steel-Elecktrik.png",
+      "hash_archivo": "051acf8136bef4c9",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:39:33",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:17:05"
+  "ultima_sincronizacion_git": "2026-07-29T11:39:00"
 }
