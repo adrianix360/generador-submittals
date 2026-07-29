@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:50:27",
+  "ultima_actualizacion": "2026-07-29T11:51:21",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2075,8 +2075,31 @@
       "fecha_modificacion": "2026-07-29T11:50:27",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "ae9d4be2-8ba1-40f9-a67e-02a27a2b19f5",
+      "nombre_ficha": "TUBERÍA EMT MULTIPLE - RYMCO",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tubería EMT",
+      "marca": "RYMCO",
+      "categoria": "ELEC",
+      "tipo_producto": "Conduit metálico eléctrico",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "Galvanizado en línea por inmersión en caliente",
+      "normativa": "UL-797",
+      "descripcion_corta": "Tubería metálica rígida de acero ligero con recubrimiento de zinc, resistente a la corrosión y recubrimiento interior aislante.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "tuberia emt multiple rymco elec conduit metalico electrico multiples galvanizado en linea por inmersion caliente ul 797 metalica rigida de acero ligero con recubrimiento zinc resistente a la corrosion y interior aislante",
+      "ruta_pdf": "ELEC/TUBERIA-EMT-MULTIPLE-RYMCO.pdf",
+      "hash_archivo": "65aef122e6adc8ee",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:51:21",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:49:47"
+  "ultima_sincronizacion_git": "2026-07-29T11:50:36"
 }
