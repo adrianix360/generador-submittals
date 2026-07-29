@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:55:48",
+  "ultima_actualizacion": "2026-07-29T11:56:33",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2213,8 +2213,31 @@
       "fecha_modificacion": "2026-07-29T11:55:48",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "b73887f2-2e58-485d-81f6-5d51ad471dcb",
+      "nombre_ficha": "BARRA TIERRA PARA RACK 25 x 491.5 - Panduit",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Barra tierra para rack",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "tipo_producto": "Busbar Kit",
+      "dimensiones": "25x491.5",
+      "sin_medidas": false,
+      "especificacion": "Optimizado para racks de 19\"",
+      "normativa": "EIA-310, UL listed",
+      "descripcion_corta": "Kit de barra colectora de cobre estañado para sistemas de conexión a tierra en centros de datos y telecomunicaciones.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "barra tierra para rack 25 x 491 5 panduit elec busbar kit 25x491 optimizado racks de 19 eia 310 ul listed colectora cobre estanado sistemas conexion a en centros datos y telecomunicaciones",
+      "ruta_pdf": "ELEC/BARRA-TIERRA-PARA-RACK-25-x-491-5-Panduit.pdf",
+      "hash_archivo": "334b2ffd20bc9183",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:56:33",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:55:19"
+  "ultima_sincronizacion_git": "2026-07-29T11:55:51"
 }
