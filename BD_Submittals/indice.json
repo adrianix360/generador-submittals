@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T14:59:21",
+  "ultima_actualizacion": "2026-07-29T14:59:32",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2037,7 +2037,7 @@
       "nombre_ficha_manual": false,
       "nombre_material": "Luminaria 517 Line Tubo LED",
       "marca": "SYLVANIA",
-      "categoria": "ARQ",
+      "categoria": "ELEC",
       "tipo_producto": "Luminaria LED",
       "dimensiones": "2438x100x100",
       "sin_medidas": false,
@@ -2046,11 +2046,11 @@
       "descripcion_corta": "Luminaria con tubo LED para instalación colgante o empotrada, ideal para áreas que requieren iluminación eficiente y decorativa.",
       "aspectos_adicionales": "",
       "sinonimos": "",
-      "search_keywords": "luminaria 517 line tubo led 2438 x 100 218 w sylvania arq 2438x100x100 517tled 48 218w d15 cielo suspendido p08952 23 ul con para instalacion colgante o empotrada ideal areas que requieren iluminacion eficiente y decorativa",
+      "search_keywords": "luminaria 517 line tubo led 2438 x 100 218 w sylvania elec 2438x100x100 517tled 48 218w d15 cielo suspendido p08952 23 ul con para instalacion colgante o empotrada ideal areas que requieren iluminacion eficiente y decorativa",
       "ruta_pdf": "ARQ/LUMINARIA-517-LINE-TUBO-LED-2438-x-100-x-100-218-W-SYLVANIA.pdf",
       "hash_archivo": "9f73584f45358a88",
       "fecha_carga": "2026-07-29",
-      "fecha_modificacion": "2026-07-29T11:49:41",
+      "fecha_modificacion": "2026-07-29T14:59:32",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
     },
@@ -3045,5 +3045,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T14:59:05"
+  "ultima_sincronizacion_git": "2026-07-29T14:59:24"
 }
