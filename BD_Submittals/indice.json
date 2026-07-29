@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:36:44",
+  "ultima_actualizacion": "2026-07-29T12:44:18",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2995,8 +2995,31 @@
       "fecha_modificacion": "2026-07-29T12:36:44",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "84e19d1e-5dfd-4171-930a-fdb51ac14587",
+      "nombre_ficha": "PLACA INTEMPERIE TOMACORRIENTE 1966 IP65 - EAGLE",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Placa intemperie TOMACORRIENTE 1966",
+      "marca": "EAGLE",
+      "categoria": "ELEC",
+      "tipo_producto": "Placa de intemperie",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Montaje Horizontal, IP65",
+      "normativa": "NEC 406.8 (A), NEC 406.8 (B)(2)",
+      "descripcion_corta": "Placa de intemperie con bisagra y tornillo interno, protección IP65, para uso exterior, material de fundición de zinc.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "placa intemperie tomacorriente 1966 ip65 eagle elec de montaje horizontal nec 406 8 a b 2 con bisagra y tornillo interno proteccion para uso exterior material fundicion zinc",
+      "ruta_pdf": "ELEC/PLACA-INTEMPERIE-TOMACORRIENTE-1966-IP65-EAGLE.pdf",
+      "hash_archivo": "f34da56143517950",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:44:18",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:32:23"
+  "ultima_sincronizacion_git": "2026-07-29T12:40:20"
 }
