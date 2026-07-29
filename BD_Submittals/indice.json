@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:52:21",
+  "ultima_actualizacion": "2026-07-29T11:53:19",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2121,8 +2121,31 @@
       "fecha_modificacion": "2026-07-29T11:52:21",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "dcee9d07-c61e-49e1-aa0c-512ffd84adf3",
+      "nombre_ficha": "TUBO CONDUIT RIGIDO MULTIPLE - Amanco Wavin",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tubo Conduit rigido",
+      "marca": "Amanco Wavin",
+      "categoria": "ELEC",
+      "tipo_producto": "Tuberías y accesorios",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "Tubería de PVC para canalización eléctrica",
+      "normativa": "ASTM D-1784, UL 514C, UL 651",
+      "descripcion_corta": "Tuberías de PVC para protección de cables en instalaciones eléctricas, resistentes a impactos y agentes externos.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "tubo conduit rigido multiple amanco wavin elec tuberias y accesorios multiples tuberia de pvc para canalizacion electrica astm d 1784 ul 514c 651 proteccion cables en instalaciones electricas resistentes a impactos agentes externos",
+      "ruta_pdf": "ELEC/TUBO-CONDUIT-RIGIDO-MULTIPLE-Amanco-Wavin.pdf",
+      "hash_archivo": "e34d41f0372e04b5",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:53:19",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:51:27"
+  "ultima_sincronizacion_git": "2026-07-29T11:52:24"
 }
