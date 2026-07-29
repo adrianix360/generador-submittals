@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T10:59:42",
+  "ultima_actualizacion": "2026-07-29T11:00:00",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1615,8 +1615,31 @@
       "fecha_modificacion": "2026-07-29T10:59:42",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "8f9fcef4-fdf6-4dc2-88c2-47f81c88605c",
+      "nombre_ficha": "TIMBRE CAMPANA 224 100 x 53.35 110 V - EAGLE",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Timbre campana 224",
+      "marca": "EAGLE",
+      "categoria": "ELEC",
+      "tipo_producto": "Timbre eléctrico",
+      "dimensiones": "100x53.35",
+      "sin_medidas": false,
+      "especificacion": "110V/130V~, 85 Db",
+      "normativa": "NOM-ANCE",
+      "descripcion_corta": "Timbre campana de montaje superficial con sonido de 85 Db, diámetro de 10 cm y cable de 14 cm.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "timbre campana 224 100 x 53 35 110 v eagle elec electrico 100x53 110v 130v 85 db nom ance de montaje superficial con sonido diametro 10 cm y cable 14",
+      "ruta_pdf": "ELEC/TIMBRE-CAMPANA-224-100-x-53-35-110-V-EAGLE.pdf",
+      "hash_archivo": "c040eb09e01ffbe8",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:00:00",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T10:59:11"
+  "ultima_sincronizacion_git": "2026-07-29T10:59:44"
 }
