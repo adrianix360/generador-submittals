@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:53:19",
+  "ultima_actualizacion": "2026-07-29T11:54:47",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2144,8 +2144,31 @@
       "fecha_modificacion": "2026-07-29T11:53:19",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "698cc5cf-bc92-4c68-896b-b5f5fe73b4ed",
+      "nombre_ficha": "TRANSFORMADOR 286 PARA CERRADURA 16 V #18 AWG - Eagle",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Transformador 286 para cerradura",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "tipo_producto": "Transformador",
+      "dimensiones": "",
+      "sin_medidas": false,
+      "especificacion": "120VAC-16VAC 10VA",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Transformador para uso en sistemas de control de 16V AC, aplicaciones residenciales, cable 18 AWG, garantía 5 años.",
+      "aspectos_adicionales": "",
+      "sinonimos": "cerradura",
+      "search_keywords": "transformador 286 para cerradura 16 v 18 awg eagle elec 120vac 16vac 10va sin especificar uso en sistemas de control 16v ac aplicaciones residenciales cable garantia 5 anos",
+      "ruta_pdf": "ELEC/TRANSFORMADOR-286-PARA-CERRADURA-16-V-18-AWG-Eagle.pdf",
+      "hash_archivo": "94137979561db419",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:54:47",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:52:24"
+  "ultima_sincronizacion_git": "2026-07-29T11:53:24"
 }
