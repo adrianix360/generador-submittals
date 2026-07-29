@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:17:17",
+  "ultima_actualizacion": "2026-07-29T12:18:02",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2719,8 +2719,31 @@
       "fecha_modificacion": "2026-07-29T12:17:17",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "908850bb-aa76-43fd-9a8b-1020fb8bafd7",
+      "nombre_ficha": "TAPE SUPER 33 18 mm - 3M",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tape Super 33",
+      "marca": "3M",
+      "categoria": "ELEC",
+      "tipo_producto": "",
+      "dimensiones": "18,0 mm",
+      "sin_medidas": true,
+      "especificacion": "Scotch Súper 33",
+      "normativa": "NMX-J-541/3-1-ANCE-2004, RoHS, UL 510",
+      "descripcion_corta": "Cinta aislante de PVC con alta resistencia dieléctrica, retarda llamas y es autoextinguible, adecuada para temperaturas de -5°C a 105°C.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "tape super 33 18 mm 3m elec 0 scotch nmx j 541 3 1 ance 2004 rohs ul 510 cinta aislante de pvc con alta resistencia dielectrica retarda llamas y es autoextinguible adecuada para temperaturas 5 c a 105",
+      "ruta_pdf": "ELEC/TAPE-SUPER-33-18-mm-3M.pdf",
+      "hash_archivo": "a10ea7279d39238e",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:18:02",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:16:38"
+  "ultima_sincronizacion_git": "2026-07-29T12:17:20"
 }
