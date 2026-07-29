@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:07:30",
+  "ultima_actualizacion": "2026-07-29T11:09:15",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1799,8 +1799,31 @@
       "fecha_modificacion": "2026-07-29T11:07:30",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "d3c9862d-0aee-44a2-ab1a-ad1cee61fb05",
+      "nombre_ficha": "VENTILADOR DE TECHO - BOREAS 152 cm - Boreas",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Ventilador de Techo - Boreas",
+      "marca": "Boreas",
+      "categoria": "ELEC",
+      "tipo_producto": "Ventilador de techo",
+      "dimensiones": "152 cm",
+      "sin_medidas": false,
+      "especificacion": "3 aspas, control de pared",
+      "normativa": "UL LISTED",
+      "descripcion_corta": "Ventilador de techo industrial con 3 aspas de ABS, motor de acero laminado en frío y control de pared.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "ventilador de techo boreas 152 cm elec 3 aspas control pared ul listed industrial con abs motor acero laminado en frio y",
+      "ruta_pdf": "ELEC/VENTILADOR-DE-TECHO-BOREAS-152-cm-Boreas.pdf",
+      "hash_archivo": "cc825c0b7adcb234",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:09:15",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T11:06:26"
+  "ultima_sincronizacion_git": "2026-07-29T11:07:34"
 }
