@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:24:03",
+  "ultima_actualizacion": "2026-07-29T12:24:46",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2903,8 +2903,31 @@
       "fecha_modificacion": "2026-07-29T12:24:03",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "eb888ca6-82af-4d17-b005-9431de1cc93c",
+      "nombre_ficha": "CONDULETA LB MULTIPLE - SIN ESPECIFICAR",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Conduleta LB",
+      "marca": "SIN ESPECIFICAR",
+      "categoria": "ELEC",
+      "tipo_producto": "Cuerpo de conduit roscado",
+      "dimensiones": "MULTIPLES",
+      "sin_medidas": false,
+      "especificacion": "Material: Aluminio, Tipo: LB",
+      "normativa": "National Electrical Code NEC",
+      "descripcion_corta": "Cuerpo de conduit roscado con tapa y empaque para unir conductos rígidos o IMC, facilitando el acceso y mantenimiento del sistema de canalización.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "conduleta lb multiple sin especificar elec cuerpo de conduit roscado multiples material aluminio tipo national electrical code nec con tapa y empaque para unir conductos rigidos o imc facilitando el acceso mantenimiento del sistema canalizacion",
+      "ruta_pdf": "ELEC/CONDULETA-LB-MULTIPLE-SIN-ESPECIFICAR.pdf",
+      "hash_archivo": "198fe300478f9946",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:24:46",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:22:21"
+  "ultima_sincronizacion_git": "2026-07-29T12:24:06"
 }
