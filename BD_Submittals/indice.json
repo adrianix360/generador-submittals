@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T11:00:00",
+  "ultima_actualizacion": "2026-07-29T11:00:35",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1638,8 +1638,31 @@
       "fecha_modificacion": "2026-07-29T11:00:00",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "76d335a9-4f3d-4e5c-976f-b87957e29314",
+      "nombre_ficha": "FOTOCELDA 76.2 x 76.2 x 56.4 277 V - Intermatic",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Fotocelda",
+      "marca": "Intermatic",
+      "categoria": "ELEC",
+      "tipo_producto": "Fotocontrol térmico",
+      "dimensiones": "76.2x76.2x56.4",
+      "sin_medidas": false,
+      "especificacion": "Fotocontrol térmico de bajo costo con cierre de 120-277 V",
+      "normativa": "ANSI C136.10, cULus",
+      "descripcion_corta": "Fotocontrol con componente fotosensible de diodo de silicona y carcasa termoplástica para control fotoeléctrico multivoltaje.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "fotocelda 76 2 x 56 4 277 v intermatic elec fotocontrol termico 2x76 2x56 de bajo costo con cierre 120 ansi c136 10 culus componente fotosensible diodo silicona y carcasa termoplastica para control fotoelectrico multivoltaje",
+      "ruta_pdf": "ELEC/FOTOCELDA-76-2-x-76-2-x-56-4-277-V-Intermatic.pdf",
+      "hash_archivo": "1d0bfec991bca6ef",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T11:00:35",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T10:59:44"
+  "ultima_sincronizacion_git": "2026-07-29T11:00:04"
 }
