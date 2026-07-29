@@ -10,6 +10,15 @@
   "tipo_caratula": "ministerio_salud",
   "materiales_seleccionados": [
     {
+      "consecutivo": "ESTR01",
+      "id_ficha_bd": "e06b1113-3b91-47f5-93bb-bc797b15bbeb",
+      "nombre_material": "RIEL STRUT MULTIPLE",
+      "marca": "PST",
+      "categoria": "ESTR",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
       "consecutivo": "ELEC01",
       "id_ficha_bd": "76cca228-4841-4bc1-992b-88f4cbfee78b",
       "nombre_material": "INTERRUPTOR SENCILLO TRES VÍAS 106.8 x 96.8 x 83.3",
@@ -416,6 +425,15 @@
     },
     {
       "consecutivo": "ELEC46",
+      "id_ficha_bd": "4f1c443e-5c49-4ce2-a7a5-7bfb9da61da8",
+      "nombre_material": "ORGANIZADOR VERTICAL MULTIPLE",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC47",
       "id_ficha_bd": "f9dda280-e57a-48a3-a181-5ede7fd4e6f2",
       "nombre_material": "PANEL ROBO",
       "marca": "Honeywell",
@@ -424,7 +442,7 @@
       "justificacion_stock": false
     },
     {
-      "consecutivo": "ELEC47",
+      "consecutivo": "ELEC48",
       "id_ficha_bd": "8905083c-bb3b-49fd-bda2-02ebb57f35ba",
       "nombre_material": "PATCH CORD AZUL MULTIPLE 6 A #28 AWG RJ45",
       "marca": "Panduit",
@@ -433,10 +451,190 @@
       "justificacion_stock": false
     },
     {
-      "consecutivo": "ELEC48",
+      "consecutivo": "ELEC49",
       "id_ficha_bd": "4cf6e1c1-acf1-4d4c-8114-1f3c75da74f8",
       "nombre_material": "PATCH PANEL 24 PUERTOS 482.6 x 43.68 x 22.35",
       "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC50",
+      "id_ficha_bd": "f70265bb-edf3-4614-8020-2d0e49a415de",
+      "nombre_material": "PDU BÁSICO 15 A 120 V",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC51",
+      "id_ficha_bd": "32fc877f-ff98-4fa4-8aeb-57f894134f77",
+      "nombre_material": "PLACA UTP MULTIPLE",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC52",
+      "id_ficha_bd": "dce320bf-984e-44ba-85ec-7e6b4e12f8b9",
+      "nombre_material": "PLACA INTERPERIE SALIDAS ESPECIALES IP65",
+      "marca": "Eagle",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC53",
+      "id_ficha_bd": "18cdd34b-3109-4ce4-aa50-e62b111e3f0a",
+      "nombre_material": "SENSOR DE MOVIMIENTO 9.1 x 5.5 x 4 cm",
+      "marca": "Paradox",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC54",
+      "id_ficha_bd": "3900e46d-f96b-4d18-9e7a-d1697836c448",
+      "nombre_material": "TECLADO SISTEMA DE ALARMA 108 x 143 x 25",
+      "marca": "Honeywell",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC55",
+      "id_ficha_bd": "3c53bd82-eb23-4b12-9390-3f9d699504e2",
+      "nombre_material": "UPS UPO11-2RT",
+      "marca": "CHICAGO DIGITAL POWER",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC56",
+      "id_ficha_bd": "40d174e4-df26-409a-adb2-1a44482f2ecc",
+      "nombre_material": "DISYUNTOR 2P70 (EATON CH270) 1.5 x 3.2 x 2.6 2P 70 A 240 V",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC57",
+      "id_ficha_bd": "5eb24b09-c99d-4428-9f16-ca220051d825",
+      "nombre_material": "DISYUNTOR 2P20 (EATON CHF220) 1.5 x 0.75 x 2.6 20 A 240 V CH 20",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC58",
+      "id_ficha_bd": "4bfe198c-b497-491a-a9b3-1e99f226f921",
+      "nombre_material": "SUPRESOR 50KVA 7.5 x 5 x 2 240 V CHSPT2SURGE10",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC59",
+      "id_ficha_bd": "c47ace0c-0a8f-413d-a939-71061456cbea",
+      "nombre_material": "CAJA FS 2 x 4",
+      "marca": "SIN ESPECIFICAR",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC60",
+      "id_ficha_bd": "27d2730e-9bbd-4402-b190-678dd068712a",
+      "nombre_material": "SCOTCH  TAPE SÚPER 33 18 x 20 m",
+      "marca": "3M",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC61",
+      "id_ficha_bd": "f3038410-29e1-40fd-be15-491e0f954243",
+      "nombre_material": "UNIÓN EMT MULTIPLE",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC62",
+      "id_ficha_bd": "034e13c2-1421-4a51-b06c-3e795c6e1e33",
+      "nombre_material": "CONECTORES EMT MULTIPLE",
+      "marca": "PST Wiring System",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC63",
+      "id_ficha_bd": "6dc2add6-3011-4dee-9a35-46b7081b49fb",
+      "nombre_material": "CONECTOR BIEX RECTO PARA LIQUIDTIGHT MULTIPLE",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC64",
+      "id_ficha_bd": "aa2f266e-f381-4df7-9956-981f4574c1bb",
+      "nombre_material": "DISYUNTOR 1P20 A TORNILLO (EATON CHB120) 8.3\" x 4.5\" x 4.4\" 20 A 240 V CH 20",
+      "marca": "Eaton",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC65",
+      "id_ficha_bd": "cca7a00a-357d-4e7b-9725-f5d5e77fa47c",
+      "nombre_material": "LUMINARIA EXTERIOR (PROYECTOR ESSENTIAL BVP150) 231 mm 100 W",
+      "marca": "PHILIPS",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC66",
+      "id_ficha_bd": "642a17d2-6658-4281-b9f6-ecba36f8faa3",
+      "nombre_material": "CURVA EMT - 90 GRADO MULTIPLE",
+      "marca": "PST Wiring System",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC67",
+      "id_ficha_bd": "3b10a2e5-1681-4c0b-9b27-dfd6274856df",
+      "nombre_material": "CONDULETA LB MULTIPLE",
+      "marca": "PST",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC68",
+      "id_ficha_bd": "0340395d-4bc4-45f2-b018-5ae00d3725cf",
+      "nombre_material": "CABLE TGP MULTIPLE",
+      "marca": "Prysmian Group",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC69",
+      "id_ficha_bd": "7e49daa6-44d3-4406-bf2c-4402af8f2079",
+      "nombre_material": "CONECTOR TSJ 1/2\"",
+      "marca": "Topaz",
       "categoria": "ELEC",
       "marcas_alternativas": [],
       "justificacion_stock": false
@@ -444,6 +642,6 @@
   ],
   "id_proyecto": "dcc4f96b-cb78-4cbb-abbf-517cc0c6a465",
   "fecha_creacion": "2026-07-29",
-  "ultima_actualizacion": "2026-07-29T15:03:04",
+  "ultima_actualizacion": "2026-07-29T15:13:53",
   "actualizado_por": "ProBook_de_Adri"
 }
