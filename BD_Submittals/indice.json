@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T12:11:25",
+  "ultima_actualizacion": "2026-07-29T12:12:27",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2558,8 +2558,31 @@
       "fecha_modificacion": "2026-07-29T12:11:25",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
+    },
+    {
+      "id": "18cdd34b-3109-4ce4-aa50-e62b111e3f0a",
+      "nombre_ficha": "SENSOR DE MOVIMIENTO 9.1 x 5.5 x 4 cm - Paradox",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Sensor de movimiento",
+      "marca": "Paradox",
+      "categoria": "ELEC",
+      "tipo_producto": "Detector de movimiento infrarrojo digital",
+      "dimensiones": "9.1x5.5x4 cm",
+      "sin_medidas": false,
+      "especificacion": "Rango de detección 10 m, resistencia a mascotas hasta 16 kg",
+      "normativa": "CE, EN50131",
+      "descripcion_corta": "Detector de movimiento infrarrojo digital con tecnología avanzada para detección precisa, óptica híbrida y resistencia a mascotas.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "sensor de movimiento 9 1 x 5 4 cm paradox elec detector infrarrojo digital 1x5 5x4 rango deteccion 10 m resistencia a mascotas hasta 16 kg ce en50131 con tecnologia avanzada para precisa optica hibrida y",
+      "ruta_pdf": "ELEC/SENSOR-DE-MOVIMIENTO-9-1-x-5-5-x-4-cm-Paradox.pdf",
+      "hash_archivo": "ccb75b8260b66895",
+      "fecha_carga": "2026-07-29",
+      "fecha_modificacion": "2026-07-29T12:12:26",
+      "cargada_por": "ProBook_de_Adri",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T12:10:40"
+  "ultima_sincronizacion_git": "2026-07-29T12:11:29"
 }
