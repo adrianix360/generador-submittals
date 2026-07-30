@@ -1,0 +1,26 @@
+{
+  "nombre_proyecto": "Prueba de varios materiales para generador de submittal BORRAR",
+  "datos_procedimiento": {
+    "numero_procedimiento": "PRUEBA-0000",
+    "institucion": "Institución de prueba",
+    "detalle": "Submittal de prueba (modo desarrollador)",
+    "plazo": "N/A",
+    "monto": "0"
+  },
+  "tipo_caratula": "clasica",
+  "materiales_seleccionados": [
+    {
+      "consecutivo": "ESTR01",
+      "id_ficha_bd": "507bac57-5cbb-4c47-82a3-dbedd828c960",
+      "nombre_material": "TUBERÍA ESTRUCTURAL CUADRADO",
+      "marca": "METALCO",
+      "categoria": "ESTR",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    }
+  ],
+  "id_proyecto": "bc6ffcc2-2a13-4d39-8404-5bd7b900f496",
+  "fecha_creacion": "2026-07-30",
+  "ultima_actualizacion": "2026-07-30T12:41:18",
+  "actualizado_por": "ProBook_de_Adri"
+}
