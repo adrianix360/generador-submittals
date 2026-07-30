@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-30T16:14:33",
+  "ultima_actualizacion": "2026-07-30T16:24:30",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -313,24 +313,26 @@
     },
     {
       "id": "425ca486-3e21-4883-a002-53b4913234f8",
-      "nombre_ficha": "ALAMBRE NEGRO RECOCIDO 1.68 mm CH 1 - ArcelorMittal",
+      "nombre_ficha": "ALAMBRE NEGRO RECOCIDO 1.68 mm CH 1 ROLLO - ArcelorMittal",
       "nombre_ficha_manual": false,
       "nombre_material": "ALAMBRE NEGRO RECOCIDO",
       "marca": "ArcelorMittal",
-      "categoria": "ESTR",
+      "categoria": "ARQ",
       "tipo_producto": "Alambre de acero",
       "dimensiones": "",
       "sin_medidas": false,
       "especificacion": "Calibre 1,68 mm ASWG 16",
       "normativa": "SIN ESPECIFICAR",
       "descripcion_corta": "Alambre negro recocido de acero 1006, calibre 1,68 mm, con protección anticorrosiva y peso de 45,4 kg por rollo.",
-      "search_keywords": "alambre negro recocido 1 68 mm ch arcelormittal estr de acero calibre aswg 16 sin especificar 1006 con proteccion anticorrosiva y peso 45 4 kg por rollo",
+      "search_keywords": "alambre negro recocido 1 68 mm ch rollo arcelormittal arq de acero calibre aswg 16 sin especificar 1006 con proteccion anticorrosiva y peso 45 4 kg por",
       "ruta_pdf": "ESTR/ALAMBRE-NEGRO-RECOCIDO-1-68-mm-CH-1-ArcelorMittal.pdf",
       "hash_archivo": "7481b445fad60a7d",
       "fecha_carga": "2026-07-28",
-      "fecha_modificacion": "2026-07-28T16:01:29",
+      "fecha_modificacion": "2026-07-30T16:24:30",
       "cargada_por": "Keis",
-      "estado": "activo"
+      "estado": "activo",
+      "aspectos_adicionales": "",
+      "sinonimos": ""
     },
     {
       "id": "ecd57e67-6a01-4111-a346-ce61c19009f7",
@@ -3196,5 +3198,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-30T16:14:21"
+  "ultima_sincronizacion_git": "2026-07-30T16:23:59"
 }
