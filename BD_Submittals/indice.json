@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-30T16:14:17",
+  "ultima_actualizacion": "2026-07-30T16:14:33",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -2890,7 +2890,7 @@
       "nombre_ficha_manual": false,
       "nombre_material": "Riel strut",
       "marca": "PST",
-      "categoria": "ESTR",
+      "categoria": "ELEC",
       "tipo_producto": "Canal ranurado",
       "dimensiones": "MULTIPLES",
       "sin_medidas": false,
@@ -2899,11 +2899,11 @@
       "descripcion_corta": "Canal ranurado para montar, soportar y conectar cargas estructurales ligeras en construcción, ventilación y sistemas mecánicos.",
       "aspectos_adicionales": "",
       "sinonimos": "",
-      "search_keywords": "riel strut multiple pst estr canal ranurado multiples acero q195 pre galvanizado iso 9001 2015 para montar soportar y conectar cargas estructurales ligeras en construccion ventilacion sistemas mecanicos",
+      "search_keywords": "riel strut multiple pst elec canal ranurado multiples acero q195 pre galvanizado iso 9001 2015 para montar soportar y conectar cargas estructurales ligeras en construccion ventilacion sistemas mecanicos",
       "ruta_pdf": "ESTR/RIEL-STRUT-MULTIPLE-PST.pdf",
       "hash_archivo": "5e584b4a1d71219b",
       "fecha_carga": "2026-07-29",
-      "fecha_modificacion": "2026-07-29T12:24:03",
+      "fecha_modificacion": "2026-07-30T16:14:33",
       "cargada_por": "ProBook_de_Adri",
       "estado": "activo"
     },
@@ -3196,5 +3196,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-30T16:13:50"
+  "ultima_sincronizacion_git": "2026-07-30T16:14:21"
 }
