@@ -1,12 +1,33 @@
-# OPCIONAL (recomendado): compila el .exe en Windows y crea el Release al
-# empujar un tag "vX.Y.Z".  Puede requerir ajustes segun tu repo.
-#   git tag v2.6.8 && git push origin v2.6.8
-name: Build & Release EXE
+# SOLO MANUAL -- NO dejar en "push: tags" (ver v3.3.7).
+#
+# Este workflow y el script local `deployment.py --build --release` compilan
+# el MISMO .exe en entornos distintos (este corre en Python 3.11 sobre el
+# runner de GitHub; deployment.py corre con la Python local del equipo), asi
+# que producen binarios distintos byte a byte aunque vengan del mismo commit.
+# `deployment.py` calcula el hash de SU PROPIO build y lo escribe en
+# VERSION.json (lo que el auto-actualizador usa para verificar integridad).
+#
+# Con el trigger en "push: tags: v*", empujar un tag disparaba este workflow
+# EN PARALELO a `deployment.py --release`: si este job terminaba de subir su
+# .exe despues de que el script local ya habia subido y verificado el suyo,
+# pisaba silenciosamente el asset del Release con un binario cuyo hash YA NO
+# coincidia con el de VERSION.json (bug real, detectado y corregido al
+# publicar v3.3.7). Este workflow no recalcula VERSION.json, asi que no puede
+# dejar el Release en un estado consistente por si solo.
+#
+# Por eso queda en "workflow_dispatch" (solo se dispara a mano, nunca por un
+# push de tag): sirve como respaldo de emergencia si hay que recompilar el
+# .exe desde un entorno limpio de GitHub (ej. esta PC no tiene Python/deps
+# instalados), pero quien lo use a mano debe saber que el Release quedara con
+# un exe de hash distinto al de VERSION.json hasta que se corrija a mano
+# (recalcular el hash y actualizar VERSION.json, o volver a subir el build
+# local con `gh release upload vX.Y.Z dist\GeneradorSubmittalsES_v3.exe
+# --clobber`). El flujo normal y unico que SI mantiene todo consistente sigue
+# siendo `python deployment.py X.Y.Z "changelog" --build --release`.
+name: Build & Release EXE (manual)
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch: {}
 
 permissions:
   contents: write

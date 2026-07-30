@@ -25,7 +25,11 @@ r"""
       Release (sin el, el auto-actualizador no tiene que descargar para el
       swap en caliente de instalaciones existentes).
    6. git add / commit / push.
-   7. (Opcional) Crea Release en GitHub con el .exe + el instalador (gh CLI).
+   7. (Opcional) Crea Release en GitHub con el .exe + el instalador (gh CLI),
+      sube cada asset con verificacion de hash post-subida y, al final,
+      vuelve a leer el Release ya publicado para confirmar que NINGUN asset
+      quedo corrupto o pisado por otro proceso (ej. el workflow de CI de
+      GitHub Actions) antes de dar la publicacion por buena.
 
  Flags:
    --no-tests      salta los tests
@@ -78,6 +82,10 @@ ARCHIVOS_VERSIONADOS = [
 # carpetas (v2.6)" y no participa del auto-updater.
 EXE_NOMBRE = "GeneradorSubmittalsES_v3.exe"
 EXE_SPEC = "GeneradorSubmittalsES_v3.spec"
+# Hermano legado: no lo compila este script (lo deja opcionalmente el
+# workflow manual de CI o una compilacion aparte), pero SI se verifica si hay
+# una copia local en dist/ cuando se audita el Release al final.
+EXE_V26_NOMBRE = "GeneradorSubmittalsES.exe"
 
 # Instalador Inno Setup (per-usuario, sin UAC): lo que se comparte para
 # instalaciones nuevas. Se compila DESPUES del .exe (su [Files] lo empaqueta).
@@ -319,6 +327,78 @@ def version_tag(version_o_tag):
     return version_o_tag[1:] if version_o_tag.startswith("v") else version_o_tag
 
 
+def verificar_release_completo(version):
+    """Ultima comprobacion antes de anunciar el Release como listo: vuelve a
+    leer el estado REAL y actual de TODOS los assets ya publicados (``gh
+    release view``) y compara su digest contra el hash local de cada archivo
+    conocido (exe v3, exe v2.6 hermano si hay copia local, instalador).
+
+    Por que hace falta ADEMAS de ``_subir_asset_verificado`` (que ya
+    descarga y compara justo despues de cada subida): esta app tiene un
+    workflow de GitHub Actions que tambien puede escribir al mismo Release
+    (ver ``.github/workflows/release.yml``). En la publicacion de v3.3.7 el
+    CI termino de subir su propio build del .exe v3 DESPUES de que este
+    script ya habia subido y verificado el suyo -- la comprobacion
+    "inmediatamente despues de subir" habia pasado en su momento, pero el
+    asset quedo pisado en silencio minutos mas tarde con un binario de hash
+    distinto al que quedo escrito en VERSION.json. Una verificacion que solo
+    mira el momento de la subida no detecta eso: hay que revisar el estado
+    FINAL en GitHub, como ultimo paso, despues de que ya no deberia haber mas
+    escrituras en curso.
+
+    Devuelve ``(ok, problemas)``; ``problemas`` es una lista de strings
+    listos para imprimir (archivo, hash esperado vs. publicado)."""
+    tag = f"v{version_tag(version)}"
+    r = subprocess.run(
+        ["gh", "release", "view", tag, "--repo", REPO_SLUG, "--json", "assets"],
+        cwd=str(BASE), capture_output=True, text=True)
+    if r.returncode != 0:
+        return False, [f"no se pudo leer el Release {tag} para verificarlo: "
+                        f"{(r.stderr or r.stdout).strip()}"]
+    try:
+        assets = json.loads(r.stdout).get("assets", [])
+    except Exception as e:
+        return False, [f"la respuesta de 'gh release view' no es JSON valido: {e}"]
+
+    digest_por_nombre = {}
+    for a in assets:
+        digest = (a.get("digest") or "").strip()
+        digest_por_nombre[a.get("name", "")] = (
+            digest.split(":", 1)[1] if ":" in digest else digest)
+
+    candidatos = {
+        EXE_NOMBRE: BASE / "dist" / EXE_NOMBRE,
+        EXE_V26_NOMBRE: BASE / "dist" / EXE_V26_NOMBRE,
+        _instalador_nombre(version): BASE / INSTALLER_DIR / _instalador_nombre(version),
+    }
+
+    problemas = []
+    revisados = 0
+    for nombre, ruta_local in candidatos.items():
+        if not ruta_local.exists():
+            continue  # sin build local de este archivo, no hay contra que comparar
+        digest_remoto = digest_por_nombre.get(nombre)
+        if digest_remoto is None:
+            problemas.append(f"{nombre}: hay build local pero NO aparece subido en el Release {tag}")
+            continue
+        if not digest_remoto:
+            problemas.append(f"{nombre}: el Release no reporta digest (no se puede verificar)")
+            continue
+        hash_local = sha256_file(ruta_local)
+        revisados += 1
+        if hash_local != digest_remoto:
+            problemas.append(
+                f"{nombre}: el hash publicado ({digest_remoto[:16]}...) NO coincide "
+                f"con el build local ({hash_local[:16]}...) -- el asset en GitHub "
+                f"quedo corrupto o fue pisado por otro proceso (ej. el workflow de CI)")
+
+    if problemas:
+        return False, problemas
+    print(f"  Verificacion final: {revisados} asset(s) revisado(s) contra el Release "
+          f"publicado, todos coinciden con el build local.")
+    return True, []
+
+
 def crear_release(version):
     """Sube AMBOS artefactos al Release: el .exe suelto (lo descarga el
     auto-updater para el swap en caliente de instalaciones existentes) y el
@@ -353,7 +433,17 @@ def crear_release(version):
             print(f"  Instalador para compartir: "
                   f"https://github.com/{REPO_SLUG}/releases/download/v{version}/"
                   f"{instalador.name}")
-        return ok
+        if not ok:
+            return False
+        print("  Verificando integridad final del Release (contra posibles "
+              "sobrescrituras posteriores, ej. el workflow de CI)…")
+        ok_final, problemas = verificar_release_completo(version)
+        if not ok_final:
+            print("   ❌ El Release quedo con archivo(s) inconsistentes:")
+            for p_ in problemas:
+                print(f"      - {p_}")
+            return False
+        return True
     print("  aviso: no se encontro 'gh' (GitHub CLI). Suba los archivos manualmente a\n"
           f"  https://github.com/{REPO_SLUG}/releases/new?tag=v{version}")
     return False
@@ -409,7 +499,10 @@ def main():
     if args.release:
         if subido:
             print("7) GitHub Release")
-            crear_release(version)
+            if not crear_release(version):
+                print("\n❌ El Release NO quedo verificado (ver errores arriba). "
+                      "No se confirma la publicacion todavia.")
+                sys.exit(1)
         else:
             sys.exit(1)
 

@@ -1,7 +1,8 @@
 # CHANGELOG v3.3.7 — Carátula con campos aplanados en el compilado
 
 **Fecha:** 2026-07-29
-**Estado:** en trabajo — pendiente de más cambios antes de subir/liberar.
+**Estado:** publicada (commit `4cbbe45`, tag `v3.3.7`, Release con exe +
+instalador subidos y verificados).
 **Alcance:** cómo se incrusta la carátula en el PDF compilado (`-CMP.pdf`) y en
 el compilado por disciplina. No cambia la carátula suelta (`CARATULA*.pdf`),
 que sigue siendo editable.
@@ -789,3 +790,151 @@ otra continúa después desde el selector de la nube.
 - `python -m unittest test_v3 -v`: 28 tests, misma única falla preexistente y
   no relacionada (`test_extraccion_ocr_ficha_real`, depende de servicio OCR
   externo).
+
+---
+
+# Post-publicación: el workflow de GitHub Actions pasa a disparo manual (evita que corrompa el hash del Release)
+
+## El problema
+
+Al publicar v3.3.7 con `deployment.py --build --release`, el Release quedó
+momentáneamente con un `GeneradorSubmittalsES_v3.exe` cuyo hash **no**
+coincidía con el registrado en `VERSION.json` — a pesar de que el script local
+reportó "subido y verificado con descarga real" para ese mismo archivo.
+
+Causa: `.github/workflows/release.yml` se disparaba automáticamente con
+cualquier push de tag `v*`. Al empujar el tag `v3.3.7`, ese workflow corrió EN
+PARALELO a `deployment.py --release` y compiló **su propio** `.exe` (en el
+runner de GitHub, con Python 3.11, distinto del entorno local usado para
+generar `VERSION.json`). Como su paso de subida terminó *después* de que el
+script local ya había subido y verificado el suyo, pisó en silencio el asset
+del Release con un binario de hash distinto — el workflow no recalcula ni
+actualiza `VERSION.json`, así que no puede dejar el Release en un estado
+consistente por sí solo. Se detectó comparando a mano el hash de
+`VERSION.json` contra el digest publicado (`gh release view --json assets`) y
+se corrigió re-subiendo el build local con `gh release upload --clobber`.
+
+## La solución
+
+`.github/workflows/release.yml` cambia su disparador de `push: tags: 'v*'` a
+`workflow_dispatch` (solo manual). Ya no corre nunca automáticamente al
+empujar un tag, así que no puede volver a competir con `deployment.py`. Queda
+documentado en el propio archivo como respaldo de emergencia únicamente (ej.
+recompilar desde un entorno limpio si esta PC no tiene las dependencias), con
+la advertencia de que quien lo dispare a mano debe re-subir el build local
+después para que el Release quede consistente con `VERSION.json`.
+
+Como red adicional (por si el workflow manual se dispara a mano y alguien se
+olvida de re-subir el build local, o por si aparece otra causa de
+sobrescritura a futuro), `deployment.py` suma una verificación final: después
+de subir y verificar cada asset, vuelve a leer el Release YA PUBLICADO (`gh
+release view --json assets`) y compara su digest contra el hash del build
+local para el exe v3, el exe v2.6 hermano (si hay copia local) y el
+instalador. Si algo no coincide, `crear_release()` devuelve `False` y
+`main()` corta con error explícito — antes `main()` ignoraba el valor de
+retorno de `crear_release()` y siempre imprimía "✅ publicada" aunque la
+verificación (o la subida) hubiera fallado; ese bug quedó corregido de paso.
+
+| Archivo | Cambio |
+|---|---|
+| `.github/workflows/release.yml` | Trigger `on: push: tags: 'v*'` → `on: workflow_dispatch: {}`, con comentario explicando la causa raíz y cómo usarlo a mano sin repetir el problema. |
+| `deployment.py` | Nueva `verificar_release_completo(version)`: relee el Release publicado y compara hash contra el build local de cada asset conocido. `crear_release()` ahora devuelve `False` si la verificación final falla. `main()` corregido para de verdad chequear ese retorno (antes lo ignoraba). |
+| `CLAUDE.md` | Nueva sección "5. Compilar y publicar una versión": protocolo exacto a seguir (incluye verificar el hash publicado contra `VERSION.json` como paso obligatorio, y no reactivar el trigger automático del workflow). |
+
+## Compatibilidad
+
+- No cambia ningún archivo de la app ni de la BD; es exclusivamente
+  infraestructura de publicación (CI + documentación para Claude).
+- No amerita una nueva versión de la app: no hay cambio de código ejecutable,
+  por eso esta entrada queda dentro del mismo changelog de v3.3.7 en vez de
+  abrir v3.3.8.
+
+## Pruebas
+
+- `python -m unittest test_v3 -v`: mismos 28 tests, misma única falla
+  preexistente y no relacionada.
+- YAML del workflow validado con `yaml.safe_load` tras el cambio (sin errores
+  de sintaxis).
+- Confirmado a mano que el digest publicado de `GeneradorSubmittalsES_v3.exe`
+  en el Release de v3.3.7 quedó igual al hash de `VERSION.json`
+  (`82de25828d8ee48eb11e62fc104567e8bc4d886a7026da8f2810130e2c070990`) después
+  de la corrección.
+
+---
+
+# Post-publicación: orden de la carpeta de trabajo para el traspaso del proyecto
+
+## El problema
+
+La carpeta de desarrollo acumulaba, mezclados con el código, varios GB de
+datos que no son parte de la aplicación: entregas y compilados reales de
+proyectos de clientes en la raíz (`ARQUITECTONICOS/`, `ESTRUCTURALES/`,
+`MECANICOS/`, `ELECTRICOS/`, `Distribucion/`, `Entregables y Respaldos/`,
+`Fichas por ordenar/`, `Prueba especifica v3.1/`, `COMPILADO FINAL SUBMITTAL/`
++ su `.zip`), artefactos de build viejos (7 instaladores anteriores, ya
+respaldados para siempre en GitHub Releases), temporales sueltos de sesiones
+de trabajo pasadas, y un archivo de versión huérfano
+(`VERSION_v3.json`, ningún `.py` lo usa). De cara al traspaso del proyecto a
+otra persona, esto hacía difícil distinguir qué es la aplicación de qué es
+trabajo de obra ya entregado.
+
+## La solución
+
+- Se movieron (no se borraron) las carpetas/zip de proyectos de clientes a
+  una carpeta HERMANA fuera del repo: `Submitals_ES - Proyectos y Entregables
+  (archivo)/`. Ninguna de esas rutas está hardcodeada en el código (se
+  confirmó con `grep`: `bd_manager.py`/`generate_caratulas.py` arman esas
+  rutas siempre a partir de un `destino` elegido por el usuario en tiempo de
+  ejecución, nunca de la raíz del repo), así que mover esas carpetas no afecta
+  el funcionamiento de la app.
+- Se restauró una muestra mínima (3 PDFs reales, ~250 KB) en
+  `ARQUITECTONICOS/ESTRUCTURALES/MECANICOS` en la raíz: `test_v3.py`
+  (`_fichas_reales`) escanea esas rutas para el caso de prueba con fichas
+  reales; el primer intento de mover TODO rompía esa cobertura en silencio
+  (los tests pasaban a "skipped" en vez de ejecutar). Esas 3 carpetas siguen
+  ignoradas por `.gitignore` igual que siempre, así que esta muestra no viaja
+  al repositorio remoto (igual que antes de esta limpieza, quien clona de
+  cero ya corría esos tests como "skipped" sin fichas locales).
+- Se borraron artefactos regenerables/redundantes: `__pycache__/`, `build/`,
+  temporales sueltos (`_probe_write.tmp`, PDFs `tmp*.pass{1,2}.pdf`, logs de
+  `generate_caratulas`, `datos_materiales.json` y `Guía interna
+  materiales.xlsx` sueltos en la raíz — sobras de corridas de prueba, no
+  documentos de referencia), los 7 instaladores de versiones anteriores
+  (`Instalador/`, solo queda v3.3.7), y `VERSION_v3.json`.
+- Se reubicó documentación histórica sin dependencia de código
+  (`README_v3.md`, `INSTRUCCIONES_LANZAMIENTO_v3.0.0.md`) dentro de
+  `Documentación/`.
+- **No se tocó absolutamente nada de `BD_Submittals/`** (catálogo de fichas,
+  índice, metadatos de proyectos) ni `submitals_config.json`: se verificó con
+  `git diff --stat -- BD_Submittals` que quedó sin cambios antes de commitear.
+- Se verificó antes de mover que nada de lo reubicado fuera una dependencia
+  activa: por ejemplo `Tabla visual refresh/assets/` casi se archiva por
+  error, pero es de ahí de donde `generate_caratulas.py` (`LOGO_PATH`) y
+  ambas GUIs toman el logo de la carátula — se dejó exactamente donde estaba.
+
+| Cambio | Detalle |
+|---|---|
+| Movidas (no borradas) | `ARQUITECTONICOS/`, `ESTRUCTURALES/`, `MECANICOS/`, `ELECTRICOS/`, `Distribucion/`, `Entregables y Respaldos/`, `Fichas por ordenar/`, `Prueba especifica v3.1/`, `COMPILADO FINAL SUBMITTAL/` + `.zip` → carpeta hermana `Submitals_ES - Proyectos y Entregables (archivo)/`. |
+| Restauradas (muestra mínima) | 1 PDF real por categoría en ARQ/ESTR/MEC en la raíz, para no perder la cobertura de `test_v3.py::TestCasosReales`. |
+| Borradas | `__pycache__/`, `build/`, `_probe_write.tmp`, `tmp896xizw3.pass1.pdf`, `tmp896xizw3.pass2.pdf`, `tmpf2nghlre.pass1.pdf`, `tmpf2nghlre.pass2.pdf`, `generate_caratulas.log`, `generate_caratulas_report.txt`, `datos_materiales.json` (suelto), `Guía interna materiales.xlsx` (suelta), `Instalador/GeneradorSubmittalsES_Setup_v3.2.1.exe` … `v3.3.6.exe`, `VERSION_v3.json`. |
+| Reubicadas dentro del repo | `README_v3.md` → `Documentación/README_v3 (historico).md`; `INSTRUCCIONES_LANZAMIENTO_v3.0.0.md` → `Documentación/`. |
+
+## Compatibilidad
+
+- `BD_Submittals/` sin cambios (verificado, `git diff` vacío para esa
+  carpeta).
+- No cambia ningún path que la app resuelva en tiempo de ejecución
+  (confirmado con `grep` sobre las carpetas/archivos tocados antes de mover
+  cada uno).
+- El repositorio de trabajo local pasó de ~5.3 GB a ~1.8 GB (queda `.git/`
+  con el historial, `dist/` e `Instalador/` con el build ya publicado y
+  verificado de v3.3.7, y `BD_Submittals/`).
+
+## Pruebas
+
+- `python -m unittest test_v3 -v`: 28 tests, misma única falla preexistente
+  (`test_extraccion_ocr_ficha_real`, servicio OCR externo) — en particular
+  `TestCasosReales` vuelve a ejecutar (no "skipped") tras restaurar la
+  muestra mínima.
+- `python -m unittest test_git_bd test_nomenclatura test_marcas_multiples
+  test_tablas_tecnicas`: 94 tests, OK (1 skipped por red/OCR, sin fallas).
