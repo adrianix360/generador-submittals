@@ -1,0 +1,53 @@
+{
+  "nombre_proyecto": "Preba Alejandro",
+  "datos_procedimiento": {
+    "numero_procedimiento": "",
+    "institucion": "",
+    "detalle": "",
+    "plazo": "",
+    "monto": ""
+  },
+  "tipo_caratula": "clasica",
+  "materiales_seleccionados": [
+    {
+      "consecutivo": "ARQ01",
+      "id_ficha_bd": "6c3a418b-fb87-4896-8bb5-bef70560d756",
+      "nombre_material": "HEXAPANEL HEXAGONAL 1220 x 2440",
+      "marca": "Hexapanel",
+      "categoria": "ARQ",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC01",
+      "id_ficha_bd": "117c4a76-4c34-435e-8ac8-1db2ff959415",
+      "nombre_material": "AERODUCTO",
+      "marca": "Legrand",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC02",
+      "id_ficha_bd": "6142e7cf-c31a-4053-95d3-6dd376048769",
+      "nombre_material": "CABLE ECOPLUS THHN/THWN-2",
+      "marca": "Phelps Dodge",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ELEC03",
+      "id_ficha_bd": "8c142d1b-59bc-4ad2-82ad-a65b5b8a044a",
+      "nombre_material": "CABLE HDMI MULTIPLE",
+      "marca": "Panduit",
+      "categoria": "ELEC",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    }
+  ],
+  "id_proyecto": "614742b9-244f-4f46-8078-e2a0b867c490",
+  "fecha_creacion": "2026-07-30",
+  "ultima_actualizacion": "2026-07-30T14:31:59",
+  "actualizado_por": "DESKTOP-AC14FSS"
+}
