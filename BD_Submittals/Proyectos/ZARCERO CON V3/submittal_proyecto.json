@@ -11,6 +11,15 @@
   "materiales_seleccionados": [
     {
       "consecutivo": "ARQ01",
+      "id_ficha_bd": "425ca486-3e21-4883-a002-53b4913234f8",
+      "nombre_material": "ALAMBRE NEGRO RECOCIDO 1.68 mm CH 1 ROLLO",
+      "marca": "ArcelorMittal",
+      "categoria": "ARQ",
+      "marcas_alternativas": [],
+      "justificacion_stock": false
+    },
+    {
+      "consecutivo": "ARQ02",
       "id_ficha_bd": "ecd57e67-6a01-4111-a346-ce61c19009f7",
       "nombre_material": "CORROSTOP PRIMARIO DE POLIURETANO LOXORITE GRIS",
       "marca": "SUR",
@@ -19,11 +28,11 @@
       "justificacion_stock": false
     },
     {
-      "consecutivo": "ESTR01",
-      "id_ficha_bd": "425ca486-3e21-4883-a002-53b4913234f8",
-      "nombre_material": "ALAMBRE NEGRO RECOCIDO 1.68 mm CH 1",
-      "marca": "ArcelorMittal",
-      "categoria": "ESTR",
+      "consecutivo": "ARQ03",
+      "id_ficha_bd": "d42497c4-5d31-4e6a-b63c-c76c35b2ecd7",
+      "nombre_material": "CORROSTOP PRIMARIO DE POLIURETANO TIPO MINIO II",
+      "marca": "SUR",
+      "categoria": "ARQ",
       "marcas_alternativas": [],
       "justificacion_stock": false
     },
@@ -660,6 +669,6 @@
   ],
   "id_proyecto": "dcc4f96b-cb78-4cbb-abbf-517cc0c6a465",
   "fecha_creacion": "2026-07-29",
-  "ultima_actualizacion": "2026-07-30T16:23:56",
+  "ultima_actualizacion": "2026-07-30T16:31:40",
   "actualizado_por": "ProBook_de_Adri"
 }
