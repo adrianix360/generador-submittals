@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-30T14:30:23",
+  "ultima_actualizacion": "2026-07-30T16:14:17",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -1181,20 +1181,22 @@
       "nombre_ficha_manual": false,
       "nombre_material": "RIEL STRUT 41 X 21",
       "marca": "PST",
-      "categoria": "ESTR",
+      "categoria": "ELEC",
       "tipo_producto": "Canal ranurado",
       "dimensiones": "41x21x1.5",
       "sin_medidas": false,
       "especificacion": "Acero, Q195",
       "normativa": "ISO 9001:2015",
       "descripcion_corta": "Canal ranurado pre-galvanizado para soportar cargas estructurales ligeras en construcción, ventilación y sistemas mecánicos.",
-      "search_keywords": "riel strut 41 x 21 1 5 pst estr canal ranurado 41x21x1 acero q195 iso 9001 2015 pre galvanizado para soportar cargas estructurales ligeras en construccion ventilacion y sistemas mecanicos",
+      "search_keywords": "riel strut 41 x 21 1 5 pst elec canal ranurado 41x21x1 acero q195 iso 9001 2015 pre galvanizado para soportar cargas estructurales ligeras en construccion ventilacion y sistemas mecanicos",
       "ruta_pdf": "ESTR/RIEL-STRUT-41-x-21-x-1-5-PST.pdf",
       "hash_archivo": "5e584b4a1d71219b",
       "fecha_carga": "2026-07-28",
-      "fecha_modificacion": "2026-07-28T17:08:56",
+      "fecha_modificacion": "2026-07-30T16:14:17",
       "cargada_por": "Keis",
-      "estado": "activo"
+      "estado": "activo",
+      "aspectos_adicionales": "",
+      "sinonimos": ""
     },
     {
       "id": "3b10a2e5-1681-4c0b-9b27-dfd6274856df",
@@ -3194,5 +3196,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-30T14:22:15"
+  "ultima_sincronizacion_git": "2026-07-30T16:13:50"
 }
