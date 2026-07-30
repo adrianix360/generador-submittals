@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-29T16:15:20",
+  "ultima_actualizacion": "2026-07-30T14:30:23",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3168,8 +3168,31 @@
       "fecha_modificacion": "2026-07-29T16:15:20",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "6c3a418b-fb87-4896-8bb5-bef70560d756",
+      "nombre_ficha": "HEXAPANEL HEXAGONAL 1220 x 2440 - Hexapanel",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Hexapanel",
+      "marca": "Hexapanel",
+      "categoria": "ARQ",
+      "tipo_producto": "Panel liviano modular",
+      "dimensiones": "1220x2440 / 1045x2440",
+      "sin_medidas": false,
+      "especificacion": "Espesor 50 mm, peso 7 kg/m², resistencia 1000 kg/m²",
+      "normativa": "SIN ESPECIFICAR",
+      "descripcion_corta": "Panel liviano para divisiones interiores con núcleo de cartón multicelular hexagonal y revestimiento melamínico.",
+      "aspectos_adicionales": "",
+      "sinonimos": "",
+      "search_keywords": "hexapanel hexagonal 1220 x 2440 arq panel liviano modular 1220x2440 1045x2440 espesor 50 mm peso 7 kg m resistencia 1000 sin especificar para divisiones interiores con nucleo de carton multicelular y revestimiento melaminico",
+      "ruta_pdf": "ARQ/HEXAPANEL-HEXAGONAL-1220-x-2440-Hexapanel.pdf",
+      "hash_archivo": "482f086f10de91b7",
+      "fecha_carga": "2026-07-30",
+      "fecha_modificacion": "2026-07-30T14:30:23",
+      "cargada_por": "DESKTOP-AC14FSS",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-29T16:12:58"
+  "ultima_sincronizacion_git": "2026-07-30T14:22:15"
 }
