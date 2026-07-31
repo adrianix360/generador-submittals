@@ -22,6 +22,7 @@ submitals_config.json
 # Datos de trabajo
 datos_materiales.json
 generate_caratulas.log
+deploy_v*.log
 generate_caratulas_report.txt
 *.bak
 *.nuevo
