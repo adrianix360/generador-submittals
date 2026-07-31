@@ -1,16 +1,16 @@
 {
-  "version": "3.3.7",
+  "version": "3.3.8",
   "tipo_actualizacion": "ejecutable",
-  "fecha": "2026-07-29",
-  "changelog": "Version 3.3.7: se reemplaza el aplanado de la caratula en los compilados por actualizacion de apariencia con widget.update() (PyMuPDF) y renombrado de campos por consecutivo para eliminar la colision de nombres entre caratulas fusionadas, manteniendo los campos editables; se agrega orden manual de consecutivos (subir/bajar) en la tabla de materiales; las marcas alternativas ahora se vinculan a fichas reales de la BD y sus PDF se copian al compilado; se puede editar libremente nombre, descripcion, normativa y aspectos adicionales de cada material por submittal, con guardado a eleccion solo en el proyecto o tambien en la ficha de la BD; se agrega boton Actualizar catalogo al armar un submittal; los datos del proyecto dejan de ser obligatorios para generar; se agregan sinonimos de busqueda al cargar o editar una ficha; se agrega boton Guardar avance y autoguardado silencioso al cerrar la ventana del submittal (causa real del reseteo de consecutivos que se reportaba, nunca fue un bug de numeracion sino avance no guardado); se reescribe el buscador de fichas corrigiendo el bug de scoring que lo hacia inservible y con una UI nueva con filtros y scroll; las ventanas se auto-dimensionan para que ningun boton quede fuera de pantalla; se agrega un guardrail para no resetear el contador de consecutivos al usar Generar desde BD sobre una carpeta que ya tenia avance; se agrega una animacion al agregar un material a la lista del submittal; y Abrir submittal existente ahora lista los proyectos ya sincronizados en la BD para continuarlos desde otra PC sin compartir carpeta (con aviso de que la edicion simultanea del mismo proyecto todavia no fusiona por material).",
+  "fecha": "2026-07-31",
+  "changelog": "Version 3.3.8: se agrega el boton Duplicar (mismo PDF) en Gestionar BD para crear una ficha nueva de otra especificacion reutilizando el PDF de una ficha ya cargada sin volver a subir ni reprocesar el archivo (resuelve el caso de proveedores que documentan todos sus productos en un unico PDF, como METALCO con tubos estructurales); al agregar un material al submittal la app ahora detecta automaticamente si existen otras fichas de la misma especificacion con distinta marca (marcas por stock) y ofrece agregarlas de una vez como marcas alternativas, activando la justificacion por stock en la caratula sin tener que editar el material a mano; se amplia el buscador de Editar marca(s) con scroll horizontal y vertical y una ventana mas grande para que se lean los nombres largos de las fichas; y se corrige un NameError que crasheaba el dialogo Editar marca(s) al abrirlo sobre un material recien agregado sin aspectos editados.",
   "archivos": {
     "submitals_gui_v3.py": {
-      "hash": "cd31386ea9f51b44a7adc79ea5bcbe7ff489da6ca3c9d66bfad91b5c8f1682b2",
+      "hash": "76747d1faa964ceb6b7e95c9b64029e931e3903a91f8ee07144552de27267b82",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/submitals_gui_v3.py",
       "tipo": "python"
     },
     "bd_manager.py": {
-      "hash": "808f46a1517e11ca869440f8995a551e40ca6093ca779310c6dcef5e1f42d8c9",
+      "hash": "7a5176b494535c731bec6434089e4fb5424280acb3abaa27719ede56670bbef0",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/bd_manager.py",
       "tipo": "python"
     },
@@ -25,7 +25,7 @@
       "tipo": "python"
     },
     "nomenclatura.py": {
-      "hash": "97468a754e1e6f6b846c9513226f4b280e8b1003d445b6b58ebaa9976640f985",
+      "hash": "2c65be65ea666697f1427328340babb7a785dbce58f93d9e3697ebae9471d405",
       "url": "https://raw.githubusercontent.com/adrianix360/generador-submittals/main/nomenclatura.py",
       "tipo": "python"
     },
@@ -65,8 +65,8 @@
       "tipo": "html"
     },
     "GeneradorSubmittalsES_v3.exe": {
-      "hash": "82de25828d8ee48eb11e62fc104567e8bc4d886a7026da8f2810130e2c070990",
-      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.7/GeneradorSubmittalsES_v3.exe",
+      "hash": "e3f5852f8f3e4c558ec0b60aa3476b561fb05ba14d847007189eea8030ef8e2e",
+      "url": "https://github.com/adrianix360/generador-submittals/releases/download/v3.3.8/GeneradorSubmittalsES_v3.exe",
       "tipo": "ejecutable",
       "requerido": false
     }

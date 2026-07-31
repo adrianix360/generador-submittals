@@ -44,20 +44,85 @@ import nomenclatura
 import ocr_extractor
 import updater_gh
 
-VERSION = "3.3.7"
+VERSION = "3.3.8"
 BASE_DIR = Path(__file__).resolve().parent
 PIN_MODO_DEV = "9119"
 
-# Colores tema (refresh visual v3.3.0: paleta azul/naranja, WCAG AA)
-AZUL_ES = "#2563EB"          # Primary
-AZUL_CLARO = "#3B82F6"       # Secondary (hover/acentos)
-NARANJA_CTA = "#F97316"      # Accent / CTA principal ("Generar", acciones clave)
-GRIS_BG = "#F8FAFC"          # Background
-GRIS_TEXTO = "#1E293B"       # Foreground (texto principal)
-GRIS_TEXTO_SUAVE = "#475569"  # texto secundario/ayuda
-BORDE_SUAVE = "#CBD5E1"      # bordes de tarjetas ("vidrio" en modo claro)
-ROJO_ES = "#DC2626"          # Danger (errores, acciones destructivas)
-VERDE_OK = "#16A34A"         # Success
+# ==========================================================================
+# SISTEMA DE DISENO v3.4.0
+# --------------------------------------------------------------------------
+# Refresh visual: neutros CALIDOS + un unico acento rojo ES, sidebar oscuro
+# permanente y tipografia IBM Plex (Sans para texto, Mono para todo dato
+# tabular: consecutivos, conteos, rutas, horas). Reemplaza a la paleta
+# azul/naranja de v3.3.x.
+#
+# Los valores vienen del diseno en oklch, convertidos a sRGB (Tkinter solo
+# entiende hex). Contraste texto/fondo >= 4.5:1 en todos los pares en uso
+# (ej. blanco sobre ACENTO = 5.35:1).
+# ==========================================================================
+# --- superficies
+FONDO = "#F4F1F0"            # fondo de dialogos
+WINDOW_BG = "#FCF9F9"        # fondo del area de contenido de la ventana
+SUPERFICIE = "#FFFFFF"       # tarjetas, tablas, barras
+SUPERFICIE_2 = "#FBFAF9"     # encabezados de tarjeta, barras de herramientas
+SUPERFICIE_3 = "#F7F4F3"     # cabeceras de tabla
+# --- sidebar (modo oscuro fijo, independiente del tema claro del resto)
+SIDEBAR = "#221D1C"
+SIDEBAR_HOVER = "#302A28"
+SIDEBAR_CARD = "#2F2827"
+SIDEBAR_BTN = "#433B39"
+SIDEBAR_BTN_H = "#554A48"
+SIDEBAR_BORDE = "#524B4A"
+SIDEBAR_TXT = "#F7F4F3"      # titulo / valores
+SIDEBAR_TXT_2 = "#B6AFAD"    # items de navegacion en reposo
+SIDEBAR_TXT_3 = "#918B88"    # metadatos (version, "hace un momento")
+SIDEBAR_LABEL = "#7A7370"    # encabezados de seccion (MENU, CATALOGO)
+SIDEBAR_NUM = "#E8E3E2"      # conteos por categoria
+# --- acento (unico: rojo ES)
+ACENTO = "#CC2827"
+ACENTO_HOVER = "#B00C15"
+ACENTO_TXT = "#8D0005"       # texto de acento sobre fondo claro
+ACENTO_SUAVE = "#FFF3F0"     # fondo de tarjeta destacada
+ACENTO_SUAVE_H = "#FFE9E5"
+ACENTO_BORDE = "#EF958B"
+ACENTO_BORDE_FUERTE = "#D9544B"   # borde de la tarjeta destacada en hover
+CHIP_BG = "#F8E6E4"          # pills de filtro y fila seleccionada
+FILA_HOVER = "#FFF4F2"
+# --- texto
+TEXTO = "#211B19"
+TEXTO_2 = "#3F3937"
+TEXTO_SUAVE = "#6D6765"
+TEXTO_TENUE = "#8B8583"
+# --- bordes
+BORDE = "#DED9D8"
+BORDE_FUERTE = "#D1CCCB"
+BORDE_TENUE = "#EEEAE9"
+# --- estado
+VERDE = "#007136"
+VERDE_PUNTO = "#46B86E"
+AMBAR = "#8E3800"
+ROJO = "#B32322"
+ROJO_BORDE = "#F9AEA5"
+ROJO_SUAVE = "#FFECE9"
+ROJO_CLARO = "#F0918A"       # rojo legible SOBRE el sidebar oscuro
+# --- consola / registro (unico bloque oscuro del area de contenido)
+LOG_BG = "#16181E"
+LOG_TXT = "#CACED4"
+LOG_OK = "#98D5A8"
+LOG_WARN = "#D5B36A"
+LOG_LABEL = "#7A808D"
+
+# Alias de la paleta v3.3.x: el resto del archivo (dialogos que no cambian de
+# estructura) los sigue usando y asi hereda la paleta nueva sin tocarse.
+AZUL_ES = ACENTO             # accion primaria
+AZUL_CLARO = ACENTO_HOVER    # acentos/hover
+NARANJA_CTA = ACENTO         # el diseno tiene UN solo acento
+GRIS_BG = FONDO
+GRIS_TEXTO = TEXTO
+GRIS_TEXTO_SUAVE = TEXTO_SUAVE
+BORDE_SUAVE = BORDE
+ROJO_ES = ROJO               # Danger (acciones destructivas)
+VERDE_OK = VERDE             # Success
 
 IMG_EXT = (".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff")
 
@@ -543,13 +608,24 @@ if _TK_OK:
     ctk.set_appearance_mode("light")
     ctk.set_default_color_theme("blue")
 
+    # Tipografia del diseno: IBM Plex Sans para texto e IBM Plex Mono para
+    # datos (consecutivos, conteos, rutas, horas). Si la PC no las tiene
+    # instaladas se cae a las del sistema, que son metricamente parecidas.
     FUENTE = "Segoe UI"
+    FUENTE_MONO = "Consolas"
     try:
         import tkinter.font as _tkfont
         _r = tk.Tk()
         _r.withdraw()
-        if "Inter" in _tkfont.families():
-            FUENTE = "Inter"
+        _fams = set(_tkfont.families())
+        for _cand in ("IBM Plex Sans", "Inter", "Segoe UI Variable Text", "Segoe UI"):
+            if _cand in _fams:
+                FUENTE = _cand
+                break
+        for _cand in ("IBM Plex Mono", "Cascadia Mono", "Consolas"):
+            if _cand in _fams:
+                FUENTE_MONO = _cand
+                break
         _r.destroy()
     except Exception:
         pass
@@ -558,53 +634,299 @@ if _TK_OK:
         """Fuente del sistema de diseno (``CTkFont``: escala con el DPI)."""
         return ctk.CTkFont(family=FUENTE, size=size, weight=weight)
 
+    def _mono(size=11, weight="normal"):
+        """Monoespaciada del sistema de diseno: TODO dato tabular (consecutivo,
+        conteo, ruta, hora, porcentaje) va en esta fuente."""
+        return ctk.CTkFont(family=FUENTE_MONO, size=size, weight=weight)
+
     def _configurar_estilo_ttk():
         """Reskin del ``ttk.Treeview`` (unico widget ttk que sigue en uso;
-        CustomTkinter no trae reemplazo) a la paleta nueva."""
+        CustomTkinter no trae reemplazo) a la paleta nueva.
+
+        El diseno usa cabeceras claras con texto tenue en mayusculas y la fila
+        seleccionada como TINTE del acento (no un bloque solido de color): asi
+        la seleccion no tapa el dato ni pelea con el resto de la pantalla.
+        """
         style = ttk.Style()
         try:
             style.theme_use("clam")
         except Exception:
             pass
-        style.configure("Treeview", background="white", fieldbackground="white",
-                        foreground=GRIS_TEXTO, rowheight=26, borderwidth=0,
-                        font=(FUENTE, 10))
-        style.configure("Treeview.Heading", background=AZUL_ES, foreground="white",
-                        font=(FUENTE, 10, "bold"), relief="flat")
-        style.map("Treeview.Heading", background=[("active", AZUL_CLARO)])
-        style.map("Treeview", background=[("selected", AZUL_CLARO)],
-                  foreground=[("selected", "white")])
+        style.configure("Treeview", background=SUPERFICIE,
+                        fieldbackground=SUPERFICIE, foreground=TEXTO_2,
+                        rowheight=28, borderwidth=0, font=(FUENTE, 10))
+        style.configure("Treeview.Heading", background=SUPERFICIE_3,
+                        foreground=TEXTO_SUAVE, font=(FUENTE_MONO, 9),
+                        relief="flat", borderwidth=0, padding=(6, 6))
+        style.map("Treeview.Heading", background=[("active", BORDE_TENUE)])
+        style.map("Treeview", background=[("selected", CHIP_BG)],
+                  foreground=[("selected", ACENTO_TXT)])
+        style.layout("Treeview", [("Treeview.treearea", {"sticky": "nswe"})])
+        # Scrollbars al tono de los bordes (antes quedaban gris azulado).
+        style.configure("Vertical.TScrollbar", background=BORDE,
+                        troughcolor=SUPERFICIE_3, bordercolor=SUPERFICIE_3,
+                        arrowcolor=TEXTO_SUAVE, relief="flat")
+        style.configure("Horizontal.TScrollbar", background=BORDE,
+                        troughcolor=SUPERFICIE_3, bordercolor=SUPERFICIE_3,
+                        arrowcolor=TEXTO_SUAVE, relief="flat")
 
     # Color de "hover" de cada color solido del tema (mismo tono, mas oscuro).
-    _HOVER = {AZUL_ES: "#1D4ED8", AZUL_CLARO: "#2563EB", NARANJA_CTA: "#EA580C",
-             ROJO_ES: "#B91C1C", VERDE_OK: "#15803D", "white": "#F1F5F9"}
+    _HOVER = {ACENTO: ACENTO_HOVER, ACENTO_HOVER: ACENTO_TXT, ROJO: "#8D0005",
+             VERDE: "#005A2B", "white": SUPERFICIE_3, SUPERFICIE: SUPERFICIE_3,
+             SIDEBAR_BTN: SIDEBAR_BTN_H}
 
     def _tarjeta(parent, **kw):
-        """Frame estilo 'tarjeta': fondo blanco, esquinas redondeadas y borde
-        sutil. Es la aproximacion de Glassmorphism que CustomTkinter puede dar
-        sin blur real (Tkinter no soporta backdrop-filter)."""
-        kw.setdefault("fg_color", "white")
-        kw.setdefault("corner_radius", 14)
+        """Frame estilo 'tarjeta': fondo blanco, esquinas redondeadas suaves y
+        borde de 1px. El diseno es plano (sin sombras ni simil-vidrio): la
+        jerarquia la dan el borde y el fondo, no la profundidad."""
+        kw.setdefault("fg_color", SUPERFICIE)
+        kw.setdefault("corner_radius", 9)
         kw.setdefault("border_width", 1)
-        kw.setdefault("border_color", BORDE_SUAVE)
+        kw.setdefault("border_color", BORDE)
         return ctk.CTkFrame(parent, **kw)
 
-    def _boton(parent, text, command, color=AZUL_ES, texto_color="white",
-              ancho=140, alto=36, **kw):
-        """Boton estandar del sistema de diseno (esquinas redondeadas, hover
-        suave, tipografia consistente)."""
+    def _boton(parent, text, command, color=ACENTO, texto_color="white",
+              ancho=140, alto=34, **kw):
+        """Boton de accion primaria: solido, esquinas de 6px."""
         return ctk.CTkButton(parent, text=text, command=command, fg_color=color,
                              hover_color=_HOVER.get(color, color),
                              text_color=texto_color, width=ancho, height=alto,
-                             corner_radius=10, font=_fuente(11, "bold"), **kw)
+                             corner_radius=6, font=_fuente(12, "bold"), **kw)
 
     def _boton_secundario(parent, text, command, ancho=140, alto=32, **kw):
-        """Boton de accion secundaria: contorno azul sobre fondo blanco."""
+        """Boton de accion secundaria: contorno neutro sobre fondo blanco (en
+        el diseno el color se reserva para la accion primaria de cada
+        pantalla, para que siempre haya UNA sola obvia)."""
         return ctk.CTkButton(parent, text=text, command=command,
-                             fg_color="white", hover_color="#EFF6FF",
-                             text_color=AZUL_ES, border_width=1,
-                             border_color=AZUL_ES, width=ancho, height=alto,
-                             corner_radius=10, font=_fuente(11), **kw)
+                             fg_color=SUPERFICIE, hover_color=SUPERFICIE_3,
+                             text_color=TEXTO_2, border_width=1,
+                             border_color=BORDE, width=ancho, height=alto,
+                             corner_radius=6, font=_fuente(12), **kw)
+
+    def _boton_peligro(parent, text, command, ancho=140, alto=32, **kw):
+        """Accion destructiva: contorno rojo, no bloque rojo. Se distingue de
+        la accion primaria (solida) sin gritar en toda la pantalla."""
+        return ctk.CTkButton(parent, text=text, command=command,
+                             fg_color=SUPERFICIE, hover_color=ROJO_SUAVE,
+                             text_color=ROJO, border_width=1,
+                             border_color=ROJO_BORDE, width=ancho, height=alto,
+                             corner_radius=6, font=_fuente(12), **kw)
+
+    def _enlace(parent, text, command, **kw):
+        """Accion terciaria de bajo peso (estilo enlace): mono, sin recuadro."""
+        b = ctk.CTkButton(parent, text=text, command=command,
+                          fg_color="transparent", hover_color=SUPERFICIE_3,
+                          text_color=TEXTO_SUAVE, width=1, height=24,
+                          corner_radius=5, font=_mono(11), **kw)
+        return b
+
+    def _etiqueta_seccion(parent, texto, color=TEXTO_SUAVE, **kw):
+        """Rotulo de seccion del diseno: mono y en mayusculas. (El diseno le
+        pone letter-spacing; Tkinter no lo soporta, asi que se compensa con la
+        mono, que ya es mas abierta.)"""
+        return ctk.CTkLabel(parent, text=texto.upper(), font=_mono(10),
+                            text_color=color, **kw)
+
+    def _consola(parent, **kw):
+        """Caja de registro (el unico bloque oscuro del area de contenido)."""
+        kw.setdefault("corner_radius", 8)
+        kw.setdefault("fg_color", LOG_BG)
+        kw.setdefault("text_color", LOG_TXT)
+        kw.setdefault("border_width", 0)
+        return ctk.CTkTextbox(parent, font=(FUENTE_MONO, 10), **kw)
+
+    def _tabla_ttk(parent, columnas, titulos, anchos, alineados=(), alto=10):
+        """``ttk.Treeview`` dentro de una tarjeta con borde, como en el diseno
+        (la tabla es una superficie con marco, no un widget suelto).
+
+        Devuelve ``(marco, tree, pie)``; ``pie`` es la franja inferior de la
+        tarjeta, lista para poner el conteo de resultados (o vacia).
+        """
+        marco = _tarjeta(parent, corner_radius=8)
+        marco.grid_rowconfigure(0, weight=1)
+        marco.grid_columnconfigure(0, weight=1)
+        interior = ctk.CTkFrame(marco, fg_color=SUPERFICIE, corner_radius=8)
+        interior.grid(row=0, column=0, sticky="nsew", padx=1, pady=(1, 0))
+        tree = ttk.Treeview(interior, columns=columnas, show="headings", height=alto)
+        for c in columnas:
+            # El encabezado se alinea igual que su columna (por defecto ttk lo
+            # centra, y quedaba desfasado del dato que rotula).
+            alineacion = "center" if c in alineados else "w"
+            tree.heading(c, text=titulos[c], anchor=alineacion)
+            tree.column(c, width=anchos[c], minwidth=40, anchor=alineacion)
+        vsb = ttk.Scrollbar(interior, orient="vertical", command=tree.yview)
+        tree.configure(yscrollcommand=vsb.set)
+        tree.grid(row=0, column=0, sticky="nsew")
+        vsb.grid(row=0, column=1, sticky="ns")
+        interior.grid_rowconfigure(0, weight=1)
+        interior.grid_columnconfigure(0, weight=1)
+        pie = ctk.CTkFrame(marco, fg_color=SUPERFICIE_2, corner_radius=0)
+        pie.grid(row=1, column=0, sticky="ew", padx=1, pady=(0, 1))
+        return marco, tree, pie
+
+    def _clicable(marco, command, normal="transparent", hover=SUPERFICIE_3,
+                  borde_normal=None, borde_hover=None):
+        """Convierte un ``CTkFrame`` (con todo lo que tenga adentro) en una
+        tarjeta clicable con hover, como las del diseno.
+
+        En Tkinter el clic y el ``<Enter>``/``<Leave>`` NO se heredan: hay que
+        atarlos a cada hijo, si no la tarjeta "no responde" justo donde esta el
+        texto. Las ataduras se reemplazan (no se acumulan) para poder repintar
+        el mismo marco varias veces.
+        """
+        def _pintar(estado):
+            kw = {"fg_color": hover if estado else normal}
+            if borde_hover is not None or borde_normal is not None:
+                kw["border_color"] = (borde_hover if estado else borde_normal) or BORDE
+            try:
+                marco.configure(**kw)
+            except Exception:
+                pass
+
+        def _recorrer(w):
+            w.bind("<Button-1>", lambda _ev: command())
+            w.bind("<Enter>", lambda _ev: _pintar(True))
+            w.bind("<Leave>", lambda _ev: _pintar(False))
+            try:
+                w.configure(cursor="hand2")
+            except Exception:
+                pass
+            for hijo in w.winfo_children():
+                _recorrer(hijo)
+
+        _recorrer(marco)
+        return marco
+
+    def _pista(entry, var, texto, size=11):
+        """Texto de ayuda DENTRO de un campo vacio.
+
+        ``CTkEntry`` ignora ``placeholder_text`` cuando el campo tiene
+        ``textvariable`` (limitacion de CustomTkinter), y todos los campos de
+        esta app usan variables. Sin esto, los filtros y la API key se ven como
+        recuadros vacios sin decir que va adentro.
+        """
+        lbl = ctk.CTkLabel(entry, text=texto, font=_fuente(size),
+                           text_color=TEXTO_TENUE, fg_color="transparent")
+
+        def _refrescar(*_a):
+            try:
+                if var.get():
+                    lbl.place_forget()
+                else:
+                    lbl.place(x=11, rely=0.5, anchor="w")
+            except Exception:
+                pass
+
+        lbl.bind("<Button-1>", lambda _ev: entry.focus_set())
+        var.trace_add("write", _refrescar)
+        _refrescar()
+        return entry
+
+    def _tooltip(widget, texto):
+        """Globo de ayuda al pasar el mouse. Se usa en los botones que quedan
+        como icono solo (↑ / ↓): sin esto la accion no se puede saber sin
+        probarla."""
+        estado = {"win": None}
+
+        def _mostrar(_ev=None):
+            if estado["win"] is not None:
+                return
+            try:
+                x = widget.winfo_rootx() + 6
+                y = widget.winfo_rooty() + widget.winfo_height() + 6
+                win = tk.Toplevel(widget)
+                win.overrideredirect(True)
+                win.attributes("-topmost", True)
+                win.geometry(f"+{x}+{y}")
+                tk.Label(win, text=texto, bg=TEXTO, fg="#FFFFFF",
+                         font=(FUENTE, 9), padx=8, pady=4, bd=0).pack()
+                estado["win"] = win
+            except Exception:
+                estado["win"] = None
+
+        def _ocultar(_ev=None):
+            win = estado["win"]
+            estado["win"] = None
+            if win is not None:
+                try:
+                    win.destroy()
+                except Exception:
+                    pass
+
+        widget.bind("<Enter>", _mostrar, add="+")
+        widget.bind("<Leave>", _ocultar, add="+")
+        widget.bind("<Button-1>", _ocultar, add="+")
+        return widget
+
+    _RE_EMOJI_INICIAL = re.compile(r"^[^\w¿¡(]+\s*")
+
+    def _limpiar_estado(texto):
+        """Quita el emoji inicial de los mensajes de estado: en el diseno el
+        estado se comunica con el punto de color, no con iconos."""
+        return _RE_EMOJI_INICIAL.sub("", str(texto)).strip() or str(texto)
+
+    class _EtiquetaSync(ctk.CTkLabel):
+        """Etiqueta de estado de sincronizacion del menu lateral.
+
+        Todo el codigo de sincronizacion/actualizacion de v3.3.x le escribe con
+        los colores del tema CLARO (``AZUL_ES``, ``VERDE_OK``, ``ROJO_ES``,
+        ``GRIS_TEXTO_SUAVE``); sobre el sidebar oscuro esos colores no se leen.
+        Esta subclase traduce el color recibido a un par (texto legible, color
+        del punto de estado), asi los flujos existentes no se tocan.
+        """
+
+        _punto = None
+        _MAPA = {ACENTO: (SIDEBAR_TXT, SIDEBAR_TXT_3),
+                 VERDE: (SIDEBAR_TXT, VERDE_PUNTO),
+                 ROJO: (ROJO_CLARO, ROJO_CLARO),
+                 TEXTO_SUAVE: (SIDEBAR_TXT_3, SIDEBAR_TXT_3)}
+
+        def configure(self, require_redraw=False, **kw):
+            if "text" in kw:
+                kw["text"] = _limpiar_estado(kw["text"])
+            color = kw.get("text_color")
+            if color is not None:
+                texto_color, punto_color = self._MAPA.get(
+                    color, (SIDEBAR_TXT, SIDEBAR_TXT_3))
+                kw["text_color"] = texto_color
+                if self._punto is not None:
+                    try:
+                        self._punto.configure(text_color=punto_color)
+                    except Exception:
+                        pass
+            super().configure(require_redraw=require_redraw, **kw)
+
+    def _hover_filas(tree, color=FILA_HOVER):
+        """Resalta la fila bajo el cursor (el diseno lo hace con ``:hover``;
+        en ``ttk.Treeview`` hay que seguir el mouse a mano)."""
+        tree.tag_configure("_hover", background=color)
+        estado = {"iid": None}
+
+        def _mover(ev):
+            iid = tree.identify_row(ev.y)
+            if iid == estado["iid"]:
+                return
+            anterior = estado["iid"]
+            if anterior and tree.exists(anterior):
+                tags = [t for t in tree.item(anterior, "tags") if t != "_hover"]
+                tree.item(anterior, tags=tags)
+            estado["iid"] = iid
+            if iid and tree.exists(iid):
+                tags = list(tree.item(iid, "tags"))
+                # Las filas con tag propio (ej. la animacion de "recien
+                # agregado") conservan el suyo: _hover solo se suma.
+                if "_hover" not in tags:
+                    tree.item(iid, tags=tags + ["_hover"])
+
+        def _salir(_ev):
+            iid = estado["iid"]
+            if iid and tree.exists(iid):
+                tree.item(iid, tags=[t for t in tree.item(iid, "tags")
+                                     if t != "_hover"])
+            estado["iid"] = None
+
+        tree.bind("<Motion>", _mover, add="+")
+        tree.bind("<Leave>", _salir, add="+")
 
     def _avisar_resultado_git(parent, r, mensaje_ok):
         """Muestra el resultado de un ``git_push()`` (subido/offline/sin token/
@@ -656,6 +978,27 @@ if _TK_OK:
         min_h = min(max(req_h, 240), sh - margen)
         w = min(max(ancho, min_w), sw - margen)
         h = min(max(alto, min_h), sh - margen)
+        x = max(0, (sw - w) // 2)
+        y = max(0, (sh - h) // 2 - 20)
+        win.geometry(f"{w}x{h}+{x}+{y}")
+        win.minsize(min_w, min_h)
+
+    def _dimensionar_principal(win, ancho=1240, alto=800, min_w=1100, min_h=670):
+        """Abre la ventana PRINCIPAL al tamano del diseno (1240x800), centrada y
+        acotada a la pantalla.
+
+        A diferencia de ``_dimensionar_ventana`` (para dialogos), aca NO se usa
+        el tamano requerido por el contenido como piso: el shell tiene tablas y
+        paneles que se estiran, y en un monitor de 1366x768 exigir el tamano
+        "ideal" dejaria la ventana mas grande que la pantalla. Se fija un minimo
+        razonable, siempre menor que la pantalla disponible.
+        """
+        win.update_idletasks()
+        sw, sh = win.winfo_screenwidth(), win.winfo_screenheight()
+        min_w = min(min_w, max(720, sw - 60))
+        min_h = min(min_h, max(520, sh - 60))
+        w = max(min_w, min(ancho, sw - 80))
+        h = max(min_h, min(alto, sh - 90))
         x = max(0, (sw - w) // 2)
         y = max(0, (sh - h) // 2 - 20)
         win.geometry(f"{w}x{h}+{x}+{y}")
@@ -764,18 +1107,22 @@ if _TK_OK:
         distinguir un material entre muchos, y lista con scroll.
 
         Se usa tanto al armar un submittal (``TablaMateriales``, doble clic =
-        agregar) como al gestionar la BD (``VentanaGestionarBD``, doble clic =
+        agregar) como al gestionar la BD (``PantallaBD``, doble clic =
         editar). El widget no sabe que se hace con la ficha elegida: avisa por
         ``on_activar(ficha)`` y expone ``ficha_seleccionada()``.
         """
 
         def __init__(self, master, bd, on_activar=None, permitir_inactivas=False,
-                     alto_filas=12, top_n=80):
+                     alto_filas=12, top_n=80, compacto=False):
             super().__init__(master, fg_color="transparent")
             self.bd = bd
             self.on_activar = on_activar
             self.permitir_inactivas = permitir_inactivas
             self.top_n = top_n
+            # ``compacto``: version de 4 columnas para el panel angosto del
+            # armado de submittal (el diseno muestra ahi Nombre/Marca/Cat.);
+            # la vista completa se usa al gestionar la BD.
+            self.compacto = compacto
             self._resultados = []
             self._debounce = None
             self._build(alto_filas)
@@ -784,77 +1131,95 @@ if _TK_OK:
         def _build(self, alto_filas):
             filtros = ctk.CTkFrame(self, fg_color="transparent")
             filtros.pack(fill="x")
-            # Fila 1: busqueda libre (fuzzy) + categoria
+            # Fila 1: busqueda libre (fuzzy) + categoria (+ ver desactivadas)
             f1 = ctk.CTkFrame(filtros, fg_color="transparent")
-            f1.pack(fill="x", pady=(0, 4))
-            ctk.CTkLabel(f1, text="🔎 Buscar:", text_color=GRIS_TEXTO,
-                        font=_fuente(11, "bold")).pack(side="left")
+            f1.pack(fill="x", pady=(0, 6))
             self.var_q = tk.StringVar()
-            ent = ctk.CTkEntry(f1, textvariable=self.var_q, width=300, height=32,
-                               corner_radius=8, border_color=BORDE_SUAVE,
-                               placeholder_text="material, marca, modelo, sinónimo…")
-            ent.pack(side="left", padx=6)
-            ctk.CTkLabel(f1, text="Categoría:", text_color=GRIS_TEXTO).pack(
-                side="left", padx=(8, 2))
+            ent = ctk.CTkEntry(f1, textvariable=self.var_q, height=32,
+                               corner_radius=6, border_color=BORDE,
+                               fg_color=SUPERFICIE, text_color=TEXTO,
+                               font=_fuente(12))
+            _pista(ent, self.var_q,
+                   "Buscar por nombre, marca, modelo o sinónimo…", size=12)
+            ent.pack(side="left", fill="x", expand=True)
+            caja_cat = ctk.CTkFrame(f1, fg_color="transparent")
+            caja_cat.pack(side="left", padx=(8, 0))
+            _etiqueta_seccion(caja_cat, "cat", color=TEXTO_TENUE).pack(side="left",
+                                                                      padx=(0, 4))
             self.var_cat = tk.StringVar(value="TODAS")
-            ctk.CTkComboBox(f1, variable=self.var_cat, width=100, height=32,
-                            corner_radius=8, border_color=BORDE_SUAVE,
-                            button_color=ROJO_ES, button_hover_color=_HOVER[ROJO_ES],
-                            state="readonly", dropdown_fg_color="white",
+            ctk.CTkComboBox(caja_cat, variable=self.var_cat, width=104, height=32,
+                            corner_radius=6, border_color=BORDE,
+                            fg_color=SUPERFICIE, text_color=TEXTO,
+                            font=_fuente(12), dropdown_font=_fuente(12),
+                            button_color=SUPERFICIE, button_hover_color=SUPERFICIE_3,
+                            text_color_disabled=TEXTO_TENUE,
+                            state="readonly", dropdown_fg_color=SUPERFICIE,
+                            dropdown_text_color=TEXTO,
+                            dropdown_hover_color=CHIP_BG,
                             values=["TODAS"] + list(bd_manager.CATEGORIAS)).pack(side="left")
             if self.permitir_inactivas:
                 self.var_inact = tk.BooleanVar(value=False)
                 ctk.CTkCheckBox(f1, text="Ver desactivadas", variable=self.var_inact,
-                               command=self.refrescar, text_color=GRIS_TEXTO,
-                               fg_color=AZUL_ES, hover_color=_HOVER[AZUL_ES]).pack(
-                    side="left", padx=(12, 0))
+                               command=self.refrescar, text_color=TEXTO_2,
+                               font=_fuente(12), checkbox_width=18, checkbox_height=18,
+                               corner_radius=4, border_width=1, border_color=BORDE_FUERTE,
+                               fg_color=ACENTO, hover_color=ACENTO_HOVER).pack(
+                    side="left", padx=(10, 0))
             else:
                 self.var_inact = None
-            # Fila 2: filtros por campo
+
+            # Fila 2: filtros por campo. El diseno los dibuja como "pills"; se
+            # mantienen como campos SIEMPRE visibles a proposito: esconder un
+            # filtro detras de un clic extra le cuesta trabajo a quien arma
+            # submittals todo el dia.
             f2 = ctk.CTkFrame(filtros, fg_color="transparent")
-            f2.pack(fill="x", pady=(0, 6))
-            ctk.CTkLabel(f2, text="Filtros:", text_color=GRIS_TEXTO_SUAVE,
-                        font=_fuente(10)).pack(side="left", padx=(0, 4))
+            f2.pack(fill="x", pady=(0, 8))
             self.var_marca = tk.StringVar()
             self.var_modelo = tk.StringVar()
             self.var_nombre = tk.StringVar()
-            for etiqueta, var, ancho in (("Marca", self.var_marca, 140),
-                                         ("Modelo/espec.", self.var_modelo, 140),
-                                         ("Nombre", self.var_nombre, 150)):
-                ctk.CTkLabel(f2, text=etiqueta + ":", text_color=GRIS_TEXTO,
-                            font=_fuente(10)).pack(side="left", padx=(6, 2))
-                ctk.CTkEntry(f2, textvariable=var, width=ancho, height=28,
-                            corner_radius=8, border_color=BORDE_SUAVE).pack(side="left")
-            _boton_secundario(f2, "Limpiar", self._limpiar, ancho=80, alto=28).pack(
-                side="left", padx=(10, 0))
+            for pista, var in (("Marca", self.var_marca),
+                              ("Modelo", self.var_modelo),
+                              ("Nombre", self.var_nombre)):
+                # La etiqueta va DENTRO del campo en vez de al lado: son tres
+                # filtros y el panel es angosto; asi entran los tres en una
+                # linea sin recortar nada.
+                e = ctk.CTkEntry(f2, textvariable=var, width=104, height=28,
+                                corner_radius=14, border_color=BORDE,
+                                fg_color=SUPERFICIE, text_color=TEXTO,
+                                font=_fuente(11))
+                _pista(e, var, pista)
+                e.pack(side="left", padx=(0, 6))
+            _enlace(f2, "Limpiar", self._limpiar).pack(side="left")
 
-            # Resultados: Treeview con scroll. Columnas para reconocer la ficha.
-            cont = ctk.CTkFrame(self, fg_color="transparent")
-            cont.pack(fill="both", expand=True)
-            cols = ("nombre", "marca", "modelo", "dim", "cat", "match")
+            # Resultados: Treeview con scroll dentro de una tarjeta con borde.
+            if self.compacto:
+                cols = ("nombre", "marca", "cat", "match")
+            else:
+                cols = ("nombre", "marca", "modelo", "dim", "cat", "match")
             if self.permitir_inactivas:
                 cols = cols + ("estado",)
-            self.tree = ttk.Treeview(cont, columns=cols, show="headings",
-                                     height=alto_filas)
-            anchos = {"nombre": 340, "marca": 130, "modelo": 130, "dim": 120,
-                      "cat": 60, "match": 70, "estado": 90}
-            titulos = {"nombre": "Nombre", "marca": "Marca", "modelo": "Modelo/espec.",
+            # Anchos de arranque chicos a proposito: las columnas se estiran con
+            # la ventana (``stretch`` por defecto), y si arrancan anchas obligan
+            # a la ventana a abrir mas grande que la pantalla.
+            anchos = ({"nombre": 190, "marca": 96, "cat": 46, "match": 54,
+                       "estado": 78} if self.compacto else
+                      {"nombre": 260, "marca": 110, "modelo": 120, "dim": 100,
+                       "cat": 50, "match": 62, "estado": 80})
+            titulos = {"nombre": "Nombre", "marca": "Marca", "modelo": "Modelo / espec.",
                        "dim": "Dimensiones", "cat": "Cat.", "match": "Coincid.",
                        "estado": "Estado"}
-            for c in cols:
-                self.tree.heading(c, text=titulos[c])
-                self.tree.column(c, width=anchos[c],
-                                 anchor=("center" if c in ("cat", "match", "estado") else "w"))
-            vsb = ttk.Scrollbar(cont, orient="vertical", command=self.tree.yview)
-            self.tree.configure(yscrollcommand=vsb.set)
-            self.tree.pack(side="left", fill="both", expand=True)
-            vsb.pack(side="right", fill="y")
+            marco, self.tree, pie = _tabla_ttk(self, cols, titulos, anchos,
+                                               alineados=("cat", "match", "estado"),
+                                               alto=alto_filas)
+            marco.pack(fill="both", expand=True)
             self.tree.bind("<Double-Button-1>", lambda _ev: self._activar())
             self.tree.bind("<Return>", lambda _ev: self._activar())
+            _hover_filas(self.tree)
 
-            self.lbl_estado = ctk.CTkLabel(self, text="", text_color=GRIS_TEXTO_SUAVE,
-                                           font=_fuente(10))
-            self.lbl_estado.pack(anchor="w", pady=(2, 0))
+            # Pie de la tarjeta: conteo de resultados, en mono (es un dato).
+            self.lbl_estado = ctk.CTkLabel(pie, text="", text_color=TEXTO_SUAVE,
+                                           font=_mono(10))
+            self.lbl_estado.pack(anchor="w", padx=12, pady=4)
 
             # Refresco con pequeno "debounce" para no releer en cada tecla en
             # catalogos grandes.
@@ -892,8 +1257,13 @@ if _TK_OK:
                 sim = f.get("_similitud", 0)
                 match = f"{int(sim * 100)}%" if sim else "—"
                 modelo = (f.get("especificacion") or f.get("tipo_producto") or "").strip()
-                vals = [bd_manager.BDManager.nombre_de(f), f.get("marca", ""),
-                        modelo, f.get("dimensiones", ""), f.get("categoria", ""), match]
+                if self.compacto:
+                    vals = [bd_manager.BDManager.nombre_de(f), f.get("marca", ""),
+                            f.get("categoria", ""), match]
+                else:
+                    vals = [bd_manager.BDManager.nombre_de(f), f.get("marca", ""),
+                            modelo, f.get("dimensiones", ""),
+                            f.get("categoria", ""), match]
                 if self.permitir_inactivas:
                     estado = f.get("estado", "activo")
                     vals.append("desactivada" if estado != "activo" else "activa")
@@ -904,10 +1274,11 @@ if _TK_OK:
                 self.tree.focus("0")
                 self.tree.see("0")
             n = len(self._resultados)
-            tope = "" if n < self.top_n else f" (se muestran los primeros {self.top_n})"
+            tope = "" if n < self.top_n else f" · se muestran los primeros {self.top_n}"
             self.lbl_estado.configure(
                 text=(f"{n} resultado(s){tope}" if n else
-                      "Sin resultados — probá con menos texto o revisá los filtros"))
+                      "Sin resultados — probá con menos texto o revisá los filtros"),
+                text_color=(TEXTO_SUAVE if n else AMBAR))
 
         def ficha_seleccionada(self):
             sel = self.tree.selection()
@@ -936,42 +1307,87 @@ if _TK_OK:
             self._refrescar()
 
         def _build(self):
-            # Barra superior: acciones de catalogo
-            top = ctk.CTkFrame(self, fg_color="transparent")
-            top.pack(fill="x", pady=(0, 4))
-            ctk.CTkLabel(top, text="Catálogo de fichas — doble clic para agregar",
-                        text_color=GRIS_TEXTO, font=_fuente(11, "bold")).pack(side="left")
-            _boton(top, "＋ Cargar ficha nueva a BD", self._cargar_ficha,
-                  color=AZUL_CLARO, ancho=200).pack(side="right")
-            _boton_secundario(top, "🔄 Actualizar catálogo", self._actualizar_catalogo,
-                              ancho=170).pack(side="right", padx=(0, 6))
+            # Dos paneles lado a lado, como en el diseno: el catalogo a la
+            # izquierda (mas ancho) y los materiales ya elegidos a la derecha.
+            # Antes estaban apilados y obligaban a hacer scroll para ver lo que
+            # se acababa de agregar.
+            # Sin ``uniform``: con columnas uniformes, la mas angosta se estira
+            # hasta igualar la proporcion de la mas ancha y la pantalla exigia
+            # ~300 px mas de los que tiene un monitor de 1366.
+            self.grid_rowconfigure(0, weight=1)
+            self.grid_columnconfigure(0, weight=115)
+            self.grid_columnconfigure(2, weight=100)
+
+            izq = ctk.CTkFrame(self, fg_color="transparent")
+            izq.grid(row=0, column=0, sticky="nsew", padx=(0, 12))
+            sep = ctk.CTkFrame(self, width=1, fg_color=BORDE)
+            sep.grid(row=0, column=1, sticky="ns")
+            der = ctk.CTkFrame(self, fg_color="transparent")
+            der.grid(row=0, column=2, sticky="nsew", padx=(12, 0))
+            # ``der`` queda expuesto: la pantalla de submittal cuelga ahi el
+            # bloque de registro, debajo de la lista de materiales.
+            self.der = der
+
+            # ---------------------------------------------- panel: catalogo
+            top = ctk.CTkFrame(izq, fg_color="transparent")
+            top.pack(fill="x", pady=(0, 8))
+            titulo = ctk.CTkFrame(top, fg_color="transparent")
+            titulo.pack(side="left")
+            ctk.CTkLabel(titulo, text="Catálogo de fichas", text_color=TEXTO,
+                        font=_fuente(13, "bold")).pack(side="left")
+            ctk.CTkLabel(titulo, text="  · doble clic para agregar",
+                        text_color=TEXTO_TENUE, font=_fuente(11)).pack(side="left")
+            # "Cargar ficha" queda como boton de icono (con globo de ayuda): el
+            # panel es angosto y la accion completa esta en Inicio.
+            b_nueva = _boton_secundario(top, "＋", self._cargar_ficha, ancho=30,
+                                        alto=24)
+            b_nueva.pack(side="right")
+            _tooltip(b_nueva, "Cargar una ficha nueva a la Base de Datos")
+            _enlace(top, "Actualizar", self._actualizar_catalogo).pack(
+                side="right", padx=(0, 8))
 
             # Buscador reutilizable (mejor coincidencia primero + filtros + scroll)
-            self.buscador = _BuscadorFichas(self, self.bd,
+            self.buscador = _BuscadorFichas(izq, self.bd, compacto=True,
                                             on_activar=self._agregar_ficha, alto_filas=8)
             self.buscador.pack(fill="both", expand=True)
 
-            ctk.CTkLabel(self, text="Materiales del submittal:", text_color=GRIS_TEXTO,
-                        font=_fuente(11, "bold")).pack(anchor="w", pady=(8, 2))
-            self.tree = ttk.Treeview(self, columns=("cons", "nombre", "marca"),
-                                     show="headings", height=8)
-            for c, t, w in (("cons", "Consecutivo", 90), ("nombre", "Nombre", 320),
-                            ("marca", "Marca", 180)):
-                self.tree.heading(c, text=t); self.tree.column(c, width=w)
-            self.tree.pack(fill="both", expand=True, pady=4)
+            # ------------------------------------------- panel: materiales
+            cab = ctk.CTkFrame(der, fg_color="transparent")
+            cab.pack(fill="x", pady=(0, 8))
+            ctk.CTkLabel(cab, text="Materiales del submittal", text_color=TEXTO,
+                        font=_fuente(13, "bold")).pack(side="left")
+            self.lbl_conteo = ctk.CTkLabel(cab, text="0 fichas", text_color=TEXTO_SUAVE,
+                                           font=_mono(11))
+            self.lbl_conteo.pack(side="right")
 
-            bar = ctk.CTkFrame(self, fg_color="transparent")
-            bar.pack(fill="x")
-            _boton_secundario(bar, "↑ Subir", lambda: self._mover(-1), ancho=90).pack(
-                side="left", padx=4)
-            _boton_secundario(bar, "↓ Bajar", lambda: self._mover(1), ancho=90).pack(
-                side="left", padx=4)
-            _boton_secundario(bar, "Editar marca(s)", self._editar, ancho=140).pack(
-                side="left", padx=4)
-            _boton_secundario(bar, "👁 Vista previa", self._vista_previa, ancho=150).pack(
-                side="left", padx=4)
-            _boton(bar, "Eliminar", self._eliminar, color=ROJO_ES, ancho=110).pack(
-                side="left", padx=4)
+            marco, self.tree, pie = _tabla_ttk(
+                der, ("cons", "nombre", "marca"),
+                {"cons": "Consec.", "nombre": "Nombre", "marca": "Marca"},
+                {"cons": 64, "nombre": 170, "marca": 96},
+                alineados=("cons",), alto=7)
+            marco.pack(fill="both", expand=True)
+            _hover_filas(self.tree)
+            self.lbl_vacio = ctk.CTkLabel(
+                pie, text="Agregá fichas desde el catálogo de la izquierda",
+                text_color=TEXTO_TENUE, font=_fuente(11))
+            self.lbl_vacio.pack(anchor="w", padx=12, pady=4)
+
+            bar = ctk.CTkFrame(der, fg_color="transparent")
+            bar.pack(fill="x", pady=(8, 0))
+            b_subir = _boton_secundario(bar, "↑", lambda: self._mover(-1), ancho=34,
+                                        alto=30)
+            b_subir.pack(side="left")
+            b_bajar = _boton_secundario(bar, "↓", lambda: self._mover(1), ancho=34,
+                                        alto=30)
+            b_bajar.pack(side="left", padx=(6, 0))
+            _tooltip(b_subir, "Subir el material dentro de su especialidad")
+            _tooltip(b_bajar, "Bajar el material dentro de su especialidad")
+            _boton_secundario(bar, "Marcas", self._editar, ancho=84,
+                              alto=30).pack(side="left", padx=(6, 0))
+            _boton_secundario(bar, "Ver PDF", self._vista_previa, ancho=86,
+                              alto=30).pack(side="left", padx=(6, 0))
+            _boton_peligro(bar, "Eliminar", self._eliminar, ancho=82, alto=30).pack(
+                side="right")
 
         def _actualizar_catalogo(self):
             """Trae los cambios de otras PCs (git pull) y vuelve a correr la
@@ -988,13 +1404,100 @@ if _TK_OK:
             # mismo tipo no aparecen como dos filas idénticas.
             nombre = nomenclatura.nombre_sin_marca(
                 bd_manager.BDManager.nombre_de(ficha), ficha.get("marca", ""))
-            self.materiales.append({
+            material = {
                 "consecutivo": cons, "id_ficha_bd": ficha["id"],
                 "nombre_material": nombre or ficha["nombre_material"],
                 "marca": ficha["marca"],
                 "categoria": cat, "marcas_alternativas": [], "justificacion_stock": False,
-            })
+            }
+            # ¿Este material tiene otras marcas por stock (misma especificación,
+            # distinta marca) ya cargadas en la BD? Si las hay, se ofrece
+            # adjuntarlas todas de una vez, sin tener que abrir "Editar material"
+            # y buscarlas una por una. Al aceptar, quedan como marcas
+            # alternativas con su ficha real y se activa la justificación por
+            # stock (el texto legal de la carátula se genera solo al generar).
+            try:
+                familia = self.bd.fichas_misma_familia(ficha)
+            except Exception:
+                familia = []      # la detección nunca debe impedir agregar
+            if familia:
+                elegidas = self._preguntar_familia(ficha, familia)
+                if elegidas:
+                    material["marcas_alternativas"] = [
+                        {"id_ficha_bd": fa["id"], "marca": fa.get("marca", "")}
+                        for fa in elegidas]
+                    material["justificacion_stock"] = True
+            self.materiales.append(material)
             self._refrescar(resaltar=cons)
+
+        def _preguntar_familia(self, ficha, familia):
+            """Popup: ``ficha`` tiene N marcas por stock disponibles. Devuelve la
+            lista de fichas alternativas elegidas (``[]`` si el usuario prefiere
+            solo la marca principal o cierra la ventana)."""
+            top = ctk.CTkToplevel(self)
+            top.title("Varias marcas disponibles")
+            top.configure(fg_color=GRIS_BG, padx=16, pady=14)
+            top.grab_set()
+            tarjeta = _tarjeta(top)
+            tarjeta.pack(fill="both", expand=True, padx=4, pady=4)
+            nombre = nomenclatura.nombre_sin_marca(
+                bd_manager.BDManager.nombre_de(ficha), ficha.get("marca", ""))
+            n_total = 1 + len(familia)
+            ctk.CTkLabel(tarjeta, text=f"Este material tiene {n_total} marcas por stock",
+                        font=_fuente(13, "bold"), text_color=GRIS_TEXTO).pack(
+                anchor="w", padx=16, pady=(16, 2))
+            ctk.CTkLabel(
+                tarjeta,
+                text=f"«{nombre}» está disponible con estas marcas. Se recomienda "
+                     "incluirlas todas para no depender de una sola en la aprobación "
+                     "(se adjunta la ficha de cada una y se justifica por stock).",
+                text_color=GRIS_TEXTO_SUAVE, justify="left", wraplength=460).pack(
+                anchor="w", padx=16, pady=(0, 10))
+
+            # Marca principal: fija, siempre incluida (es la ficha que se agrega).
+            fila_p = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            fila_p.pack(fill="x", padx=16, pady=2)
+            ctk.CTkLabel(fila_p, text=f"✓  {ficha.get('marca', '(sin marca)')}",
+                        font=_fuente(11, "bold"), text_color=AZUL_ES).pack(side="left")
+            ctk.CTkLabel(fila_p, text="marca principal (siempre incluida)",
+                        text_color=GRIS_TEXTO_SUAVE).pack(side="left", padx=8)
+
+            variables = []
+            for fa in familia:
+                v = tk.BooleanVar(value=True)
+                variables.append((v, fa))
+                fila = ctk.CTkFrame(tarjeta, fg_color="transparent")
+                fila.pack(fill="x", padx=16, pady=2)
+                ctk.CTkCheckBox(fila, variable=v, text=fa.get("marca", "(sin marca)"),
+                               font=_fuente(11, "bold"), text_color=GRIS_TEXTO,
+                               fg_color=AZUL_ES, hover_color=_HOVER[AZUL_ES]).pack(
+                    side="left")
+                ctk.CTkLabel(fila, text="ficha en catálogo",
+                            text_color=GRIS_TEXTO_SUAVE).pack(side="left", padx=8)
+
+            resultado = {"v": []}
+
+            def _agregar_todas():
+                resultado["v"] = [fa for v, fa in variables if v.get()]
+                top.destroy()
+
+            def _solo_principal():
+                resultado["v"] = []
+                top.destroy()
+
+            barra = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            barra.pack(pady=(14, 16))
+            _boton(barra, "Agregar las marcas marcadas", _agregar_todas,
+                  color=NARANJA_CTA, ancho=250).pack(side="left", padx=6)
+            _boton_secundario(barra, "Solo esta marca", _solo_principal,
+                             ancho=150).pack(side="left", padx=6)
+            # Cerrar con la X = no agregar alternativas (equivale a "solo esta
+            # marca"): el usuario ya pidió agregar el material, no se pierde.
+            top.protocol("WM_DELETE_WINDOW", _solo_principal)
+            _dimensionar_ventana(top, 520, 360)
+            _traer_al_frente(top)
+            self.wait_window(top)
+            return resultado["v"]
 
         def _siguiente_consecutivo(self, cat):
             nums = [int(re.match(rf"{cat}(\d+)", m["consecutivo"]).group(1))
@@ -1021,6 +1524,14 @@ if _TK_OK:
                 marca = bd_manager._marcas_material(m, {})
                 self.tree.insert("", "end", iid=m["consecutivo"],
                                  values=(m["consecutivo"], m["nombre_material"], marca))
+            n = len(self.materiales)
+            self.lbl_conteo.configure(text=f"{n} ficha" if n == 1 else f"{n} fichas")
+            # El pie de la tabla solo dice que hacer cuando esta vacia; con
+            # materiales adentro estorba.
+            if n:
+                self.lbl_vacio.pack_forget()
+            else:
+                self.lbl_vacio.pack(anchor="w", padx=12, pady=4)
             if resaltar and self.tree.exists(resaltar):
                 self.tree.selection_set(resaltar)
                 self.tree.see(resaltar)
@@ -1030,7 +1541,9 @@ if _TK_OK:
             """Resalta en verde el renglon recien agregado y lo desvanece a
             blanco en unos pocos pasos, para dar feedback visual inmediato de
             que el material entro a la lista del submittal."""
-            colores = ["#BBF7D0", "#D6F5E0", "#EEFBF2", "#FFFFFF"]
+            # Se desvanece hacia el tinte de acento del diseno (no verde: el
+            # verde en esta paleta significa "sincronizado/ok", no "nuevo").
+            colores = [CHIP_BG, "#FBEEEC", FILA_HOVER, SUPERFICIE]
             tag = f"nuevo_{iid}"
 
             def paso(i=0):
@@ -1098,9 +1611,16 @@ if _TK_OK:
             top = ctk.CTkToplevel(self)
             top.title("Editar material"); top.grab_set()
             top.configure(fg_color=GRIS_BG, padx=14, pady=14)
-            top.geometry("620x760")
+            top.geometry("820x820")
             tarjeta = _tarjeta(top); tarjeta.pack(fill="both", expand=True)
             tarjeta.grid_columnconfigure(1, weight=1)
+            # ``v_s`` (justificar por stock) se define ACA, antes de armar los
+            # campos: ``_aspectos_auto()`` la lee al pre-llenar "Aspectos
+            # adicionales" (mas abajo), y crearla despues provocaba un
+            # NameError al abrir el diálogo sobre un material sin override de
+            # aspectos. Su checkbox se dibuja mas abajo reutilizando esta misma
+            # variable.
+            v_s = tk.BooleanVar(value=m.get("justificacion_stock", False))
             ctk.CTkLabel(tarjeta, text=f"{m['consecutivo']} — texto de la carátula",
                         font=_fuente(11, "bold"), text_color=GRIS_TEXTO).grid(
                 row=0, column=0, columnspan=3, padx=16, pady=(16, 10), sticky="w")
@@ -1122,10 +1642,13 @@ if _TK_OK:
             ctk.CTkLabel(tarjeta, text="Marcas alternativas\n(con ficha adjunta):",
                         text_color=GRIS_TEXTO, justify="right").grid(
                 row=3, column=0, sticky="ne", pady=4, padx=(16, 6))
-            lst_alt = tk.Listbox(tarjeta, height=4, width=34, font=(FUENTE, 10),
-                                 bg="white", fg=GRIS_TEXTO, selectbackground=AZUL_CLARO,
-                                 selectforeground="white", relief="solid", borderwidth=1)
-            lst_alt.grid(row=3, column=1, padx=(0, 6), pady=4, sticky="w")
+            lst_alt = tk.Listbox(tarjeta, height=5, width=34, font=(FUENTE, 10),
+                                 bg=SUPERFICIE, fg=TEXTO_2, selectbackground=CHIP_BG,
+                                 selectforeground=ACENTO_TXT, relief="flat",
+                                 borderwidth=0, highlightthickness=1,
+                                 highlightbackground=BORDE, highlightcolor=ACENTO_BORDE,
+                                 activestyle="none")
+            lst_alt.grid(row=3, column=1, padx=(0, 6), pady=4, sticky="we")
 
             def _pintar_alt():
                 lst_alt.delete(0, "end")
@@ -1150,10 +1673,29 @@ if _TK_OK:
             ctk.CTkEntry(tarjeta, textvariable=v_busq_alt, height=32,
                         corner_radius=8, border_color=BORDE_SUAVE).grid(
                 row=4, column=1, columnspan=2, padx=(0, 16), pady=(10, 4), sticky="we")
-            lst_busq_alt = tk.Listbox(tarjeta, height=4, width=34, font=(FUENTE, 10),
-                                      bg="white", fg=GRIS_TEXTO, selectbackground=AZUL_CLARO,
-                                      selectforeground="white", relief="solid", borderwidth=1)
-            lst_busq_alt.grid(row=5, column=1, columnspan=2, padx=(0, 16), pady=(0, 4), sticky="w")
+            # Resultados de la busqueda: en un contenedor con scroll horizontal
+            # (los nombres de fichas -- tubos, tuberia -- son largos y antes se
+            # cortaban) y VERTICAL, mas alto, y estirandose con la ventana para
+            # ver la descripcion completa de cada producto.
+            cont_busq = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            cont_busq.grid(row=5, column=1, columnspan=2, padx=(0, 16),
+                           pady=(0, 4), sticky="nsew")
+            cont_busq.grid_rowconfigure(0, weight=1)
+            cont_busq.grid_columnconfigure(0, weight=1)
+            lst_busq_alt = tk.Listbox(cont_busq, height=8, font=(FUENTE, 10),
+                                      bg=SUPERFICIE, fg=TEXTO_2, selectbackground=CHIP_BG,
+                                      selectforeground=ACENTO_TXT, relief="flat",
+                                      borderwidth=0, highlightthickness=1,
+                                      highlightbackground=BORDE,
+                                      highlightcolor=ACENTO_BORDE, activestyle="none")
+            lst_busq_alt.grid(row=0, column=0, sticky="nsew")
+            _sb_v = tk.Scrollbar(cont_busq, orient="vertical", command=lst_busq_alt.yview)
+            _sb_v.grid(row=0, column=1, sticky="ns")
+            _sb_h = tk.Scrollbar(cont_busq, orient="horizontal", command=lst_busq_alt.xview)
+            _sb_h.grid(row=1, column=0, sticky="ew")
+            lst_busq_alt.configure(yscrollcommand=_sb_v.set, xscrollcommand=_sb_h.set)
+            # La fila de resultados es la que crece cuando la ventana se agranda.
+            tarjeta.grid_rowconfigure(5, weight=1)
             sug_alt = []
 
             def _buscar_alt(*_ev):
@@ -1207,11 +1749,11 @@ if _TK_OK:
             def _recalcular_aspectos():
                 txt_aspectos.delete("1.0", "end")
                 txt_aspectos.insert("1.0", _aspectos_auto())
-            _boton_secundario(tarjeta, "↻ Recalcular automático", _recalcular_aspectos,
+            _boton_secundario(tarjeta, "Recalcular automático", _recalcular_aspectos,
                               ancho=180).grid(row=9, column=1, columnspan=2, padx=(0, 16),
                                               pady=(0, 4), sticky="w")
 
-            v_s = tk.BooleanVar(value=m.get("justificacion_stock", False))
+            # (``v_s`` ya se definió arriba, antes de "Aspectos adicionales".)
             ctk.CTkCheckBox(tarjeta, text="Justificar por stock (marcas alternativas aprobadas)",
                            variable=v_s, text_color=GRIS_TEXTO,
                            fg_color=AZUL_ES, hover_color=_HOVER[AZUL_ES]).grid(
@@ -1299,11 +1841,11 @@ if _TK_OK:
 
             barra_guardar = ctk.CTkFrame(tarjeta, fg_color="transparent")
             barra_guardar.grid(row=11, column=0, columnspan=3, pady=(12, 16))
-            _boton_secundario(barra_guardar, "💾 Guardar solo este proyecto",
+            _boton_secundario(barra_guardar, "Guardar solo este proyecto",
                              _guardar_solo_proyecto, ancho=220).pack(side="left", padx=6)
-            _boton(barra_guardar, "☁️ Guardar en la BD (todos los proyectos)",
+            _boton(barra_guardar, "Guardar en la BD (todos los proyectos)",
                   _guardar_en_bd, color=NARANJA_CTA, ancho=280).pack(side="left", padx=6)
-            _dimensionar_ventana(top, 680, 800)
+            _dimensionar_ventana(top, 820, 820)
             _traer_al_frente(top)
 
         def _eliminar(self):
@@ -1327,8 +1869,12 @@ if _TK_OK:
             _vista_previa_ficha(self, self.bd, ficha)
 
         def _cargar_ficha(self):
+            # Al terminar se refresca el catalogo para que la ficha recien
+            # cargada aparezca sin cerrar y reabrir la pantalla. (Antes esto
+            # llamaba a ``self._sugerir()``, un metodo que no existe: cargar una
+            # ficha desde aca lanzaba AttributeError al cerrar la ventana.)
             VentanaCargarFicha(self.winfo_toplevel(), self.bd,
-                               al_terminar=lambda: (self._sugerir()))
+                               al_terminar=self.buscador.refrescar)
 
 
     class VentanaCargarFicha(ctk.CTkToplevel):
@@ -1350,23 +1896,24 @@ if _TK_OK:
                 anchor="w", padx=18, pady=(18, 0))
             botones = ctk.CTkFrame(tarjeta, fg_color="transparent")
             botones.pack(anchor="w", padx=18, pady=8)
+            # Una sola accion primaria (solida) por dialogo: las otras dos van
+            # como secundaria y como destructiva de contorno.
             self.btn_archivos = _boton(botones, "Seleccionar archivo(s)…",
-                                       self._seleccionar, color=AZUL_ES, ancho=190)
+                                       self._seleccionar, ancho=180)
             self.btn_archivos.pack(side="left")
-            self.btn_carpetas = _boton(botones, "Seleccionar carpeta(s)…",
-                                       self._seleccionar_carpetas, color=AZUL_ES, ancho=190)
+            self.btn_carpetas = _boton_secundario(botones, "Seleccionar carpeta(s)…",
+                                                  self._seleccionar_carpetas,
+                                                  ancho=180, alto=34)
             self.btn_carpetas.pack(side="left", padx=(8, 0))
-            self.btn_cancelar = _boton(botones, "⛔ Cancelar extracción",
-                                       self._cancelar, color=ROJO_ES, ancho=170)
+            self.btn_cancelar = _boton_peligro(botones, "Cancelar extracción",
+                                               self._cancelar, ancho=160, alto=34)
             self.btn_cancelar.configure(state="disabled")
             self.btn_cancelar.pack(side="left", padx=(8, 0))
             self.prog = ctk.CTkProgressBar(tarjeta, height=10, corner_radius=5,
                                            progress_color=AZUL_ES)
             self.prog.set(0)
             self.prog.pack(fill="x", padx=18, pady=4)
-            self.txt = ctk.CTkTextbox(tarjeta, height=280, corner_radius=10,
-                                      fg_color="#0F172A", text_color="#4ADE80",
-                                      font=("Consolas", 10))
+            self.txt = _consola(tarjeta, height=280)
             self.txt.pack(fill="both", expand=True, padx=18, pady=(4, 8))
             self.btn_cerrar = _boton_secundario(tarjeta, "Cerrar", self._on_close, ancho=120)
             self.btn_cerrar.pack(pady=(0, 18))
@@ -1636,7 +2183,7 @@ if _TK_OK:
                              font=_fuente(11, "bold"), text_color=AZUL_ES)
             e.grid(row=fila, column=0, columnspan=2, sticky="we", padx=(16, 6))
             e.bind("<KeyRelease>", self._nombre_a_mano)
-            _boton_secundario(tarjeta, "↻ Regenerar", self._regenerar, ancho=120).grid(
+            _boton_secundario(tarjeta, "Regenerar", self._regenerar, ancho=120).grid(
                 row=fila, column=2, padx=(0, 16))
             fila += 1
 
@@ -1672,8 +2219,7 @@ if _TK_OK:
 
             barra = ctk.CTkFrame(tarjeta, fg_color="transparent")
             barra.grid(row=fila, column=0, columnspan=3, pady=(12, 16))
-            self.btn_ok = _boton(barra, "✅ Confirmar y guardar", self._confirmar,
-                                 color=VERDE_OK, ancho=220)
+            self.btn_ok = _boton(barra, "Confirmar y guardar", self._confirmar, ancho=190)
             self.btn_ok.pack(side="left", padx=6)
             _boton_secundario(barra, "Cancelar" if self.es_edicion else "Omitir",
                              self.destroy, ancho=120).pack(side="left", padx=6)
@@ -1858,18 +2404,18 @@ if _TK_OK:
             self.configure(fg_color=GRIS_BG, padx=14, pady=14)
             tarjeta = _tarjeta(self)
             tarjeta.pack(fill="both", expand=True, padx=4, pady=4)
-            ctk.CTkLabel(tarjeta, text="☁️ Proyectos sincronizados en la nube",
+            ctk.CTkLabel(tarjeta, text="Submittals guardados en la nube",
                         font=_fuente(14, "bold"), text_color=GRIS_TEXTO).pack(
                 anchor="w", padx=18, pady=(16, 4))
-            self.lbl_estado = ctk.CTkLabel(tarjeta, text="🔄 Sincronizando…",
-                                           text_color=AZUL_ES)
+            self.lbl_estado = ctk.CTkLabel(tarjeta, text="Sincronizando…",
+                                           text_color=TEXTO_SUAVE)
             self.lbl_estado.pack(anchor="w", padx=18)
 
             barra = ctk.CTkFrame(tarjeta, fg_color="transparent")
             barra.pack(fill="x", padx=18, pady=(6, 8))
-            _boton_secundario(barra, "🔄 Actualizar", self._sincronizar_y_listar,
-                              ancho=130).pack(side="left")
-            _boton_secundario(barra, "💻 Buscar carpeta en esta PC…", self._buscar_local,
+            _boton_secundario(barra, "Actualizar", self._sincronizar_y_listar,
+                              ancho=110).pack(side="left")
+            _boton_secundario(barra, "Buscar carpeta en esta PC…", self._buscar_local,
                               ancho=230).pack(side="left", padx=(8, 0))
 
             self.tree = ttk.Treeview(
@@ -1894,8 +2440,8 @@ if _TK_OK:
             self.after(100, self._sincronizar_y_listar)
 
         def _sincronizar_y_listar(self):
-            self.lbl_estado.configure(text="🔄 Sincronizando con GitHub…",
-                                      text_color=AZUL_ES)
+            self.lbl_estado.configure(text="Sincronizando con GitHub…",
+                                      text_color=TEXTO_SUAVE)
 
             def trabajo():
                 try:
@@ -1922,8 +2468,8 @@ if _TK_OK:
                                          p.get("actualizado_por", "")))
             n = len(proyectos)
             self.lbl_estado.configure(
-                text=(f"☁️ {n} proyecto(s) sincronizado(s)" if n else
-                      "☁️ Todavía no hay proyectos guardados en la BD"),
+                text=(f"{n} submittal(s) sincronizado(s)" if n else
+                      "Todavía no hay submittals guardados en la BD"),
                 text_color=GRIS_TEXTO_SUAVE)
 
         def _abrir_seleccion(self, _ev=None):
@@ -1953,68 +2499,135 @@ if _TK_OK:
             self.resultado = proyecto
             self.destroy()
 
-    class _VentanaSubmittal(ctk.CTkToplevel):
-        """Base comun para 'Generar desde BD' y 'Abrir existente'."""
+    class PantallaSubmittal(ctk.CTkFrame):
+        """Pantalla 'Submittal activo': arma el submittal (tanto el flujo
+        'Generar desde BD' como 'Abrir existente').
+
+        v3.4.0: era una ventana aparte (``_VentanaSubmittal``); ahora vive
+        dentro de la ventana principal, detras del item 'Submittal activo' del
+        menu lateral. La logica de guardado/generado no cambio: lo que antes
+        pasaba al cerrar la ventana ahora lo dispara ``guardar_al_salir()``,
+        que la ventana principal llama al cerrarse o al cambiar de submittal.
+        """
 
         _ETIQ_ES = "ES (clásica)"
         _ETIQ_MINSAL = "Ministerio de Salud"
 
-        def __init__(self, master, bd, proyecto, destino, titulo):
-            super().__init__(master)
+        def __init__(self, master, bd, proyecto, destino, titulo, app=None):
+            super().__init__(master, fg_color="transparent")
             self.bd = bd; self.proyecto = proyecto; self.destino = destino
-            self.title(titulo)
-            self.configure(fg_color=GRIS_BG, padx=14, pady=14)
-            self.geometry("820x640")
-            tarjeta = _tarjeta(self)
-            tarjeta.pack(fill="both", expand=True, padx=4, pady=4)
-            ctk.CTkLabel(tarjeta, text=titulo, font=_fuente(14, "bold"),
-                        text_color=GRIS_TEXTO).pack(anchor="w", padx=18, pady=(16, 0))
-            top = ctk.CTkFrame(tarjeta, fg_color="transparent")
-            top.pack(fill="x", padx=18, pady=10)
-            _boton_secundario(top, "⚙️ Datos del Proyecto", self._datos,
-                             ancho=180).pack(side="left")
-            ctk.CTkLabel(top, text="  Carpeta destino:", text_color=GRIS_TEXTO).pack(
-                side="left")
-            self.var_dest = tk.StringVar(value=destino or "")
-            ctk.CTkEntry(top, textvariable=self.var_dest, width=340, height=32,
-                        corner_radius=8, border_color=BORDE_SUAVE).pack(
-                side="left", padx=4)
-            _boton_secundario(top, "…", self._elegir_destino, ancho=40).pack(side="left")
+            self.app = app
+            self.titulo = titulo
+            self.grid_rowconfigure(1, weight=1)
+            self.grid_columnconfigure(0, weight=1)
 
-            tipo_frame = ctk.CTkFrame(tarjeta, fg_color="transparent")
-            tipo_frame.pack(fill="x", padx=18, pady=(0, 10))
-            ctk.CTkLabel(tipo_frame, text="Carátula a usar:", text_color=GRIS_TEXTO).pack(
-                side="left")
+            # ------------------------------------------------- encabezado
+            cab = ctk.CTkFrame(self, fg_color=SUPERFICIE_2, corner_radius=0)
+            cab.grid(row=0, column=0, sticky="ew")
+            ctk.CTkFrame(self, height=1, fg_color=BORDE_FUERTE).grid(
+                row=0, column=0, sticky="sew")
+
+            fila1 = ctk.CTkFrame(cab, fg_color="transparent")
+            fila1.pack(fill="x", padx=26, pady=(20, 0))
+            izq = ctk.CTkFrame(fila1, fg_color="transparent")
+            izq.pack(side="left")
+            _etiqueta_seccion(izq, "editando", color=ACENTO_TXT).pack(
+                side="left", padx=(0, 10))
+            ctk.CTkLabel(izq, text=proyecto.get("nombre_proyecto", "Submittal"),
+                        font=_fuente(19, "bold"), text_color=TEXTO).pack(side="left")
+            acciones = ctk.CTkFrame(fila1, fg_color="transparent")
+            acciones.pack(side="right")
+            _boton_secundario(acciones, "Datos del proyecto", self._datos,
+                             ancho=150).pack(side="left")
+            _boton_secundario(acciones, "Guardar avance", self._guardar_avance,
+                             ancho=132).pack(side="left", padx=(8, 0))
+            _boton(acciones, "Generar submittal", self._generar, ancho=158).pack(
+                side="left", padx=(8, 0))
+
+            fila2 = ctk.CTkFrame(cab, fg_color="transparent")
+            fila2.pack(fill="x", padx=26, pady=(14, 16))
+            dest = ctk.CTkFrame(fila2, fg_color="transparent")
+            dest.pack(side="left", fill="x", expand=True)
+            _etiqueta_seccion(dest, "carpeta destino", color=TEXTO_SUAVE).pack(
+                side="left", padx=(0, 10))
+            self.var_dest = tk.StringVar(value=destino or "")
+            ctk.CTkEntry(dest, textvariable=self.var_dest, height=30,
+                        corner_radius=6, border_color=BORDE, fg_color=SUPERFICIE,
+                        text_color=TEXTO_2, font=_mono(11)).pack(
+                side="left", fill="x", expand=True)
+            _boton_secundario(dest, "Examinar…", self._elegir_destino, ancho=92,
+                              alto=30).pack(side="left", padx=(6, 0))
+
+            car = ctk.CTkFrame(fila2, fg_color="transparent")
+            car.pack(side="left", padx=(26, 0))
+            _etiqueta_seccion(car, "carátula", color=TEXTO_SUAVE).pack(
+                side="left", padx=(0, 10))
             self.var_tipo_caratula = tk.StringVar(value=self._ETIQ_MINSAL
                 if proyecto.get("tipo_caratula", "clasica") == "ministerio_salud"
                 else self._ETIQ_ES)
-            ctk.CTkSegmentedButton(tipo_frame, values=[self._ETIQ_ES, self._ETIQ_MINSAL],
-                                   variable=self.var_tipo_caratula,
-                                   selected_color=AZUL_ES,
-                                   selected_hover_color=_HOVER[AZUL_ES],
-                                   command=self._cambiar_tipo_caratula).pack(
-                side="left", padx=8)
+            ctk.CTkSegmentedButton(car, values=[self._ETIQ_ES, self._ETIQ_MINSAL],
+                                   variable=self.var_tipo_caratula, height=30,
+                                   corner_radius=6, font=_fuente(12),
+                                   fg_color=BORDE_TENUE,
+                                   selected_color=SUPERFICIE,
+                                   selected_hover_color=SUPERFICIE,
+                                   unselected_color=BORDE_TENUE,
+                                   unselected_hover_color=BORDE,
+                                   text_color=TEXTO, text_color_disabled=TEXTO_TENUE,
+                                   border_width=2,
+                                   command=self._cambiar_tipo_caratula).pack(side="left")
             self._cambiar_tipo_caratula(self.var_tipo_caratula.get())
 
-            self.tabla = TablaMateriales(tarjeta, bd, proyecto.get("materiales_seleccionados", []))
-            self.tabla.pack(fill="both", expand=True, padx=18, pady=8)
+            # ------------------------------------------------------ cuerpo
+            cuerpo = ctk.CTkFrame(self, fg_color="transparent")
+            cuerpo.grid(row=1, column=0, sticky="nsew", padx=16, pady=14)
+            cuerpo.grid_rowconfigure(0, weight=1)
+            cuerpo.grid_columnconfigure(0, weight=1)
+            self.tabla = TablaMateriales(cuerpo, bd,
+                                         proyecto.get("materiales_seleccionados", []))
+            self.tabla.grid(row=0, column=0, sticky="nsew")
 
-            self.txt = ctk.CTkTextbox(tarjeta, height=140, corner_radius=10,
-                                      fg_color="#0F172A", text_color="#4ADE80",
-                                      font=("Consolas", 10))
-            self.txt.pack(fill="x", padx=18, pady=(4, 4))
-            barra_final = ctk.CTkFrame(tarjeta, fg_color="transparent")
-            barra_final.pack(pady=(4, 18))
-            _boton_secundario(barra_final, "💾 Guardar avance", self._guardar_avance,
-                             ancho=200, alto=42).pack(side="left", padx=6)
-            _boton(barra_final, "🚀 Generar / Confirmar cambios", self._generar,
-                  color=NARANJA_CTA, ancho=280, alto=42).pack(side="left", padx=6)
-            self.protocol("WM_DELETE_WINDOW", self._on_close)
-            _dimensionar_ventana(self, 920, 720)
-            _traer_al_frente(self)
+            # El registro va debajo de los materiales (columna derecha), como en
+            # el diseno: lo que se acaba de hacer queda al lado de la lista que
+            # cambio, no al final de toda la pantalla.
+            registro = ctk.CTkFrame(self.tabla.der, fg_color=LOG_BG, corner_radius=8,
+                                    height=108)
+            registro.pack(fill="x", pady=(10, 0))
+            registro.pack_propagate(False)
+            _etiqueta_seccion(registro, "registro", color=LOG_LABEL,
+                              height=14).pack(anchor="w", padx=12, pady=(8, 0))
+            self.txt = _consola(registro, fg_color=LOG_BG, height=68)
+            self.txt.pack(fill="both", expand=True, padx=8, pady=(2, 8))
+            self._preparar_tags_log()
+
+        # ------------------------------------------------------------- log
+        def _preparar_tags_log(self):
+            """Colorea el registro por tipo de linea (ok / aviso / error), como
+            en el diseno. Si la version de CustomTkinter no expone el ``Text``
+            interno, se degrada a texto plano sin fallar."""
+            self._tags_log = False
+            try:
+                caja = self.txt._textbox
+                caja.tag_config("ok", foreground=LOG_OK)
+                caja.tag_config("warn", foreground=LOG_WARN)
+                caja.tag_config("err", foreground=ROJO_CLARO)
+                self._tags_log = True
+            except Exception:
+                pass
 
         def _log(self, m):
-            self.txt.insert("end", str(m) + "\n"); self.txt.see("end"); self.update_idletasks()
+            texto = str(m)
+            tag = None
+            if any(s in texto for s in ("❌", "⚠️", "No se pudo", "Error")):
+                tag = "err" if ("❌" in texto or "Error" in texto) else "warn"
+            elif any(s in texto for s in ("✅", "☁️", "Listo")):
+                tag = "ok"
+            if self._tags_log and tag:
+                self.txt._textbox.insert("end", texto + "\n", tag)
+            else:
+                self.txt.insert("end", texto + "\n")
+            self.txt.see("end")
+            self.update_idletasks()
 
         def _datos(self):
             d = DatosProyectoDialog(self, self.proyecto.get("datos_procedimiento", {}))
@@ -2036,7 +2649,7 @@ if _TK_OK:
             SIN generar caratulas/compilados/Excel, para seguir despues desde
             'Abrir existente'. No necesita carpeta destino.
 
-            Con ``silencioso=True`` (usado al cerrar la ventana) no muestra
+            Con ``silencioso=True`` (usado al salir de la pantalla) no muestra
             avisos ni escribe en el log -- solo guarda."""
             self.proyecto["materiales_seleccionados"] = self.tabla.materiales
             destino = self.var_dest.get().strip()
@@ -2045,31 +2658,36 @@ if _TK_OK:
                 f"guardar avance de {self.proyecto.get('nombre_proyecto', 'submittal')}")
             if silencioso:
                 return
-            self._log("\n💾 Avance guardado (sin generar carátulas/compilados).")
+            self._log("💾 Avance guardado (sin generar carátulas/compilados).")
+            if self.app is not None:
+                self.app._actualizar_estado()
             _avisar_resultado_git(
                 self.winfo_toplevel(), r,
-                "Avance guardado. Podés cerrar esta ventana y continuar después "
-                "con 'Abrir existente'.")
+                "Avance guardado. Podés seguir en otra pantalla y volver después "
+                "a 'Submittal activo' (o abrirlo con 'Abrir submittal existente').")
 
-        def _on_close(self):
-            """Guarda el avance SIEMPRE al cerrar la ventana (aunque sea con la
-            X, sin tocar "Guardar avance" o "Generar"). Antes, cerrar sin
-            guardar perdia en silencio los materiales agregados en la sesion;
-            al reabrir se continuaba desde el ultimo guardado real (menos
-            materiales de los que la persona alcanzo a ver en pantalla), lo
-            que se percibia como "el contador de consecutivos se resetea"
-            -- la numeracion en si nunca estuvo mal, era el progreso el que
-            no se habia guardado."""
+        def guardar_al_salir(self):
+            """Guarda el avance SIEMPRE al dejar de trabajar en este submittal
+            (al cerrar la aplicacion o al abrir otro), aunque no se haya tocado
+            "Guardar avance" ni "Generar". Antes, cerrar sin guardar perdia en
+            silencio los materiales agregados en la sesion; al reabrir se
+            continuaba desde el ultimo guardado real (menos materiales de los
+            que la persona alcanzo a ver en pantalla), lo que se percibia como
+            "el contador de consecutivos se resetea" -- la numeracion en si
+            nunca estuvo mal, era el progreso el que no se habia guardado.
+
+            Devuelve ``True`` si se puede continuar (guardo bien, o el usuario
+            eligio seguir igual) y ``False`` si el usuario prefiere quedarse.
+            """
             try:
                 self._guardar_avance(silencioso=True)
             except Exception as e:
-                if not messagebox.askyesno(
-                        "No se pudo guardar",
-                        f"No se pudo guardar el avance antes de cerrar:\n{e}\n\n"
-                        "¿Cerrar de todas formas? Se perderían los cambios sin "
-                        "guardar de esta sesión.", parent=self.winfo_toplevel()):
-                    return
-            self.destroy()
+                return bool(messagebox.askyesno(
+                    "No se pudo guardar",
+                    f"No se pudo guardar el avance del submittal:\n{e}\n\n"
+                    "¿Continuar de todas formas? Se perderían los cambios sin "
+                    "guardar de esta sesión.", parent=self.winfo_toplevel()))
+            return True
 
         def _generar(self):
             self.proyecto["materiales_seleccionados"] = self.tabla.materiales
@@ -2085,8 +2703,11 @@ if _TK_OK:
             tipo = self.proyecto.get("tipo_caratula", "clasica")
             try:
                 res = generar_entregables(self.bd, self.proyecto, destino, tipo=tipo, log=self._log)
-                self._log(f"\n✅ Listo: {res['materiales']} materiales en {res['destino']}")
+                self._log(f"✅ Listo: {res['materiales']} materiales en {res['destino']}")
                 self._subir_metadatos()
+                if self.app is not None:
+                    # Refresca conteos del menu lateral y "Actividad reciente".
+                    self.app._actualizar_estado()
                 try:
                     os.startfile(destino)  # Windows: abre el explorador
                 except Exception:
@@ -2144,105 +2765,219 @@ if _TK_OK:
                 pass
             return (False, f"No se pudo conectar: {str(e)[:150]}")
 
-    class DialogoConfiguracion(ctk.CTkToplevel):
-        """Configuracion unificada del usuario en DOS pestañas:
+    class PantallaConfig(ctk.CTkFrame):
+        """Pantalla 'Configuración': ajustes del usuario, agrupados en un menu
+        propio a la izquierda (como en el diseno) en vez de pestañas:
 
-          * OpenAI: la API key que usa la lectura de fichas (PDF/imagen) con IA.
-          * GitHub: repositorio, rama y token (PAT) para sincronizar la BD.
+          * Lectura con IA: la API key que usa la lectura de fichas con IA.
+          * Sincronización: repositorio, rama y token (PAT) de la BD.
+          * Rutas y carpetas: donde vive la BD, la caché y el registro.
+          * Acerca de: versión y estado del programa.
 
-        Antes la API key solo se podia definir desde la app v2.6; en una PC que
-        solo tiene el .exe de v3 no habia forma de ingresarla. Esta ventana lo
-        resuelve. Ambos secretos se guardan (ofuscados en base64, igual que v2.6)
-        en ``%APPDATA%/GeneradorSubmittals/config.json``.
+        Ambos secretos se guardan (ofuscados en base64, igual que v2.6) en
+        ``%APPDATA%/GeneradorSubmittals/config.json``.
+
+        v3.4.0: era ``DialogoConfiguracion`` (una ventana modal con pestañas);
+        pasa a ser una pantalla de la ventana principal. La logica de guardado
+        es la misma.
         """
 
-        def __init__(self, master, bd, tab_inicial="openai"):
-            super().__init__(master)
+        _SECCIONES = [("openai", "Lectura con IA"),
+                      ("github", "Sincronización"),
+                      ("rutas", "Rutas y carpetas"),
+                      ("acerca", "Acerca de")]
+
+        def __init__(self, master, bd, seccion_inicial="openai", app=None):
+            super().__init__(master, fg_color="transparent")
             self.bd = bd
+            self.app = app
             self.cambio_github = False      # solo si cambio algo de GitHub -> resync
             self._probando = False
-            self.title("Configuración")
-            self.configure(fg_color=GRIS_BG, padx=16, pady=16)
-            self.geometry("560x520")
-            self.grab_set()
+            self.grid_rowconfigure(0, weight=1)
+            self.grid_columnconfigure(0, minsize=208)
+            self.grid_columnconfigure(1, weight=1)
 
-            nb = ctk.CTkTabview(self, fg_color="white", corner_radius=14,
-                               border_width=1, border_color=BORDE_SUAVE,
-                               segmented_button_selected_color=ROJO_ES,
-                               segmented_button_selected_hover_color=_HOVER[ROJO_ES],
-                               segmented_button_unselected_color="#E2E8F0",
-                               text_color=GRIS_TEXTO, text_color_disabled=GRIS_TEXTO_SUAVE)
-            nb.pack(fill="both", expand=True)
-            self.tab_openai = nb.add("🔑 OpenAI (lectura de fichas)")
-            self.tab_github = nb.add("☁️ GitHub (sincronización)")
-            self._build_openai(self.tab_openai)
-            self._build_github(self.tab_github)
+            # ------------------------------------------- menu de secciones
+            lateral = ctk.CTkFrame(self, fg_color=SUPERFICIE_2, corner_radius=0,
+                                   width=208)
+            lateral.grid(row=0, column=0, sticky="nsw")
+            lateral.grid_propagate(False)
+            ctk.CTkFrame(self, width=1, fg_color=BORDE_FUERTE).grid(
+                row=0, column=0, sticky="nse")
+            _etiqueta_seccion(lateral, "ajustes", color=TEXTO_SUAVE).pack(
+                anchor="w", padx=24, pady=(22, 12))
+            self._btn_seccion = {}
+            for clave, etiqueta in self._SECCIONES:
+                b = ctk.CTkButton(
+                    lateral, text=etiqueta, anchor="w", height=32, corner_radius=6,
+                    fg_color="transparent", hover_color=BORDE_TENUE,
+                    text_color=TEXTO_2, font=_fuente(12),
+                    command=lambda c=clave: self.mostrar_seccion(c))
+                b.pack(fill="x", padx=14, pady=1)
+                self._btn_seccion[clave] = b
 
-            barra = ctk.CTkFrame(self, fg_color="transparent")
-            barra.pack(fill="x", pady=(12, 0))
-            _boton(barra, "💾 Guardar", self._guardar, color=AZUL_ES, ancho=140).pack(
-                side="left", padx=6)
-            _boton_secundario(barra, "Cerrar", self.destroy, ancho=110).pack(
-                side="left", padx=6)
+            # ------------------------------------------------- contenido
+            derecha = ctk.CTkFrame(self, fg_color="transparent")
+            derecha.grid(row=0, column=1, sticky="nsew")
+            derecha.grid_rowconfigure(0, weight=1)
+            derecha.grid_columnconfigure(0, weight=1)
+            self._cuerpo = ctk.CTkScrollableFrame(derecha, fg_color="transparent",
+                                                  scrollbar_button_color=BORDE,
+                                                  scrollbar_button_hover_color=BORDE_FUERTE)
+            self._cuerpo.grid(row=0, column=0, sticky="nsew", padx=(30, 20), pady=(26, 0))
 
-            nb.set("🔑 OpenAI (lectura de fichas)" if tab_inicial == "openai"
-                  else "☁️ GitHub (sincronización)")
-            _dimensionar_ventana(self, 600, 560)
-            _traer_al_frente(self)
+            self._paneles = {}
+            for clave, _e in self._SECCIONES:
+                p = ctk.CTkFrame(self._cuerpo, fg_color="transparent")
+                self._paneles[clave] = p
+            self._build_openai(self._paneles["openai"])
+            self._build_github(self._paneles["github"])
+            self._build_rutas(self._paneles["rutas"])
+            self._build_acerca(self._paneles["acerca"])
 
-        # -------------------------------------------------- pestaña OpenAI
+            # -------------------------------------------------- pie fijo
+            ctk.CTkFrame(derecha, height=1, fg_color=BORDE_FUERTE).grid(
+                row=1, column=0, sticky="ew")
+            pie = ctk.CTkFrame(derecha, fg_color=SUPERFICIE, corner_radius=0, height=58)
+            pie.grid(row=2, column=0, sticky="ew")
+            pie.grid_propagate(False)
+            _boton(pie, "Guardar", self._guardar, ancho=110).pack(
+                side="right", padx=(0, 30), pady=12)
+            _boton_secundario(pie, "Cancelar", self._cancelar, ancho=104).pack(
+                side="right", padx=(0, 8), pady=12)
+
+            self.mostrar_seccion(seccion_inicial)
+
+        # ---------------------------------------------------- navegacion
+        def mostrar_seccion(self, clave):
+            if clave not in self._paneles:
+                clave = "openai"
+            for c, panel in self._paneles.items():
+                panel.pack_forget()
+                self._btn_seccion[c].configure(fg_color="transparent",
+                                               text_color=TEXTO_2,
+                                               font=_fuente(12))
+            self._paneles[clave].pack(fill="both", expand=True)
+            self._btn_seccion[clave].configure(fg_color=CHIP_BG,
+                                               text_color=ACENTO_TXT,
+                                               font=_fuente(12, "bold"))
+
+        def _cancelar(self):
+            """No hay nada que revertir: los campos solo se aplican al guardar.
+            Simplemente se vuelve al inicio."""
+            if self.app is not None:
+                self.app._ir("inicio")
+
+        # ------------------------------------------------------ ayudantes
+        def _titulo(self, padre, texto, ayuda=None):
+            ctk.CTkLabel(padre, text=texto, font=_fuente(19, "bold"),
+                        text_color=TEXTO, anchor="w").pack(anchor="w")
+            if ayuda:
+                ctk.CTkLabel(padre, text=ayuda, text_color=TEXTO_SUAVE,
+                            font=_fuente(12), justify="left", wraplength=560,
+                            anchor="w").pack(anchor="w", pady=(6, 0))
+
+        def _panel(self, padre, titulo, insignia=None, color_insignia=VERDE):
+            """Tarjeta con cabecera (y opcionalmente una insignia de estado a la
+            derecha, como los 'Configurada · 220 ms' del diseno)."""
+            tarjeta = _tarjeta(padre)
+            tarjeta.pack(fill="x", pady=(18, 0))
+            # padx/pady de 1: si la cabecera se pega al borde, tapa la linea de
+            # 1px del marco y la tarjeta parece abierta por arriba.
+            cab = ctk.CTkFrame(tarjeta, fg_color=SUPERFICIE_2, corner_radius=0)
+            cab.pack(fill="x", padx=1, pady=(1, 0))
+            ctk.CTkLabel(cab, text=titulo, font=_fuente(13, "bold"),
+                        text_color=TEXTO_2).pack(side="left", padx=18, pady=13)
+            if insignia:
+                caja = ctk.CTkFrame(cab, fg_color="transparent")
+                caja.pack(side="right", padx=18)
+                ctk.CTkLabel(caja, text="●", text_color=color_insignia,
+                            font=_fuente(11)).pack(side="left", padx=(0, 5))
+                ctk.CTkLabel(caja, text=insignia, text_color=color_insignia,
+                            font=_mono(11)).pack(side="left")
+            ctk.CTkFrame(tarjeta, height=1, fg_color=BORDE_TENUE).pack(fill="x")
+            interior = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            interior.pack(fill="x", padx=18, pady=16)
+            return interior
+
+        def _fila_dato(self, padre, etiqueta, valor, primera=False):
+            """Fila 'etiqueta ......... valor' con separador, como en el diseno."""
+            if not primera:
+                ctk.CTkFrame(padre, height=1, fg_color=BORDE_TENUE).pack(
+                    fill="x", pady=11)
+            f = ctk.CTkFrame(padre, fg_color="transparent")
+            f.pack(fill="x")
+            ctk.CTkLabel(f, text=etiqueta, text_color=TEXTO_2,
+                        font=_fuente(12)).pack(side="left")
+            ctk.CTkLabel(f, text=valor, text_color=TEXTO_SUAVE, font=_mono(11),
+                        anchor="e").pack(side="right")
+            return f
+
+        # -------------------------------------------- seccion: lectura IA
         def _build_openai(self, f):
-            ctk.CTkLabel(f, text="API Key de OpenAI", font=_fuente(12, "bold"),
-                        text_color=GRIS_TEXTO).grid(row=0, column=0, columnspan=3,
-                                                    sticky="w")
-            ctk.CTkLabel(f, text="Se usa para leer las fichas técnicas (PDF/imagen) con IA.\n"
-                             "Sin ella, la extracción cae a OCR local y revisión manual.",
-                        text_color=GRIS_TEXTO_SUAVE, justify="left").grid(
-                row=1, column=0, columnspan=3, sticky="w", pady=(0, 8))
+            self._titulo(
+                f, "Lectura de fichas con IA",
+                "La API se usa para leer fichas técnicas en PDF o imagen. Sin "
+                "ella, la extracción cae a OCR local y revisión manual.")
 
             # El entorno TIENE PRIORIDAD sobre la config (ver obtener_api_key):
-            # se distingue la fuente para no mostrar "✅ configurada" por una key
+            # se distingue la fuente para no mostrar "configurada" por una key
             # guardada que en realidad no se usa porque la enmascara el entorno.
             env_key = os.environ.get("OPENAI_API_KEY", "").strip()
             guardada = bd_manager.descifrar_api_key(
                 self.bd.cfg.get("api", {}).get("openai_key_encrypted", ""))
             if env_key:
-                estado = ("✅ configurada por variable de entorno OPENAI_API_KEY "
-                          "(tiene prioridad)")
+                insignia, color = "Configurada por entorno", AMBAR
+                nota = ("La variable de entorno OPENAI_API_KEY tiene PRIORIDAD "
+                        "sobre la clave guardada acá.")
             elif guardada:
-                estado = "✅ ya configurada"
+                insignia, color = "Configurada", VERDE
+                nota = "Deje el campo vacío para conservar la clave actual."
             else:
-                estado = "❌ sin configurar"
-            ctk.CTkLabel(f, text=f"Estado actual: {estado}   ·   deje el campo vacío para "
-                             "conservarla", text_color=GRIS_TEXTO_SUAVE).grid(
-                row=2, column=0, columnspan=3, sticky="w", pady=(0, 6))
+                insignia, color = "Sin configurar", ROJO
+                nota = "Cree su API key en platform.openai.com/api-keys"
 
-            ctk.CTkLabel(f, text="API Key:", text_color=GRIS_TEXTO).grid(
-                row=3, column=0, sticky="e", pady=4)
+            caja = self._panel(f, "Proveedor de IA", insignia=insignia,
+                               color_insignia=color)
+            _etiqueta_seccion(caja, "api key", color=TEXTO_SUAVE).pack(anchor="w")
+            fila = ctk.CTkFrame(caja, fg_color="transparent")
+            fila.pack(fill="x", pady=(7, 0))
             self.v_openai = tk.StringVar(value="")
-            self.e_openai = ctk.CTkEntry(f, textvariable=self.v_openai, width=280,
-                                        height=32, corner_radius=8,
-                                        border_color=BORDE_SUAVE, show="•")
-            self.e_openai.grid(row=3, column=1, pady=4)
+            self.e_openai = ctk.CTkEntry(
+                fila, textvariable=self.v_openai, height=34, corner_radius=6,
+                border_color=BORDE, fg_color=SUPERFICIE_3, text_color=TEXTO,
+                font=_mono(12), show="•")
+            _pista(self.e_openai, self.v_openai,
+                   "sk-•••• •••• •••• (guardada — dejar vacío para conservarla)"
+                   if (guardada or env_key) else "sk-… (pegá acá la API key)",
+                   size=11)
+            self.e_openai.pack(side="left", fill="x", expand=True)
             self.v_mostrar = tk.BooleanVar(value=False)
-            ctk.CTkCheckBox(f, text="Mostrar", variable=self.v_mostrar,
-                           command=self._toggle_mostrar, text_color=GRIS_TEXTO,
-                           fg_color=AZUL_ES, hover_color=_HOVER[AZUL_ES]).grid(
-                row=3, column=2, padx=(6, 0))
+            self.btn_mostrar = _boton_secundario(
+                fila, "Mostrar", self._alternar_mostrar, ancho=84, alto=34)
+            self.btn_mostrar.pack(side="left", padx=(8, 0))
+            ctk.CTkLabel(caja, text=nota, text_color=TEXTO_SUAVE,
+                        font=_fuente(11), justify="left", wraplength=520).pack(
+                anchor="w", pady=(7, 0))
 
-            self.btn_probar = _boton_secundario(f, "Probar conexión",
-                                                self._probar_openai, ancho=150)
-            self.btn_probar.grid(row=4, column=1, sticky="w", pady=(8, 0))
-            self.lbl_openai_estado = ctk.CTkLabel(f, text="", text_color=GRIS_TEXTO_SUAVE,
-                                                  justify="left", wraplength=420)
-            self.lbl_openai_estado.grid(row=5, column=0, columnspan=3, sticky="w",
-                                        pady=(6, 0))
-            ctk.CTkLabel(f, text="Cree su API key en platform.openai.com/api-keys",
-                        text_color=GRIS_TEXTO_SUAVE).grid(
-                row=6, column=0, columnspan=3, sticky="w", pady=(10, 0))
+            prueba = ctk.CTkFrame(caja, fg_color="transparent")
+            prueba.pack(fill="x", pady=(16, 0))
+            self.btn_probar = _boton_secundario(prueba, "Probar conexión",
+                                                self._probar_openai, ancho=140,
+                                                alto=34)
+            self.btn_probar.pack(side="left")
+            self.lbl_openai_estado = ctk.CTkLabel(prueba, text="", text_color=TEXTO_SUAVE,
+                                                  font=_mono(11), justify="left",
+                                                  wraplength=380)
+            self.lbl_openai_estado.pack(side="left", padx=(12, 0))
 
-        def _toggle_mostrar(self):
-            self.e_openai.configure(show="" if self.v_mostrar.get() else "•")
+        def _alternar_mostrar(self):
+            """Mostrar/ocultar la API key. El diseno usa un boton "Mostrar" en
+            vez de una casilla: ocupa menos y dice mejor que va a pasar."""
+            self.v_mostrar.set(not self.v_mostrar.get())
+            visible = self.v_mostrar.get()
+            self.e_openai.configure(show="" if visible else "•")
+            self.btn_mostrar.configure(text="Ocultar" if visible else "Mostrar")
 
         def _probar_openai(self):
             if self._probando:
@@ -2256,7 +2991,8 @@ if _TK_OK:
                 return
             self._probando = True
             self.btn_probar.configure(state="disabled")
-            self.lbl_openai_estado.configure(text="Probando conexión…", text_color=AZUL_ES)
+            self.lbl_openai_estado.configure(text="Probando conexión…",
+                                             text_color=TEXTO_SUAVE)
 
             def trabajo():
                 ok, msg = _probar_openai_key(key)
@@ -2278,39 +3014,117 @@ if _TK_OK:
             self.lbl_openai_estado.configure(text=("✅ " if ok else "❌ ") + msg,
                                              text_color=(VERDE_OK if ok else ROJO_ES))
 
-        # -------------------------------------------------- pestaña GitHub
+        # ------------------------------------------ seccion: sincronizacion
         def _build_github(self, f):
             gh = self.bd.cfg.get("github", {}) or {}
             est = self.bd.git_status()
-            ctk.CTkLabel(f, text="Sincronización de la Base de Datos",
-                        font=_fuente(12, "bold"), text_color=GRIS_TEXTO).grid(
-                row=0, column=0, columnspan=2, sticky="w")
-            modo = {"git": "git instalado", "rest": "API REST (sin git)"}.get(
-                est.get("backend"), est.get("backend", "?"))
-            ctk.CTkLabel(f, text=f"Método: {modo}", text_color=GRIS_TEXTO_SUAVE).grid(
-                row=1, column=0, columnspan=2, sticky="w", pady=(0, 8))
+            self._titulo(
+                f, "Sincronización de la Base de Datos",
+                "La BD de fichas vive en un repositorio de GitHub: así todas "
+                "las computadoras trabajan sobre el mismo catálogo.")
 
+            autenticado = bool(est.get("autenticado"))
+            caja = self._panel(
+                f, "Repositorio",
+                insignia=("Token configurado" if autenticado else "Sin token"),
+                color_insignia=(VERDE if autenticado else ROJO))
             self.v_repo = tk.StringVar(value=gh.get("repo", ""))
             self.v_rama = tk.StringVar(value=gh.get("branch", "main"))
             self.v_token = tk.StringVar(value="")
-            filas = [("Repositorio (usuario/repo):", self.v_repo, False),
-                     ("Rama:", self.v_rama, False),
-                     ("Token (PAT):", self.v_token, True)]
-            for i, (etiqueta, var, secreto) in enumerate(filas, 2):
-                ctk.CTkLabel(f, text=etiqueta, text_color=GRIS_TEXTO).grid(
-                    row=i, column=0, sticky="e", pady=4)
-                ctk.CTkEntry(f, textvariable=var, width=240, height=32, corner_radius=8,
-                            border_color=BORDE_SUAVE,
-                            show="•" if secreto else "").grid(row=i, column=1, pady=4)
+            campos = [("repositorio (usuario/repo)", self.v_repo, False,
+                       "es-constructora/submittals-bd"),
+                      ("rama", self.v_rama, False, "main"),
+                      ("token (pat)", self.v_token, True,
+                       "ghp_… (vacío = conservar el actual)")]
+            for i, (etiqueta, var, secreto, pista) in enumerate(campos):
+                _etiqueta_seccion(caja, etiqueta, color=TEXTO_SUAVE).pack(
+                    anchor="w", pady=((0 if i == 0 else 14), 6))
+                e = ctk.CTkEntry(caja, textvariable=var, height=34, corner_radius=6,
+                                border_color=BORDE, fg_color=SUPERFICIE_3,
+                                text_color=TEXTO, font=_mono(12),
+                                show="•" if secreto else "")
+                _pista(e, var, pista)
+                e.pack(fill="x")
 
-            tiene = "✅ ya configurado" if est.get("autenticado") else "❌ sin configurar"
-            ctk.CTkLabel(f, text=f"Token actual: {tiene}   ·   deje el campo vacío "
-                             "para conservarlo", text_color=GRIS_TEXTO_SUAVE).grid(
-                row=5, column=0, columnspan=2, sticky="w")
-            ctk.CTkLabel(f, text="Cree el token en github.com/settings/tokens con\n"
-                             "permiso Contents: write SOLO sobre este repositorio.",
-                        text_color=GRIS_TEXTO_SUAVE, justify="left").grid(
-                row=6, column=0, columnspan=2, sticky="w", pady=(4, 0))
+            modo = {"git": "git instalado", "rest": "API REST (sin git)",
+                    "local": "BD local (sin sincronización)"}.get(
+                est.get("backend"), est.get("backend", "?"))
+            info = self._panel(f, "Estado")
+            self._fila_dato(info, "Método de transporte", modo, primera=True)
+            self._fila_dato(info, "Cambios sin subir",
+                            str(est.get("pendientes", 0)))
+            self._fila_dato(info, "Última sincronización",
+                            self.bd.texto_estado_sync())
+            ctk.CTkLabel(
+                f, text="Cree el token en github.com/settings/tokens con permiso "
+                        "Contents: write SOLO sobre este repositorio.",
+                text_color=TEXTO_SUAVE, font=_fuente(11), justify="left",
+                wraplength=560).pack(anchor="w", pady=(14, 24))
+
+        # ------------------------------------------ seccion: rutas/carpetas
+        def _build_rutas(self, f):
+            self._titulo(
+                f, "Rutas y carpetas",
+                "Dónde guarda el programa la base de datos, la caché y el "
+                "registro de esta computadora. Son de solo lectura.")
+            caja = self._panel(f, "Ubicaciones en esta PC")
+            rutas = [("Base de datos (copia local)",
+                      getattr(self.bd, "bd_root", "") or getattr(self.bd, "cache_dir", "")),
+                     ("Submittals guardados", getattr(self.bd, "proyectos_dir", "")),
+                     ("Caché", getattr(self.bd, "cache_dir", "")),
+                     ("Configuración", getattr(self.bd, "config_dir", "")),
+                     ("Registro (app.log)", LOG_PATH)]
+            for i, (etiqueta, ruta) in enumerate(rutas):
+                fila = self._fila_dato(caja, etiqueta,
+                                       self._acortar(str(ruta)), primera=(i == 0))
+                _enlace(fila, "abrir", lambda r=ruta: self._abrir_carpeta(r)).pack(
+                    side="right", padx=(0, 10))
+
+        @staticmethod
+        def _acortar(ruta, tope=46):
+            return ruta if len(ruta) <= tope else "…" + ruta[-(tope - 1):]
+
+        def _abrir_carpeta(self, ruta):
+            """Abre la carpeta en el explorador (si el destino es un archivo, se
+            abre la carpeta que lo contiene)."""
+            try:
+                p = Path(str(ruta))
+                destino = p if p.is_dir() else p.parent
+                os.startfile(destino)
+            except Exception as e:
+                messagebox.showerror("No se pudo abrir", str(e),
+                                     parent=self.winfo_toplevel())
+
+        # ----------------------------------------------- seccion: acerca de
+        def _build_acerca(self, f):
+            self._titulo(f, "Acerca de",
+                         "Generador de Submittals ES — plataforma de armado de "
+                         "submittals sobre una BD central de fichas técnicas.")
+            caja = self._panel(f, "Versión y entorno")
+            self._fila_dato(caja, "Versión del programa", f"v{VERSION}", primera=True)
+            self._fila_dato(caja, "Modo de ejecución",
+                            "empaquetado (.exe)" if getattr(sys, "frozen", False)
+                            else "código fuente (.py)")
+            r = self.bd.resumen_por_categoria()
+            self._fila_dato(caja, "Fichas activas en la BD", str(r["TOTAL"]))
+            self._fila_dato(caja, "Por especialidad",
+                            f"ARQ {r['ARQ']} · ESTR {r['ESTR']} · "
+                            f"MEC {r['MEC']} · ELEC {r['ELEC']}")
+            acciones = ctk.CTkFrame(f, fg_color="transparent")
+            acciones.pack(anchor="w", pady=(18, 24))
+            _boton_secundario(acciones, "Buscar actualización",
+                              lambda: self.app._buscar_update() if self.app else None,
+                              ancho=160, alto=34).pack(side="left")
+            _boton_secundario(acciones, "Ver registro",
+                              lambda: self._abrir_registro(), ancho=124,
+                              alto=34).pack(side="left", padx=(8, 0))
+
+        def _abrir_registro(self):
+            try:
+                os.startfile(LOG_PATH)
+            except Exception as e:
+                messagebox.showerror("No se pudo abrir el registro", str(e),
+                                     parent=self.winfo_toplevel())
 
         # -------------------------------------------------- guardado
         def _guardar(self):
@@ -2362,21 +3176,241 @@ if _TK_OK:
                     "que la elimine.", parent=self.winfo_toplevel())
             else:
                 messagebox.showinfo("Configuración", "Configuración guardada.", parent=self.winfo_toplevel())
-            self.destroy()
+            # Antes esto cerraba la ventana modal; ahora vuelve al inicio y, si
+            # cambio algo de GitHub, la ventana principal vuelve a sincronizar.
+            if self.app is not None:
+                self.app._tras_guardar_config(self.cambio_github)
+
+
+    class PantallaInicio(ctk.CTkFrame):
+        """Pantalla de inicio: las dos acciones grandes (generar / abrir), el
+        mantenimiento del catálogo y la actividad reciente.
+
+        Reemplaza al menu 2x2 de v3.3.x sin quitar ninguna de sus cuatro
+        entradas: 'Generar desde BD' y 'Abrir submittal existente' pasan a ser
+        las tarjetas grandes, y 'Cargar ficha a BD' y 'Gestionar BD' quedan en
+        el bloque de mantenimiento, con el resto de las acciones de catalogo.
+        """
+
+        def __init__(self, master, app, bd=None):
+            super().__init__(master, fg_color="transparent")
+            self.app = app
+            self._build()
+
+        @property
+        def bd(self):
+            # La BD se crea DESPUES de armar la ventana (primero hay que
+            # verificar git), asi que se busca al usarla, no al construir.
+            return getattr(self.app, "bd", None)
+
+        def _build(self):
+            # Con scroll: en un monitor de 1366x768 el area de contenido queda
+            # en ~660 px de alto y, sin scroll, la actividad reciente quedaria
+            # fuera de alcance.
+            cuerpo = ctk.CTkScrollableFrame(
+                self, fg_color="transparent", height=380, width=600,
+                scrollbar_button_color=BORDE,
+                scrollbar_button_hover_color=BORDE_FUERTE)
+            cuerpo.pack(fill="both", expand=True, padx=20, pady=(24, 16))
+
+            enc = ctk.CTkFrame(cuerpo, fg_color="transparent")
+            enc.pack(fill="x")
+            ctk.CTkLabel(enc, text="¿Qué vamos a hacer hoy?", font=_fuente(23, "bold"),
+                        text_color=TEXTO, anchor="w").pack(anchor="w")
+            ctk.CTkLabel(enc, text="Generá un submittal nuevo desde la base de datos "
+                                   "o continuá con uno existente.",
+                        font=_fuente(13), text_color=TEXTO_SUAVE, anchor="w").pack(
+                anchor="w", pady=(4, 0))
+
+            # ------------------------------------------ acciones principales
+            acc = ctk.CTkFrame(cuerpo, fg_color="transparent")
+            acc.pack(fill="x", pady=(18, 0))
+            acc.grid_columnconfigure(0, weight=1, uniform="acc")
+            acc.grid_columnconfigure(1, weight=1, uniform="acc")
+            self._tarjeta_grande(
+                acc, 0, "Generar desde BD",
+                "Seleccioná fichas por especialidad y armá el paquete en PDF.",
+                "ACCIÓN PRINCIPAL", self.app._generar_desde_bd, destacada=True)
+            self.lbl_reciente = self._tarjeta_grande(
+                acc, 1, "Abrir submittal existente",
+                "Retomá un paquete guardado y actualizá sus fichas.",
+                "SIN SUBMITTALS GUARDADOS", self.app._abrir_existente)
+
+            # ------------------------------------------------ mantenimiento
+            _etiqueta_seccion(cuerpo, "mantenimiento del catálogo",
+                              color=TEXTO_SUAVE, height=16).pack(anchor="w",
+                                                                 pady=(20, 8))
+            mant = ctk.CTkFrame(cuerpo, fg_color="transparent")
+            mant.pack(fill="x")
+            mant.grid_columnconfigure(0, weight=1, uniform="mant")
+            mant.grid_columnconfigure(1, weight=1, uniform="mant")
+            self.lbl_total_bd = None
+            fichas = [
+                ("Cargar ficha a BD", "+", self.app._cargar_ficha, 0, 0),
+                ("Gestionar BD", "—", self.app._gestionar_bd, 0, 1),
+                ("Generar desde carpetas (v2.6)", "v2.6", self.app._lanzar_v26, 1, 0),
+                ("Cargar carpeta completa de fichas", "lote",
+                 lambda: self.app._cargar_ficha(por_carpetas=True), 1, 1),
+            ]
+            for titulo, valor, cmd, fila, col in fichas:
+                lbl = self._tarjeta_chica(mant, fila, col, titulo, valor, cmd)
+                if titulo == "Gestionar BD":
+                    self.lbl_total_bd = lbl
+
+            # ------------------------------------------- actividad reciente
+            _etiqueta_seccion(cuerpo, "actividad reciente", color=TEXTO_SUAVE,
+                              height=16).pack(anchor="w", pady=(20, 8))
+            marco, self.tree, pie = _tabla_ttk(
+                cuerpo, ("nombre", "fichas", "fecha", "estado"),
+                {"nombre": "Submittal", "fichas": "Fichas", "fecha": "Actualizado",
+                 "estado": "Estado"},
+                {"nombre": 300, "fichas": 66, "fecha": 130, "estado": 96},
+                alineados=("fichas", "estado"), alto=4)
+            marco.pack(fill="both", expand=True)
+            _hover_filas(self.tree)
+            self.tree.bind("<Double-Button-1>", lambda _ev: self._abrir_reciente())
+            self.lbl_pie = ctk.CTkLabel(pie, text="", text_color=TEXTO_SUAVE,
+                                        font=_mono(10))
+            self.lbl_pie.pack(anchor="w", padx=12, pady=4)
+            self._recientes = []
+
+        # ------------------------------------------------------- tarjetas
+        def _tarjeta_grande(self, padre, col, titulo, desc, meta, command,
+                            destacada=False):
+            fondo = ACENTO_SUAVE if destacada else SUPERFICIE
+            hover = ACENTO_SUAVE_H if destacada else SUPERFICIE_2
+            borde = ACENTO_BORDE if destacada else BORDE_FUERTE
+            t = ctk.CTkFrame(padre, fg_color=fondo, corner_radius=9, border_width=1,
+                             border_color=borde)
+            t.grid(row=0, column=col, sticky="nsew", padx=(0, 7) if col == 0 else (7, 0))
+            fila = ctk.CTkFrame(t, fg_color="transparent")
+            fila.pack(fill="x", padx=18, pady=(16, 0))
+            ctk.CTkLabel(fila, text=titulo, font=_fuente(16, "bold"),
+                        text_color=ACENTO_TXT if destacada else TEXTO_2).pack(side="left")
+            ctk.CTkLabel(fila, text="→", font=_fuente(15),
+                        text_color=ACENTO if destacada else TEXTO_SUAVE).pack(side="right")
+            ctk.CTkLabel(t, text=desc, font=_fuente(12), justify="left",
+                        wraplength=330, anchor="w", height=34,
+                        text_color=TEXTO_SUAVE).pack(anchor="w", padx=18, pady=(4, 0))
+            lbl_meta = ctk.CTkLabel(t, text=meta, font=_mono(10), anchor="w",
+                                    height=14,
+                                    text_color=ACENTO if destacada else TEXTO_TENUE)
+            lbl_meta.pack(anchor="w", padx=18, pady=(6, 16))
+            _clicable(t, command, normal=fondo, hover=hover,
+                      borde_normal=borde,
+                      borde_hover=ACENTO_BORDE_FUERTE if destacada else BORDE_FUERTE)
+            return lbl_meta
+
+        def _tarjeta_chica(self, padre, fila, col, titulo, valor, command):
+            t = ctk.CTkFrame(padre, fg_color=SUPERFICIE, corner_radius=8,
+                             border_width=1, border_color=BORDE)
+            t.grid(row=fila, column=col, sticky="nsew",
+                   padx=(0, 5) if col == 0 else (5, 0), pady=(0, 10))
+            interior = ctk.CTkFrame(t, fg_color="transparent")
+            interior.pack(fill="x", padx=14, pady=10)
+            ctk.CTkLabel(interior, text=titulo, font=_fuente(13), height=20,
+                        text_color=TEXTO_2).pack(side="left")
+            lbl = ctk.CTkLabel(interior, text=valor, font=_mono(12),
+                               text_color=TEXTO_SUAVE)
+            lbl.pack(side="right")
+            _clicable(t, command, normal=SUPERFICIE, hover=SUPERFICIE_3,
+                      borde_normal=BORDE, borde_hover=BORDE_FUERTE)
+            return lbl
+
+        # ------------------------------------------------------- refresco
+        def refrescar(self):
+            """Repinta conteos y actividad reciente. Tolera que la BD todavia
+            no exista (se llama tambien al armar la ventana)."""
+            bd = self.bd
+            if bd is None:
+                return
+            try:
+                total = bd.resumen_por_categoria()["TOTAL"]
+                if self.lbl_total_bd is not None:
+                    self.lbl_total_bd.configure(text=str(total))
+            except Exception:
+                pass
+            try:
+                proyectos = bd.listar_proyectos()
+            except Exception:
+                proyectos = []
+            self._recientes = proyectos[:6]
+            for i in self.tree.get_children():
+                self.tree.delete(i)
+            for p in self._recientes:
+                fecha = (p.get("ultima_actualizacion") or "")[:16].replace("T", " ")
+                self.tree.insert("", "end", iid=p["carpeta_bd"],
+                                 values=(p.get("nombre_proyecto", ""),
+                                         p.get("materiales", 0), fecha or "—",
+                                         self._estado_proyecto(p)))
+            n = len(proyectos)
+            self.lbl_pie.configure(
+                text=(f"{n} submittal(s) guardado(s) · doble clic para continuar"
+                      if n else "Todavía no hay submittals guardados en la BD"))
+            if self._recientes:
+                self.lbl_reciente.configure(
+                    text="RECIENTE · " +
+                         self._recientes[0].get("nombre_proyecto", "")[:34].upper())
+            else:
+                self.lbl_reciente.configure(text="SIN SUBMITTALS GUARDADOS")
+
+        @staticmethod
+        def _estado_proyecto(p):
+            """'generado' si ya se armaron los entregables, 'en edición' si no.
+
+            El dato vive en el ``submittal_proyecto.json`` del proyecto (que
+            ``listar_proyectos()`` no devuelve), asi que se lee de ahi.
+            """
+            try:
+                ruta = Path(p["carpeta_bd"]) / bd_manager.NOMBRE_SUBMITTAL_JSON
+                d = json.loads(ruta.read_text(encoding="utf-8"))
+                return "generado" if d.get("entregables_generados") else "en edición"
+            except Exception:
+                return "—"
+
+        def _abrir_reciente(self):
+            sel = self.tree.selection()
+            if not sel:
+                return
+            try:
+                proyecto = bd_manager.BDManager.cargar_submittal(sel[0])
+            except Exception as e:
+                messagebox.showerror("No se pudo abrir", str(e),
+                                     parent=self.winfo_toplevel())
+                return
+            ruta_previa = proyecto.get("ruta_entregables", "")
+            destino = ruta_previa if ruta_previa and Path(ruta_previa).is_dir() else ""
+            self.app._abrir_submittal(
+                proyecto, destino,
+                f"Editando: {proyecto.get('nombre_proyecto', '')}")
 
 
     class App(ctk.CTk):
-        """Ventana principal con el menu 2x2 y la sincronizacion con GitHub."""
+        """Ventana principal: shell con menu lateral oscuro fijo y las cuatro
+        pantallas del programa adentro (Inicio, Submittal activo, Base de datos,
+        Configuración).
+
+        v3.4.0: antes era un menu 2x2 que abria una ventana por flujo. Ahora
+        todo pasa en una sola ventana; solo siguen siendo modales los dialogos
+        puntuales (cargar ficha, revisar ficha, datos del proyecto, PIN, abrir
+        submittal existente), que interrumpen a proposito.
+        """
 
         def __init__(self):
             super().__init__()
             _configurar_estilo_ttk()
             self.title(f"Generador de Submittals ES v{VERSION}")
-            self.configure(fg_color=GRIS_BG, padx=20, pady=20)
+            self.configure(fg_color=FONDO)
             self._sincronizando = False
             self.modo_dev = False
+            self.pantalla_actual = None
+            self.submittal = None          # PantallaSubmittal activa (o None)
+            self._pantallas = {}
             self._construir()
-            _dimensionar_ventana(self, 720, 620)
+            # Tamano del diseno (1240x800) como preferido, acotado a la pantalla
+            # y redimensionable: en un monitor de 1366x768 la ventana entra
+            # igual en vez de quedar con los botones fuera de vista.
+            _dimensionar_principal(self, 1240, 800)
             # Se revisa/instala Git ANTES de crear el BDManager: la eleccion de
             # transporte (git vs API REST) se decide una sola vez, al construir
             # el GitSync de adentro. Solo tarda si esta PC no tiene git (primera
@@ -2388,54 +3422,283 @@ if _TK_OK:
             self.protocol("WM_DELETE_WINDOW", self._cerrar_seguro)
             self.after(100, lambda: self._sincronizar(inicial=True))
 
+        # =============================================== armado del shell
         def _construir(self):
-            titulo = ctk.CTkFrame(self, fg_color="transparent")
-            titulo.pack(pady=(0, 4))
-            ctk.CTkLabel(titulo, text="Generador de Submittals ", text_color=AZUL_ES,
-                        font=_fuente(20, "bold")).pack(side="left")
-            ctk.CTkLabel(titulo, text="ES", text_color=ROJO_ES,
-                        font=_fuente(20, "bold")).pack(side="left")
-            self.lbl_estado = ctk.CTkLabel(self, text="", text_color=GRIS_TEXTO_SUAVE)
-            self.lbl_estado.pack()
-            self.lbl_sync = ctk.CTkLabel(self, text="⏳ Iniciando…", text_color=GRIS_TEXTO_SUAVE)
-            self.lbl_sync.pack()
-            self.prog = ctk.CTkProgressBar(self, width=360, height=8, corner_radius=4,
-                                           mode="indeterminate", progress_color=AZUL_ES)
+            self.grid_rowconfigure(0, weight=1)
+            self.grid_columnconfigure(0, minsize=262)   # ancho del menu lateral
+            self.grid_columnconfigure(1, weight=1)
+            self._construir_sidebar()
 
-            grid = ctk.CTkFrame(self, fg_color="transparent"); grid.pack(pady=18)
-            botones = [
-                ("📤  Generar desde BD", self._generar_desde_bd),
-                ("📂  Abrir submittal existente", self._abrir_existente),
-                ("➕  Cargar ficha a BD", self._cargar_ficha),
-                ("🗂️  Gestionar BD", self._gestionar_bd),
-            ]
-            for i, (txt, cmd) in enumerate(botones):
-                b = ctk.CTkButton(grid, text=txt, command=cmd, width=260, height=84,
-                                  fg_color="white", hover_color="#EFF6FF",
-                                  text_color=AZUL_ES, border_width=1,
-                                  border_color=BORDE_SUAVE, corner_radius=16,
-                                  font=_fuente(13, "bold"))
-                b.grid(row=i // 2, column=i % 2, padx=10, pady=10)
+            principal = ctk.CTkFrame(self, fg_color=WINDOW_BG, corner_radius=0)
+            principal.grid(row=0, column=1, sticky="nsew")
+            principal.grid_rowconfigure(2, weight=1)
+            principal.grid_columnconfigure(0, weight=1)
 
-            sync = ctk.CTkFrame(self, fg_color="transparent"); sync.pack(pady=(0, 10))
-            _boton_secundario(sync, "🔄 Sincronizar ahora", self._sincronizar,
-                             ancho=170).pack(side="left", padx=4)
-            _boton_secundario(sync, "☁️ Subir cambios pendientes", self._subir_pendientes,
-                             ancho=210).pack(side="left", padx=4)
-            _boton_secundario(sync, "⚙️ Configuración", self._configuracion,
-                             ancho=150).pack(side="left", padx=4)
+            # ------------------------------------------ barra de titulo
+            topbar = ctk.CTkFrame(principal, fg_color=SUPERFICIE, corner_radius=0,
+                                  height=56)
+            topbar.grid(row=0, column=0, sticky="ew")
+            topbar.grid_propagate(False)
+            self.lbl_titulo = ctk.CTkLabel(topbar, text="Inicio", font=_fuente(14, "bold"),
+                                           text_color=TEXTO_2)
+            self.lbl_titulo.pack(side="left", padx=(26, 8), pady=16)
+            self.lbl_subtitulo = ctk.CTkLabel(topbar, text="", font=_mono(11),
+                                              text_color=TEXTO_SUAVE)
+            self.lbl_subtitulo.pack(side="left")
+            ctk.CTkFrame(principal, height=1, fg_color=BORDE).grid(
+                row=1, column=0, sticky="ew")
 
-            barra = ctk.CTkFrame(self, fg_color="transparent")
-            barra.pack(side="bottom", fill="x")
-            _boton_secundario(barra, "🏗️ Generar desde carpetas (v2.6)", self._lanzar_v26,
-                             ancho=230).pack(side="left")
-            _boton_secundario(barra, "🔄 Buscar actualización", self._buscar_update,
-                             ancho=190).pack(side="left", padx=6)
-            self.btn_modo_dev = _boton_secundario(barra, "🛠️ Modo desarrollador",
-                                                  self._toggle_modo_dev, ancho=190)
-            self.btn_modo_dev.pack(side="left", padx=6)
-            _boton(barra, "❌ Cerrar", self._cerrar_seguro, color=ROJO_ES,
-                  ancho=110).pack(side="right")
+            # --------------------------------------- contenedor de pantallas
+            self.contenedor = ctk.CTkFrame(principal, fg_color="transparent")
+            self.contenedor.grid(row=2, column=0, sticky="nsew")
+
+            # ------------------------------------------- barra de estado
+            ctk.CTkFrame(principal, height=1, fg_color=BORDE).grid(
+                row=3, column=0, sticky="ew")
+            pie = ctk.CTkFrame(principal, fg_color=SUPERFICIE, corner_radius=0,
+                               height=44)
+            pie.grid(row=4, column=0, sticky="ew")
+            pie.grid_propagate(False)
+            self.lbl_estado = ctk.CTkLabel(pie, text="", text_color=TEXTO_SUAVE,
+                                           font=_mono(11))
+            self.lbl_estado.pack(side="left", padx=26)
+            _boton_secundario(pie, "Cerrar", self._cerrar_seguro, ancho=88,
+                              alto=28).pack(side="right", padx=26)
+
+            # La pantalla de inicio se arma ya; las demas, cuando se usan.
+            self._pantallas["inicio"] = PantallaInicio(self.contenedor, self, None)
+            self._ir("inicio")
+
+        def _construir_sidebar(self):
+            lat = ctk.CTkFrame(self, fg_color=SIDEBAR, corner_radius=0, width=262)
+            lat.grid(row=0, column=0, sticky="nsw")
+            lat.grid_propagate(False)
+            lat.grid_rowconfigure(3, weight=1)
+            lat.grid_columnconfigure(0, weight=1)
+
+            # ------------------------------------------------------- marca
+            marca = ctk.CTkFrame(lat, fg_color="transparent")
+            marca.grid(row=0, column=0, sticky="ew", padx=16, pady=(20, 22))
+            sello = ctk.CTkFrame(marca, fg_color=ACENTO, corner_radius=7, width=30,
+                                 height=30)
+            sello.pack(side="left")
+            sello.pack_propagate(False)
+            ctk.CTkLabel(sello, text="ES", font=_mono(13, "bold"),
+                        text_color="white").pack(expand=True)
+            txt = ctk.CTkFrame(marca, fg_color="transparent")
+            txt.pack(side="left", padx=(11, 0))
+            ctk.CTkLabel(txt, text="Generador de Submittals", font=_fuente(13, "bold"),
+                        text_color=SIDEBAR_TXT, anchor="w").pack(anchor="w")
+            self.lbl_version = ctk.CTkLabel(txt, text=f"v{VERSION}", font=_mono(11),
+                                            text_color=SIDEBAR_TXT_3, anchor="w")
+            self.lbl_version.pack(anchor="w")
+
+            # -------------------------------------------------------- menu
+            menu = ctk.CTkFrame(lat, fg_color="transparent")
+            menu.grid(row=1, column=0, sticky="ew", padx=16)
+            _etiqueta_seccion(menu, "menú", color=SIDEBAR_LABEL).pack(
+                anchor="w", padx=10, pady=(0, 8))
+            self._nav = {}
+            self._nav_badge = {}
+            for clave, etiqueta in (("inicio", "Inicio"),
+                                    ("submittal", "Submittal activo"),
+                                    ("bd", "Base de datos"),
+                                    ("config", "Configuración")):
+                self._nav_item(menu, clave, etiqueta)
+
+            # -------------------------------------------------- catalogo
+            cat = ctk.CTkFrame(lat, fg_color="transparent")
+            cat.grid(row=2, column=0, sticky="ew", padx=16, pady=(22, 0))
+            _etiqueta_seccion(cat, "catálogo", color=SIDEBAR_LABEL).pack(
+                anchor="w", padx=10, pady=(0, 8))
+            self._lbl_cat = {}
+            for clave, etiqueta in (("ARQ", "Arquitectura"), ("ESTR", "Estructura"),
+                                    ("MEC", "Mecánica"), ("ELEC", "Eléctrica")):
+                fila = ctk.CTkFrame(cat, fg_color="transparent")
+                fila.pack(fill="x", padx=10, pady=3)
+                ctk.CTkLabel(fila, text=etiqueta, font=_fuente(12),
+                            text_color=SIDEBAR_TXT_2).pack(side="left")
+                v = ctk.CTkLabel(fila, text="—", font=_mono(12),
+                                 text_color=SIDEBAR_NUM)
+                v.pack(side="right")
+                self._lbl_cat[clave] = v
+
+            # -------------------------------------------- pie: sync + extras
+            pie = ctk.CTkFrame(lat, fg_color="transparent")
+            pie.grid(row=4, column=0, sticky="ews", padx=16, pady=(12, 16))
+
+            tarjeta = ctk.CTkFrame(pie, fg_color=SIDEBAR_CARD, corner_radius=7)
+            tarjeta.pack(fill="x")
+            cabsync = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            cabsync.pack(fill="x", padx=12, pady=(12, 0))
+            self.punto_sync = ctk.CTkLabel(cabsync, text="●", font=_fuente(12),
+                                           text_color=SIDEBAR_TXT_3)
+            self.punto_sync.pack(side="left", padx=(0, 7))
+            # ``lbl_sync`` conserva el nombre de v3.3.x: todos los flujos de
+            # sincronizacion/actualizacion le escriben el estado ahi.
+            self.lbl_sync = _EtiquetaSync(cabsync, text="Iniciando…", font=_fuente(12),
+                                          text_color=SIDEBAR_TXT, anchor="w",
+                                          wraplength=170, justify="left")
+            self.lbl_sync._punto = self.punto_sync
+            self.lbl_sync.pack(side="left", fill="x", expand=True)
+            self.lbl_sync_meta = ctk.CTkLabel(tarjeta, text="", font=_mono(11),
+                                              text_color=SIDEBAR_TXT_3, anchor="w",
+                                              wraplength=178, justify="left")
+            self.lbl_sync_meta.pack(fill="x", padx=12, pady=(4, 0))
+            # La barra de progreso vive en su propio hueco: los flujos hacen
+            # ``prog.pack()`` / ``prog.pack_forget()`` y asi siempre aparece en
+            # el mismo lugar (entre el estado y los botones), no al final.
+            hueco_prog = ctk.CTkFrame(tarjeta, fg_color="transparent", height=10)
+            hueco_prog.pack(fill="x", padx=12)
+            self.prog = ctk.CTkProgressBar(hueco_prog, height=4, corner_radius=2,
+                                           mode="indeterminate", progress_color=ACENTO,
+                                           fg_color=SIDEBAR_BTN)
+            botsync = ctk.CTkFrame(tarjeta, fg_color="transparent")
+            botsync.pack(fill="x", padx=12, pady=(10, 12))
+            ctk.CTkButton(botsync, text="Sincronizar", command=self._sincronizar,
+                          fg_color=SIDEBAR_BTN, hover_color=SIDEBAR_BTN_H,
+                          text_color=SIDEBAR_TXT, font=_fuente(11), height=28,
+                          corner_radius=5, width=1).pack(side="left", fill="x",
+                                                         expand=True, padx=(0, 6))
+            ctk.CTkButton(botsync, text="Subir", command=self._subir_pendientes,
+                          fg_color="transparent", hover_color=SIDEBAR_HOVER,
+                          text_color=SIDEBAR_TXT_2, font=_fuente(11), height=28,
+                          corner_radius=5, width=1, border_width=1,
+                          border_color=SIDEBAR_BORDE).pack(side="left", fill="x",
+                                                           expand=True)
+
+            extras = ctk.CTkFrame(pie, fg_color="transparent")
+            extras.pack(fill="x", pady=(12, 0))
+            # "Generar desde carpetas (v2.6)" vive en las tarjetas de Inicio
+            # (como en el diseno); aca solo quedan las dos acciones que no
+            # tienen otro lugar.
+            ctk.CTkButton(extras, text="Buscar actualización",
+                          command=self._buscar_update, anchor="w",
+                          fg_color="transparent", hover_color=SIDEBAR_HOVER,
+                          text_color=SIDEBAR_TXT_2, font=_fuente(12), height=28,
+                          corner_radius=5).pack(fill="x")
+            # ``btn_modo_dev`` conserva el nombre: ``_toggle_modo_dev`` lo repinta.
+            self.btn_modo_dev = ctk.CTkButton(
+                extras, text="Modo desarrollador", command=self._toggle_modo_dev,
+                anchor="w", fg_color="transparent", hover_color=SIDEBAR_HOVER,
+                text_color=SIDEBAR_TXT_3, font=_fuente(12), height=28,
+                corner_radius=5)
+            self.btn_modo_dev.pack(fill="x")
+
+        def _nav_item(self, padre, clave, etiqueta):
+            """Item del menu lateral: etiqueta a la izquierda y, a la derecha,
+            un contador (fichas de la BD) o una insignia (submittal activo)."""
+            fila = ctk.CTkFrame(padre, fg_color="transparent", corner_radius=6,
+                                height=34)
+            fila.pack(fill="x", pady=1)
+            fila.pack_propagate(False)
+            lbl = ctk.CTkLabel(fila, text=etiqueta, font=_fuente(13),
+                               text_color=SIDEBAR_TXT_2, anchor="w")
+            lbl.pack(side="left", padx=(10, 0))
+            badge = ctk.CTkLabel(fila, text="", font=_mono(11),
+                                 text_color=SIDEBAR_TXT_3, corner_radius=3)
+            badge.pack(side="right", padx=(0, 10))
+            self._nav[clave] = (fila, lbl)
+            self._nav_badge[clave] = badge
+            _clicable(fila, lambda: self._ir(clave),
+                      normal="transparent", hover=SIDEBAR_HOVER)
+
+        # ================================================== navegacion
+        _TITULOS = {"inicio": ("Inicio", ""),
+                    "submittal": ("Submittal activo", ""),
+                    "bd": ("Base de datos", ""),
+                    "config": ("Configuración", "")}
+
+        def _ir(self, clave):
+            """Muestra una pantalla (creandola la primera vez)."""
+            if clave == "submittal" and self.submittal is None:
+                # Sin submittal abierto no hay nada que mostrar: se ofrece
+                # empezar uno en vez de dejar el clic sin respuesta.
+                if messagebox.askyesno(
+                        "Sin submittal activo",
+                        "Todavía no hay un submittal abierto.\n\n"
+                        "¿Generar uno nuevo desde la Base de Datos?",
+                        parent=self):
+                    self._generar_desde_bd()
+                return
+            if clave == "bd" and "bd" not in self._pantallas:
+                self._pantallas["bd"] = PantallaBD(self.contenedor, self.bd, app=self,
+                                                   al_cambiar=self._actualizar_estado)
+            if clave == "config":
+                # Se rearma cada vez: muestra el estado real de la API key, del
+                # token y de los conteos en el momento de abrirla.
+                anterior = self._pantallas.pop("config", None)
+                if anterior is not None:
+                    anterior.destroy()
+                self._pantallas["config"] = PantallaConfig(
+                    self.contenedor, self.bd, seccion_inicial=self._seccion_config,
+                    app=self)
+            pantalla = self._pantallas.get(clave)
+            if pantalla is None:
+                return
+            if self.pantalla_actual is not None:
+                self.pantalla_actual.pack_forget()
+            pantalla.pack(fill="both", expand=True)
+            self.pantalla_actual = pantalla
+            self._clave_actual = clave
+            if clave == "bd":
+                pantalla.al_mostrar()
+            elif clave == "inicio":
+                pantalla.refrescar()
+            self._pintar_nav(clave)
+            self._pintar_titulo(clave)
+
+        _seccion_config = "openai"
+
+        def _pintar_nav(self, activa):
+            for clave, (fila, lbl) in self._nav.items():
+                encendido = (clave == activa)
+                fila.configure(fg_color=ACENTO if encendido else "transparent")
+                lbl.configure(text_color="white" if encendido else SIDEBAR_TXT_2,
+                              font=_fuente(13, "bold") if encendido else _fuente(13))
+                # El contador tambien tiene que leerse sobre el rojo del item
+                # activo (en gris tenue quedaba por debajo de 4.5:1).
+                badge = self._nav_badge[clave]
+                if badge.cget("fg_color") in ("transparent", None):
+                    badge.configure(text_color="white" if encendido
+                                    else SIDEBAR_TXT_3)
+                _clicable(fila, lambda c=clave: self._ir(c),
+                          normal=ACENTO if encendido else "transparent",
+                          hover=ACENTO_HOVER if encendido else SIDEBAR_HOVER)
+
+        def _pintar_titulo(self, clave):
+            titulo, sub = self._TITULOS.get(clave, (clave, ""))
+            if clave == "submittal" and self.submittal is not None:
+                sub = "· " + self.submittal.proyecto.get("nombre_proyecto", "")
+            elif clave == "bd":
+                try:
+                    sub = f"· {self.bd.resumen_por_categoria()['TOTAL']} fichas"
+                except Exception:
+                    sub = ""
+            self.lbl_titulo.configure(text=titulo)
+            self.lbl_subtitulo.configure(text=sub)
+
+        def _abrir_submittal(self, proyecto, destino, titulo):
+            """Punto unico de entrada a la pantalla de submittal (la usan tanto
+            'Generar desde BD' como 'Abrir existente').
+
+            Si ya habia un submittal abierto se guarda su avance antes de
+            reemplazarlo: es la misma garantia que daba el cierre de la ventana
+            en v3.3.x.
+            """
+            if self.submittal is not None:
+                if not self.submittal.guardar_al_salir():
+                    return
+                if self.pantalla_actual is self.submittal:
+                    self.submittal.pack_forget()
+                    self.pantalla_actual = None
+                self.submittal.destroy()
+                self._pantallas.pop("submittal", None)
+            self.submittal = PantallaSubmittal(self.contenedor, self.bd, proyecto,
+                                               destino, titulo, app=self)
+            self._pantallas["submittal"] = self.submittal
+            self._ir("submittal")
+            self._actualizar_estado()
 
         # ------------------------------------------------ sincronizacion
         def _sincronizar(self, inicial=False):
@@ -2525,33 +3788,62 @@ if _TK_OK:
                                         text_color=ROJO_ES)
 
         def _configuracion(self, tab_inicial="openai"):
-            """Abre la configuración unificada (OpenAI + GitHub)."""
-            d = DialogoConfiguracion(self, self.bd, tab_inicial=tab_inicial)
-            self.wait_window(d)
-            if d.cambio_github:
-                self._sincronizar()
+            """Va a la pantalla de configuración (OpenAI + GitHub + rutas)."""
+            self._seccion_config = tab_inicial
+            self._ir("config")
 
         def _config_github(self):
-            """Atajo que abre la configuración directamente en la pestaña GitHub
-            (lo usa el aviso de 'falta el token' al intentar subir)."""
+            """Atajo que abre la configuración directamente en la sección de
+            sincronización (lo usa el aviso de 'falta el token' al subir)."""
             self._configuracion(tab_inicial="github")
 
+        def _tras_guardar_config(self, cambio_github):
+            """Lo llama ``PantallaConfig`` al guardar: vuelve al inicio y, si se
+            tocó algo de GitHub, vuelve a sincronizar (igual que cuando la
+            configuración era una ventana modal)."""
+            self._ir("inicio")
+            self._actualizar_estado()
+            if cambio_github:
+                self._sincronizar()
+
         def _actualizar_estado(self):
+            """Refresca los conteos del menu lateral, la barra de estado y la
+            insignia del submittal activo."""
             res = self.bd.resumen_por_categoria()
-            cache = "  ·  ⚠️ usando caché anterior" if self.bd.usando_cache else ""
+            cache = "  ·  usando caché anterior" if self.bd.usando_cache else ""
             pend = self.bd.pendientes
-            sin_subir = f"  ·  ☁️ {len(pend)} cambio(s) sin subir" if pend else ""
+            sin_subir = f"  ·  {len(pend)} cambio(s) sin subir" if pend else ""
             self.lbl_estado.configure(
-                text=f"BD: {res['TOTAL']} fichas  (ARQ {res['ARQ']} · ESTR {res['ESTR']} · "
-                     f"MEC {res['MEC']} · ELEC {res['ELEC']}){cache}{sin_subir}",
-                text_color=GRIS_TEXTO_SUAVE)
+                text=f"BD: {res['TOTAL']} fichas  ·  ARQ {res['ARQ']} · "
+                     f"ESTR {res['ESTR']} · MEC {res['MEC']} · "
+                     f"ELEC {res['ELEC']}{cache}{sin_subir}",
+                text_color=(AMBAR if (cache or sin_subir) else TEXTO_SUAVE))
+
+            for clave, lbl in self._lbl_cat.items():
+                lbl.configure(text=str(res.get(clave, 0)))
+            activa = getattr(self, "_clave_actual", "inicio")
+            self._nav_badge["bd"].configure(
+                text=str(res["TOTAL"]), fg_color="transparent",
+                text_color=("white" if activa == "bd" else SIDEBAR_TXT_3))
+            n = (len(self.submittal.tabla.materiales)
+                 if self.submittal is not None else 0)
+            self._nav_badge["submittal"].configure(
+                text=(str(n) if self.submittal is not None else ""),
+                fg_color=(ACENTO if n else "transparent"),
+                text_color=("white" if n else SIDEBAR_TXT_3),
+                width=(22 if n else 0))
+            self.lbl_sync_meta.configure(
+                text=f"{len(pend)} pendiente(s)" if pend else "0 pendientes")
+            if "inicio" in self._pantallas:
+                self._pantallas["inicio"].refrescar()
 
         # -------- modo desarrollador
         def _toggle_modo_dev(self):
             if self.modo_dev:
                 self.modo_dev = False
-                self.btn_modo_dev.configure(text="🛠️ Modo desarrollador", fg_color="white",
-                                            text_color=AZUL_ES)
+                self.btn_modo_dev.configure(text="Modo desarrollador",
+                                            fg_color="transparent",
+                                            text_color=SIDEBAR_TXT_3)
                 self.title(f"Generador de Submittals ES v{VERSION}")
                 return
 
@@ -2565,8 +3857,8 @@ if _TK_OK:
                 return
 
             self.modo_dev = True
-            self.btn_modo_dev.configure(text="🛠️ Modo desarrollador: ACTIVO",
-                                        fg_color=ROJO_ES, text_color="white")
+            self.btn_modo_dev.configure(text="Modo desarrollador: ACTIVO",
+                                        fg_color=ACENTO, text_color="white")
             self.title(f"Generador de Submittals ES v{VERSION} — MODO DESARROLLADOR")
             messagebox.showinfo(
                 "Modo desarrollador activado",
@@ -2618,8 +3910,9 @@ if _TK_OK:
                         "No = empezar uno nuevo vacío en esta misma carpeta.",
                         parent=self.winfo_toplevel())
                     if continuar:
-                        _VentanaSubmittal(self, self.bd, existente, destino,
-                                          f"Editando: {existente.get('nombre_proyecto', '')}")
+                        self._abrir_submittal(
+                            existente, destino,
+                            f"Editando: {existente.get('nombre_proyecto', '')}")
                         return
             datos = self._pedir_datos_proyecto()
             if not datos:
@@ -2627,7 +3920,7 @@ if _TK_OK:
             proyecto = {"nombre_proyecto": Path(destino).name,
                         "datos_procedimiento": datos, "tipo_caratula": "clasica",
                         "materiales_seleccionados": []}
-            _VentanaSubmittal(self, self.bd, proyecto, destino, "Generar submittal desde BD")
+            self._abrir_submittal(proyecto, destino, "Generar submittal desde BD")
 
         def _abrir_existente(self):
             """Abre un submittal ya guardado, ya sea eligiendolo de la lista
@@ -2644,14 +3937,18 @@ if _TK_OK:
             # pide al generar (igual que "Generar desde BD").
             ruta_previa = proyecto.get("ruta_entregables", "")
             destino = ruta_previa if ruta_previa and Path(ruta_previa).is_dir() else ""
-            _VentanaSubmittal(self, self.bd, proyecto, destino,
-                              f"Editando: {proyecto.get('nombre_proyecto', '')}")
+            self._abrir_submittal(proyecto, destino,
+                                  f"Editando: {proyecto.get('nombre_proyecto', '')}")
 
-        def _cargar_ficha(self):
-            VentanaCargarFicha(self, self.bd, al_terminar=self._actualizar_estado)
+        def _cargar_ficha(self, por_carpetas=False):
+            """Abre el diálogo de carga de fichas. Con ``por_carpetas=True``
+            arranca directo en la selección de carpetas (carga masiva)."""
+            v = VentanaCargarFicha(self, self.bd, al_terminar=self._actualizar_estado)
+            if por_carpetas:
+                v.after(200, v._seleccionar_carpetas)
 
         def _gestionar_bd(self):
-            VentanaGestionarBD(self, self.bd, al_cambiar=self._actualizar_estado)
+            self._ir("bd")
 
         def _lanzar_v26(self):
             import subprocess
@@ -2740,6 +4037,11 @@ if _TK_OK:
             Ya no hay lock que liberar; lo único que puede quedar a medias es un
             cambio local sin subir (por ejemplo si se trabajó sin conexión).
             """
+            # Antes de cualquier otra cosa: el submittal en pantalla se guarda
+            # SIEMPRE (es lo que hacia el cierre de su ventana en v3.3.x).
+            if self.submittal is not None:
+                if not self.submittal.guardar_al_salir():
+                    return
             try:
                 pendiente = self.bd.hay_cambios_sin_subir()
             except Exception:
@@ -2765,54 +4067,87 @@ if _TK_OK:
             self.destroy()
 
 
-    class VentanaGestionarBD(ctk.CTkToplevel):
-        """Flujo 4: gestionar la BD (buscar, filtrar, editar, desactivar).
+    class PantallaBD(ctk.CTkFrame):
+        """Pantalla 'Base de datos': gestionar la BD (buscar, filtrar, editar,
+        duplicar, desactivar/reactivar, reemplazar PDF, vista previa).
 
         v3.2.0: la columna principal es el NOMBRE DESCRIPTIVO completo, y se
         puede EDITAR una ficha (regenerando su nombre). Poder corregir es lo que
         faltaba; por eso el borrado sigue siendo lógico y reversible.
+
+        v3.4.0: era ``VentanaGestionarBD`` (ventana aparte); ahora es una
+        pantalla de la ventana principal. Las acciones y sus confirmaciones no
+        cambiaron; solo se reordenaron segun el diseno (las de edicion arriba a
+        la derecha, las de estado abajo a la izquierda).
         """
 
-        def __init__(self, master, bd, al_cambiar=None):
-            super().__init__(master)
+        def __init__(self, master, bd, al_cambiar=None, app=None):
+            super().__init__(master, fg_color="transparent")
             self.bd = bd; self.al_cambiar = al_cambiar
-            self.title("Gestionar Base de Datos"); self.geometry("1020x640")
-            self.configure(fg_color=GRIS_BG, padx=12, pady=12)
-            tarjeta = _tarjeta(self)
-            tarjeta.pack(fill="both", expand=True, padx=4, pady=4)
-            ctk.CTkLabel(tarjeta, text="Fichas en la Base de Datos — doble clic para editar",
-                        text_color=GRIS_TEXTO, font=_fuente(12, "bold")).pack(
-                anchor="w", padx=16, pady=(16, 4))
+            self.app = app
+            self._migracion_ofrecida = False
+            cuerpo = ctk.CTkFrame(self, fg_color="transparent")
+            cuerpo.pack(fill="both", expand=True, padx=26, pady=(22, 0))
+
+            enc = ctk.CTkFrame(cuerpo, fg_color="transparent")
+            enc.pack(fill="x", pady=(0, 14))
+            titulos = ctk.CTkFrame(enc, fg_color="transparent")
+            titulos.pack(side="left")
+            ctk.CTkLabel(titulos, text="Base de datos de fichas",
+                        font=_fuente(20, "bold"), text_color=TEXTO,
+                        anchor="w").pack(anchor="w")
+            ctk.CTkLabel(titulos, text="Doble clic sobre una fila para editarla.",
+                        font=_fuente(12), text_color=TEXTO_SUAVE,
+                        anchor="w").pack(anchor="w", pady=(4, 0))
+            acciones = ctk.CTkFrame(enc, fg_color="transparent")
+            acciones.pack(side="right")
+            _boton_secundario(acciones, "Vista previa", self._vista_previa,
+                              ancho=112).pack(side="left")
+            _boton_secundario(acciones, "Reemplazar PDF", self._reemplazar_pdf,
+                              ancho=132).pack(side="left", padx=(8, 0))
+            _boton_secundario(acciones, "Duplicar", self._duplicar, ancho=94).pack(
+                side="left", padx=(8, 0))
+            _boton(acciones, "Editar ficha", self._editar, ancho=124).pack(
+                side="left", padx=(8, 0))
+
             # Mismo buscador que al armar un submittal, con la mejor coincidencia
             # de primera, filtros y scroll; aqui ademas puede mostrar las fichas
             # desactivadas (para reactivarlas).
-            self.buscador = _BuscadorFichas(tarjeta, self.bd, on_activar=lambda _f: self._editar(),
+            self.buscador = _BuscadorFichas(cuerpo, self.bd,
+                                            on_activar=lambda _f: self._editar(),
                                             permitir_inactivas=True, alto_filas=14)
-            self.buscador.pack(fill="both", expand=True, padx=16, pady=(0, 8))
+            self.buscador.pack(fill="both", expand=True)
 
-            bar = ctk.CTkFrame(tarjeta, fg_color="transparent")
-            bar.pack(fill="x", padx=16, pady=(0, 16))
-            _boton(bar, "✏️ Editar ficha", self._editar, color=AZUL_ES, ancho=150).pack(
-                side="left")
-            _boton_secundario(bar, "👁 Vista previa", self._vista_previa,
-                             ancho=150).pack(side="left", padx=6)
-            _boton_secundario(bar, "📄 Reemplazar PDF", self._reemplazar_pdf,
-                             ancho=170).pack(side="left", padx=6)
-            _boton(bar, "🗑️ Desactivar", self._eliminar, color=ROJO_ES, ancho=150).pack(
-                side="left", padx=6)
-            _boton_secundario(bar, "♻️ Reactivar", self._reactivar, ancho=140).pack(
-                side="left")
+            bar = ctk.CTkFrame(cuerpo, fg_color="transparent")
+            bar.pack(fill="x", pady=(12, 16))
+            _boton_peligro(bar, "Desactivar", self._eliminar, ancho=112).pack(side="left")
+            _boton_secundario(bar, "Reactivar", self._reactivar, ancho=104).pack(
+                side="left", padx=(8, 0))
+            self.lbl_resumen = ctk.CTkLabel(bar, text="", text_color=TEXTO_SUAVE,
+                                            font=_mono(11))
+            self.lbl_resumen.pack(side="right")
+            self._pintar_resumen()
+
+        def al_mostrar(self):
+            """La ventana principal llama a esto cada vez que se entra a la
+            pantalla: refresca el listado y, la primera vez, ofrece generar los
+            nombres de las fichas viejas (antes se preguntaba al abrir la
+            ventana)."""
+            self._refrescar()
+            if not self._migracion_ofrecida:
+                self._migracion_ofrecida = True
+                self._ofrecer_migracion()
+
+        def _pintar_resumen(self):
             r = self.bd.resumen_por_categoria()
-            ctk.CTkLabel(bar, text=f"{r['TOTAL']} activas · ARQ {r['ARQ']} · ESTR {r['ESTR']} · "
-                                   f"MEC {r['MEC']} · ELEC {r['ELEC']}",
-                        text_color=GRIS_TEXTO_SUAVE).pack(side="right")
-            self._ofrecer_migracion()
-            _dimensionar_ventana(self, 1060, 680)
-            _traer_al_frente(self)
+            self.lbl_resumen.configure(
+                text=f"{r['TOTAL']} activas · ARQ {r['ARQ']} · ESTR {r['ESTR']} · "
+                     f"MEC {r['MEC']} · ELEC {r['ELEC']}")
 
         # ------------------------------------------------------------ listado
         def _refrescar(self):
             self.buscador.refrescar()
+            self._pintar_resumen()
 
         def _sel(self):
             f = self.buscador.ficha_seleccionada()
@@ -2901,6 +4236,53 @@ if _TK_OK:
             self._avisar_push(r, "Archivo reemplazado. El nombre y las referencias "
                                  "de los submittals se conservan.")
             self._refrescar()
+            if self.al_cambiar:
+                self.al_cambiar()
+
+        def _duplicar(self):
+            """Crea una ficha nueva para OTRA especificacion reutilizando el PDF
+            de la ficha seleccionada, sin volver a subir/leer el archivo.
+
+            Pensado para proveedores (ej. METALCO) que documentan varias medidas
+            en un solo PDF: en vez de re-subir y re-procesar el mismo archivo por
+            cada medida, se duplica la ficha cambiando solo la especificacion."""
+            f = self._sel()
+            if not f:
+                return
+            if f.get("estado", "activo") != "activo":
+                messagebox.showinfo(
+                    "Duplicar ficha",
+                    "Reactive la ficha antes de duplicarla: solo se duplican "
+                    "fichas activas.", parent=self.winfo_toplevel())
+                return
+            # Se pre-llena el mismo diálogo de revisión con los datos de la ficha
+            # original (SIN su id/ruta/hash: es una ficha nueva). El usuario
+            # cambia lo que distingue la variante -- casi siempre las medidas o
+            # la especificación -- y el nombre se regenera solo.
+            base = {k: f.get(k, "") for k in
+                    ("nombre_material", "marca", "categoria", "dimensiones",
+                     "tipo_producto", "especificacion", "normativa",
+                     "descripcion_corta", "aspectos_adicionales", "sinonimos")}
+            base["sin_medidas"] = bool(f.get("sin_medidas"))
+            d = DialogoRevisarFicha(
+                self, self.bd, None, base,
+                titulo=f"Duplicar con el mismo PDF de: {self.bd.nombre_de(f)}",
+                es_edicion=True)
+            self.wait_window(d)
+            if d.resultado.get("accion") != "guardar":
+                return
+            try:
+                nueva = self.bd.duplicar_ficha(f["id"], d.resultado["datos"])
+            except Exception as e:
+                messagebox.showerror("No se pudo duplicar", str(e),
+                                     parent=self.winfo_toplevel()); return
+            r = self.bd.git_push(
+                f"duplicar ficha {nueva['nombre_ficha']} "
+                f"(mismo PDF que {self.bd.nombre_de(f)})")
+            self._refrescar()
+            self._avisar_push(
+                r, f"Ficha duplicada:\n{nueva['nombre_ficha']}\n\n"
+                   "Reutiliza el PDF de la ficha original (no se subió de nuevo).")
             if self.al_cambiar:
                 self.al_cambiar()
 

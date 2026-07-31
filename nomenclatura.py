@@ -710,6 +710,22 @@ def clave_unicidad(nombre_ficha):
     return re.sub(r"(?<=\d)\s*x\s*(?=\d)", "x", s)
 
 
+def clave_familia(nombre_ficha, marca=""):
+    """Clave normalizada de la ESPECIFICACION, ignorando la marca.
+
+    Dos fichas que describen el MISMO producto (misma medida/tipo) pero de
+    marcas distintas comparten ``clave_familia``. Ej.:
+    ``'TUBO ESTRUCTURAL 100x100x1.5mm - METALCO'`` y
+    ``'TUBO ESTRUCTURAL 100x100x1.5mm - MultiGroup'`` -> misma clave.
+
+    Se construye quitando el sufijo `` - MARCA`` (``nombre_sin_marca``) y
+    normalizando el resto con la misma regla que ``clave_unicidad`` (para que
+    coincidan aunque cada quien escriba las medidas distinto). Es la base de
+    la deteccion automatica de "este material tiene N marcas por stock".
+    """
+    return clave_unicidad(nombre_sin_marca(nombre_ficha, marca))
+
+
 def slug_archivo(nombre_ficha, maximo=110):
     """Nombre de archivo seguro (y legible) a partir del nombre de la ficha.
 

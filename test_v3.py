@@ -317,6 +317,86 @@ class TestBDManager(unittest.TestCase):
         proyecto["materiales_seleccionados"] = []
         self.assertFalse(self.m.validar_proyecto(proyecto)[0])
 
+    # ---- FAMILIAS DE MARCA (marcas por stock) ----
+    def _agregar_tubo(self, marca, dim="100x100x1.5mm", cat="ESTR"):
+        return self.m.agregar_ficha(str(self.pdf), {
+            "nombre_material": "Tubo Estructural", "marca": marca, "categoria": cat,
+            "tipo_producto": "cuadrado", "dimensiones": dim,
+            "normativa": "ASTM A500M", "descripcion_corta": "Tubo de acero"})
+
+    def test_fichas_misma_familia_agrupa_por_especificacion(self):
+        """Misma medida + distinta marca = misma familia; distinta medida no."""
+        metalco = self._agregar_tubo("METALCO")
+        multi = self._agregar_tubo("MultiGroup")
+        otra_medida = self._agregar_tubo("MultiGroup", dim="100x100x2.1mm")
+        fam = self.m.fichas_misma_familia(metalco)
+        ids = {f["id"] for f in fam}
+        self.assertIn(multi["id"], ids)                 # misma medida, otra marca
+        self.assertNotIn(otra_medida["id"], ids)        # otra medida, no
+        self.assertNotIn(metalco["id"], ids)            # nunca se incluye a si misma
+
+    def test_fichas_misma_familia_respeta_categoria(self):
+        """Mismo nombre/medida en OTRA categoria no cuenta como familia."""
+        estr = self._agregar_tubo("METALCO", cat="ESTR")
+        self._agregar_tubo("MultiGroup", cat="MEC")     # mismo texto, otra disciplina
+        fam = self.m.fichas_misma_familia(estr)
+        self.assertEqual(fam, [])
+
+    def test_fichas_misma_familia_ignora_inactivas_por_defecto(self):
+        metalco = self._agregar_tubo("METALCO")
+        multi = self._agregar_tubo("MultiGroup")
+        self.m.soft_delete_ficha(multi["id"])
+        self.assertEqual(self.m.fichas_misma_familia(metalco), [])
+        fam_con = self.m.fichas_misma_familia(metalco, incluir_inactivas=True)
+        self.assertIn(multi["id"], {f["id"] for f in fam_con})
+
+    def test_duplicar_ficha_reusa_pdf_sin_resubir(self):
+        """Duplicar crea una ficha nueva (id/ruta propios) reutilizando el PDF
+        de la original, sin pedir un archivo nuevo. Caso METALCO: una sola
+        ficha tecnica sirve para varias medidas."""
+        origen = self._agregar_tubo("METALCO", dim="100x100x2.1mm")
+        nueva = self.m.duplicar_ficha(origen["id"], {
+            "nombre_material": "Tubo Estructural", "marca": "METALCO",
+            "categoria": "ESTR", "tipo_producto": "cuadrado",
+            "dimensiones": "100x100x1.5mm", "normativa": "ASTM A500M"})
+        # Ficha nueva independiente
+        self.assertNotEqual(nueva["id"], origen["id"])
+        self.assertNotEqual(nueva["ruta_pdf"], origen["ruta_pdf"])
+        # El PDF nuevo existe y es byte-identico al de la ficha origen
+        self.assertTrue((self.m.bd_root / nueva["ruta_pdf"]).exists())
+        self.assertEqual(nueva["hash_archivo"], origen["hash_archivo"])
+        self.assertEqual(len(self.m.listar_fichas()), 2)
+        # La medida nueva quedo reflejada en el nombre
+        self.assertIn("1.5", nueva["nombre_ficha"])
+
+    def test_duplicar_ficha_origen_inexistente(self):
+        with self.assertRaises(bd.BDError):
+            self.m.duplicar_ficha("id-que-no-existe", {
+                "nombre_material": "X", "marca": "Y", "categoria": "ESTR"})
+
+    def test_familia_a_marcas_alternativas_genera_justificacion(self):
+        """Flujo completo: material con las alternativas de su familia como
+        marcas_alternativas + justificacion_stock -> carATula recibe el texto
+        legal de 'varias marcas por stock' y adjunta las N fichas."""
+        metalco = self._agregar_tubo("METALCO")
+        multi = self._agregar_tubo("MultiGroup")
+        fam = self.m.fichas_misma_familia(metalco)
+        material = {
+            "consecutivo": "ESTR01", "id_ficha_bd": metalco["id"], "categoria": "ESTR",
+            "nombre_material": "Tubo Estructural 100x100x1.5mm", "marca": "METALCO",
+            "marcas_alternativas": [{"id_ficha_bd": fa["id"], "marca": fa["marca"]}
+                                    for fa in fam],
+            "justificacion_stock": True}
+        datos = self.m.construir_datos_materiales(
+            {"materiales_seleccionados": [material]}, self.tmp / "destino")
+        mat = datos["materiales"][0]
+        self.assertIn("METALCO", mat["marca"])
+        self.assertIn("MultiGroup", mat["marca"])
+        self.assertIn("2 fichas tecnicas", mat["aspectos_adicionales"])
+        # Se adjuntan las 2 fichas (principal + alternativa), no solo una
+        self.assertEqual(len(mat["documentos_encontrados"]), 2)
+        _ = multi  # (referenciada via fam)
+
 
 # ==========================================================================
 # CASOS REALES

@@ -947,6 +947,63 @@ class BDManager:
                 return True
         return False
 
+    # ------------------------------------------------- familias / duplicados
+    def fichas_misma_familia(self, ficha, incluir_inactivas=False):
+        """Otras fichas que describen el MISMO producto que ``ficha`` pero de
+        distinta marca (misma categoria + misma especificacion normalizada,
+        ignorando la marca; ver ``nomenclatura.clave_familia``).
+
+        Es lo que permite avisar, al agregar un material al submittal, que
+        "este material tiene N marcas por stock" y ofrecer adjuntarlas todas.
+        Nunca incluye la propia ``ficha``. Por defecto solo fichas activas.
+        """
+        clave = nomenclatura.clave_familia(self.nombre_de(ficha), ficha.get("marca", ""))
+        if not clave:
+            return []
+        cat = str(ficha.get("categoria", "")).upper()
+        propio_id = ficha.get("id")
+        salida = []
+        for f in self.listar_fichas(incluir_inactivas=incluir_inactivas):
+            if f.get("id") == propio_id:
+                continue
+            if str(f.get("categoria", "")).upper() != cat:
+                continue
+            if nomenclatura.clave_familia(self.nombre_de(f), f.get("marca", "")) == clave:
+                salida.append(f)
+        return salida
+
+    def duplicar_ficha(self, id_origen, datos, subir=False):
+        """Crea una ficha NUEVA reutilizando el PDF de una ficha existente, sin
+        volver a subir/leer el archivo.
+
+        Pensado para proveedores como METALCO, que documentan varias medidas en
+        un unico PDF: en vez de re-subir y re-procesar (OCR/IA) el mismo archivo
+        una vez por cada medida, se duplica la ficha cambiando solo la
+        especificacion; el PDF se copia dentro de la BD con el nombre de la
+        ficha nueva (cada ficha queda autocontenida: un PDF por ficha, igual
+        que siempre, sin rutas compartidas que compliquen el merge).
+
+        ``datos`` son los campos de la ficha nueva (mismo formato que
+        ``agregar_ficha``). Reutiliza toda la logica ya probada de
+        ``agregar_ficha`` (validacion, nombre unico, dedup de archivo, hash,
+        keywords, indice, pendientes, push): la unica diferencia es el ORIGEN
+        del PDF (la ficha existente en vez de un archivo elegido por el
+        usuario).
+
+        Devuelve la ficha creada. Lanza ``BDError`` si el origen no existe o si
+        los datos no pasan la validacion.
+        """
+        origen = self.obtener_ficha(id_origen, incluir_inactivas=True)
+        if origen is None:
+            raise BDError(f"Ficha de origen no encontrada: {id_origen}")
+        # Asegura que los bytes del PDF esten disponibles localmente (con el
+        # backend REST puede que solo esten en cache o haya que descargarlos).
+        pdf_local = self.ruta_local_ficha(origen)
+        datos = dict(datos)
+        if not str(datos.get("categoria", "") or "").strip():
+            datos["categoria"] = origen.get("categoria", "")
+        return self.agregar_ficha(str(pdf_local), datos, subir=subir)
+
     # ================================================================ cache
     def ruta_local_ficha(self, ficha):
         """Ruta LOCAL (en cache) del PDF de la ficha, copiandolo desde la BD si
