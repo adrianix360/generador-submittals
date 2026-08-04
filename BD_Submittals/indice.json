@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-08-04T15:41:05",
+  "ultima_actualizacion": "2026-08-04T15:41:33",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3300,8 +3300,29 @@
       "fecha_modificacion": "2026-08-04T15:41:05",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "738799d5-30b8-4c98-b6b0-539d38ef1be1",
+      "nombre_ficha": "PERFIL C 6000 x 13 - Metales Flix",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Perfil C",
+      "marca": "Metales Flix",
+      "categoria": "ESTR",
+      "tipo_producto": "Perfil estructural",
+      "dimensiones": "6000x13/-6mm",
+      "sin_medidas": false,
+      "especificacion": "Hierro negro, acero galvanizado",
+      "normativa": "ASTM A653, INTE C405, INTE C409, INTE C421, JIS G3141 SPCC, JIS G3132 SPHT2",
+      "descripcion_corta": "Perfiles abiertos en forma de 'C' de acero negro o galvanizado, usados en estructuras secundarias y elementos constructivos.",
+      "search_keywords": "perfil c 6000 x 13 metales flix estr estructural 6000x13 6mm hierro negro acero galvanizado astm a653 inte c405 c409 c421 jis g3141 spcc g3132 spht2 perfiles abiertos en forma de o usados estructuras secundarias y elementos constructivos",
+      "ruta_pdf": "ESTR/PERFIL-C-6000-x-13-Metales-Flix.pdf",
+      "hash_archivo": "35900de95b7c3ff2",
+      "fecha_carga": "2026-08-04",
+      "fecha_modificacion": "2026-08-04T15:41:33",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-08-04T15:40:44"
+  "ultima_sincronizacion_git": "2026-08-04T15:41:09"
 }
