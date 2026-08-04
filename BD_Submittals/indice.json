@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-07-30T16:24:30",
+  "ultima_actualizacion": "2026-08-04T15:38:42",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3195,8 +3195,29 @@
       "fecha_modificacion": "2026-07-30T14:30:23",
       "cargada_por": "DESKTOP-AC14FSS",
       "estado": "activo"
+    },
+    {
+      "id": "1c9a18e6-58f6-4fd2-a5c7-c7293d66110f",
+      "nombre_ficha": "PEGABLOK® TIPO S - INTACO",
+      "nombre_ficha_manual": false,
+      "nombre_material": "PEGABLOK® TIPO S",
+      "marca": "INTACO",
+      "categoria": "ARQ",
+      "tipo_producto": "Mortero para bloques",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Resistencia a la compresión ≥ 12,4 MPa",
+      "normativa": "ASTM C 1437, ASTM C 231, ASTM C 270, ASTM C 387, ASTM C 109, INTE C91:2015, INTE 109:2017, NTE INEN 2518",
+      "descripcion_corta": "Mortero cementicio modificado para instalación de bloques de concreto y ladrillo de alta compresión en interiores y exteriores.",
+      "search_keywords": "pegablok tipo s intaco arq mortero para bloques resistencia a la compresion 12 4 mpa astm c 1437 231 270 387 109 inte c91 2015 2017 nte inen 2518 cementicio modificado instalacion de concreto y ladrillo alta en interiores exteriores",
+      "ruta_pdf": "ARQ/PEGABLOK-TIPO-S-INTACO.pdf",
+      "hash_archivo": "8816d1d61e6518f8",
+      "fecha_carga": "2026-08-04",
+      "fecha_modificacion": "2026-08-04T15:38:42",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-07-30T16:23:59"
+  "ultima_sincronizacion_git": "2026-08-04T15:37:37"
 }
