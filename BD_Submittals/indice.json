@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-08-04T15:38:42",
+  "ultima_actualizacion": "2026-08-04T15:38:57",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3216,8 +3216,29 @@
       "fecha_modificacion": "2026-08-04T15:38:42",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "47e19b75-bd3b-4480-b498-733dc844f498",
+      "nombre_ficha": "REPEMAX® CAPA FINA 90 - INTACO",
+      "nombre_ficha_manual": false,
+      "nombre_material": "REPEMAX® CAPA FINA 90",
+      "marca": "INTACO",
+      "categoria": "ARQ",
+      "tipo_producto": "Mortero para repellos",
+      "dimensiones": "",
+      "sin_medidas": true,
+      "especificacion": "Mortero de 90 kg/cm² para repellos de 3 mm a 5 mm",
+      "normativa": "ASTM C 109, UNE EN 1015-11, UNE EN 1015-12, UNE EN 1015-18, UNE-EN 998-1",
+      "descripcion_corta": "Mortero modificado con látex, microfibras y aditivos, ideal para repellos en interiores y exteriores, con excelente adherencia y resistencia.",
+      "search_keywords": "repemax capa fina 90 intaco arq mortero para repellos de kg cm 3 mm a 5 astm c 109 une en 1015 11 12 18 998 1 modificado con latex microfibras y aditivos ideal interiores exteriores excelente adherencia resistencia",
+      "ruta_pdf": "ARQ/REPEMAX-CAPA-FINA-90-INTACO.pdf",
+      "hash_archivo": "b7a5a0288a521579",
+      "fecha_carga": "2026-08-04",
+      "fecha_modificacion": "2026-08-04T15:38:57",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-08-04T15:37:37"
+  "ultima_sincronizacion_git": "2026-08-04T15:38:45"
 }
