@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-08-04T15:38:57",
+  "ultima_actualizacion": "2026-08-04T15:40:00",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3237,8 +3237,29 @@
       "fecha_modificacion": "2026-08-04T15:38:57",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "a61b1e86-0d15-40fa-9eaf-3e4b07efacce",
+      "nombre_ficha": "TUBO NOVAFORT MULTIPLE - Amanco Wavin",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Tubo Novafort",
+      "marca": "Amanco Wavin",
+      "categoria": "ARQ",
+      "tipo_producto": "Tubo de PVC-U",
+      "dimensiones": "MULTIPLE",
+      "sin_medidas": false,
+      "especificacion": "Monolítico, pared interna lisa",
+      "normativa": "ASTM D1784, ASTM D2321, ASTM F949, AASHTO M304, IRAM 13141, ISO 21138, EN1610",
+      "descripcion_corta": "Tubo de PVC-U para conducción de fluidos sin presión, con sistema de unión espiga-campana y sello hidráulico.",
+      "search_keywords": "tubo novafort multiple amanco wavin arq de pvc u monolitico pared interna lisa astm d1784 d2321 f949 aashto m304 iram 13141 iso 21138 en1610 para conduccion fluidos sin presion con sistema union espiga campana y sello hidraulico",
+      "ruta_pdf": "ARQ/TUBO-NOVAFORT-MULTIPLE-Amanco-Wavin.pdf",
+      "hash_archivo": "bc7a098ed1e60181",
+      "fecha_carga": "2026-08-04",
+      "fecha_modificacion": "2026-08-04T15:40:00",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-08-04T15:38:45"
+  "ultima_sincronizacion_git": "2026-08-04T15:38:59"
 }
