@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-08-04T15:40:39",
+  "ultima_actualizacion": "2026-08-04T15:41:05",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3279,8 +3279,29 @@
       "fecha_modificacion": "2026-08-04T15:40:39",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "426b45df-3277-4f32-8613-de9b037c7999",
+      "nombre_ficha": "PERFIL TIPO Z 210 x 50 x 1.5 - Macopa",
+      "nombre_ficha_manual": false,
+      "nombre_material": "Perfil Tipo Z",
+      "marca": "Macopa",
+      "categoria": "ESTR",
+      "tipo_producto": "Elemento estructural conformado en frío",
+      "dimensiones": "210x50x1.5",
+      "sin_medidas": false,
+      "especificacion": "Acero galvanizado y hierro negro",
+      "normativa": "ASTM A-36",
+      "descripcion_corta": "Perfiles tipo Z para soporte de cargas estructurales, fabricados en frío según norma ASTM A-36.",
+      "search_keywords": "perfil tipo z 210 x 50 1 5 macopa estr elemento estructural conformado en frio 210x50x1 acero galvanizado y hierro negro astm a 36 perfiles para soporte de cargas estructurales fabricados segun norma",
+      "ruta_pdf": "ESTR/PERFIL-TIPO-Z-210-x-50-x-1-5-Macopa.pdf",
+      "hash_archivo": "0649b0887c93b1f8",
+      "fecha_carga": "2026-08-04",
+      "fecha_modificacion": "2026-08-04T15:41:05",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-08-04T15:40:04"
+  "ultima_sincronizacion_git": "2026-08-04T15:40:44"
 }
