@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-08-04T15:41:33",
+  "ultima_actualizacion": "2026-08-04T15:47:10",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3213,7 +3213,7 @@
       "ruta_pdf": "ARQ/PEGABLOK-TIPO-S-INTACO.pdf",
       "hash_archivo": "8816d1d61e6518f8",
       "fecha_carga": "2026-08-04",
-      "fecha_modificacion": "2026-08-04T15:38:42",
+      "fecha_modificacion": "2026-08-04T15:47:10",
       "cargada_por": "Keis",
       "estado": "activo"
     },
@@ -3324,5 +3324,5 @@
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-08-04T15:41:09"
+  "ultima_sincronizacion_git": "2026-08-04T15:41:38"
 }
