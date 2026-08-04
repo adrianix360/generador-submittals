@@ -1,6 +1,6 @@
 {
   "version": "3.2.0",
-  "ultima_actualizacion": "2026-08-04T15:40:00",
+  "ultima_actualizacion": "2026-08-04T15:40:39",
   "fichas": [
     {
       "id": "76cca228-4841-4bc1-992b-88f4cbfee78b",
@@ -3258,8 +3258,29 @@
       "fecha_modificacion": "2026-08-04T15:40:00",
       "cargada_por": "Keis",
       "estado": "activo"
+    },
+    {
+      "id": "5a14f035-95c2-4eca-87b4-3cf6d895b334",
+      "nombre_ficha": "AP10 30 x 1.22 x 0.01 - PRODEX",
+      "nombre_ficha_manual": false,
+      "nombre_material": "AP10",
+      "marca": "PRODEX",
+      "categoria": "ARQ",
+      "tipo_producto": "Aislamiento térmico reflectivo",
+      "dimensiones": "30x1.22x0.01",
+      "sin_medidas": false,
+      "especificacion": "Espuma de polietileno de celda cerrada",
+      "normativa": "ASTM C-1313-98, ASTM C-1534, ASTM C-1224, ASTM D-638, ASTM E-96, IRAM 1735",
+      "descripcion_corta": "Espuma de polietileno de celda cerrada de 10 mm con aluminio y cara blanca resistente al UV.",
+      "search_keywords": "ap10 30 x 1 22 0 01 prodex arq aislamiento termico reflectivo 30x1 22x0 espuma de polietileno celda cerrada astm c 1313 98 1534 1224 d 638 e 96 iram 1735 10 mm con aluminio y cara blanca resistente al uv",
+      "ruta_pdf": "ARQ/AP10-30-x-1-22-x-0-01-PRODEX.pdf",
+      "hash_archivo": "9526b93bc0f92fd0",
+      "fecha_carga": "2026-08-04",
+      "fecha_modificacion": "2026-08-04T15:40:39",
+      "cargada_por": "Keis",
+      "estado": "activo"
     }
   ],
   "rama_actual": "main",
-  "ultima_sincronizacion_git": "2026-08-04T15:38:59"
+  "ultima_sincronizacion_git": "2026-08-04T15:40:04"
 }
